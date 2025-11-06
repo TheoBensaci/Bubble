@@ -20,7 +20,7 @@ public class CollisionSystem {
 
     public void doCollisionUpdate(){
         for (int i = 0; i < _bodys.size(); i++) {
-            for (int j = i; j < _bodys.size(); j++) {
+            for (int j = i+1; j < _bodys.size(); j++) {
                 _bodys.get(i).collisionStepWith(_bodys.get(j));
             }
         }

@@ -135,18 +135,21 @@ public class GameRender extends JPanel implements ActionListener {
         }
 
         if(_drawables.getLast().getLayer()>drawable.getLayer()){
-            for (int i = _drawables.size()-1; i >= 0; i--) {
-                if(_drawables.get(i).getLayer()<drawable.getLayer()){
-                    try {
-                        _semaphore.acquire();
-                        _drawables.add(drawable);
-                        _semaphore.release();
-                    } catch (InterruptedException e) {
-                        throw new RuntimeException(e);
+            try {
+                _semaphore.acquire();
+                for (int i = _drawables.size()-1; i >= 0; i--) {
+                    if(_drawables.get(i).getLayer()<drawable.getLayer()){
+                        _drawables.add(i,drawable);
+                        return;
                     }
-                    return;
                 }
+                _drawables.addFirst(drawable);
+                _semaphore.release();
+                return;
+            } catch (InterruptedException e) {
+                throw new RuntimeException(e);
             }
+
         }
         try {
             _semaphore.acquire();

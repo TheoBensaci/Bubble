@@ -11,7 +11,7 @@ import java.util.ArrayList;
 import java.util.concurrent.Semaphore;
 
 public class Game extends Thread {
-    public static final boolean DEBUG=false;
+    public static boolean DEBUG=false;
     public static final int TARGET_UPDATE_SPEED = 1;           // target update rate in millisecond (honeslty, with a system like this, idk how to make it pretier, sry :[)
 
     public static Game Instance;

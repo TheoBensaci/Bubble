@@ -121,9 +121,19 @@ public class Vector2f {
         return x == 0 && y == 0;
     }
 
+    public Vector2f set(float x, float y){
+        this.x=x;
+        this.y=y;
+        return this;
+    }
+
+    public Vector2f set(Vector2f oder){
+        return set(oder.x,oder.y);
+    }
+
 
     @Override
     public String toString() {
-        return "("+x+", "+y+")";
+        return String.format("(%.2f || %.2f)",x,y);
     }
 }

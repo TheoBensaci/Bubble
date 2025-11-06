@@ -14,29 +14,38 @@ import java.awt.image.BufferedImage;
 import java.awt.image.BufferedImageOp;
 import java.awt.image.RescaleOp;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Objects;
 
 public class Player extends CollisionBody implements IDrawable, IUpdateable {
 
     public static float MOVEMENT_SPEED=0.2f;
+    public static float SPACE_MOVEMENT_SPEED=0.4f;
     public static float DASH_DISTANCE = 25;
     public static float DASH_ADD_SPEED = 1.5f;
     public static float DASH_ADD_SPEED_DECRESS = 0.02f;
 
     public final int PlayerNumber;
 
-    private Vector2f _direction = new Vector2f(0,0);
+    private Vector2f _direction = new Vector2f(0,0);        // direction apply to the player
+    private Vector2f _tragetDir=new Vector2f(0,0);          // direction request by the player
     private double _rotation=0;
     private int _maxNumberDash=2;
     private int _maxAmmo=5;
     private int _numberDash=_maxNumberDash;
     private int _ammo=_maxAmmo;
     private float _addSpeed=0;
+
+    // state
     private boolean _onDash=false;
+    private boolean _inSpaceBubble=false;
+
+    private SpaceBubble _actualBubble;
 
 
     // input handling
     private boolean _hasDash=false;
+    private boolean _hasDebug=false;
 
 
 
@@ -48,7 +57,7 @@ public class Player extends CollisionBody implements IDrawable, IUpdateable {
 
 
     public Player(int playerNumber,Vector2f initPosition) {
-        super(initPosition, 24, false);
+        super(initPosition, 12, false);
         PlayerNumber=playerNumber;
         _maxGhostPosition=initPosition.copy();
 
@@ -67,28 +76,27 @@ public class Player extends CollisionBody implements IDrawable, IUpdateable {
 
     //#endregion
 
+    public void setSpaceBubble(SpaceBubble bubble){
+        _actualBubble=bubble;
+    }
 
-    @Override
-    public void update(float deltaTime) {
-        Point p = Input.getMousePos();
-        Vector2f a = getPosition().sub(new Vector2f(p.x,p.y));
-
-        _rotation=Math.acos(a.normilize().dot(new Vector2f(-1,0)));
-        _rotation*=(a.y<0)?1:-1;
-
-        // update ghost position
-        // (i know it's a visual and technicly it would be logical to put it on the draw update, but trust me)
-        _maxGhostPosition=Vector2f.lerp(_maxGhostPosition,_position,
-                0.03f/((_onDash)?10:1)*
-                deltaTime
-        );
+    // "phyisc"
 
 
+
+
+
+    //#region update
+
+    private void stateUpdate(float deltaTime){
         // input handling
         if(_hasDash){
             _hasDash=Input.getMouseRight();
         }
 
+        if(_hasDebug){
+            _hasDebug=Input.getC();
+        }
 
         // define direction
         int x=0;
@@ -106,31 +114,10 @@ public class Player extends CollisionBody implements IDrawable, IUpdateable {
         if(Input.getDown()){
             y++;
         }
-
-        if(Input.getMouseLeft() || Input.getC()){
-            _position.x=x;
-            _position.y=y;
-        }
-
-        _direction.x=x;
-        _direction.y=y;
+        _tragetDir.set(x,y).normilize();
 
 
-        // skip if no move
-        if(!_direction.isNull()){
-            _direction.normilize();
-        }
-
-        // dash
-        if(!_hasDash && Input.getMouseRight() && !_direction.isNull()){
-            _hasDash=true;
-            _position.add(_direction.copy().mult(DASH_DISTANCE));
-            _addSpeed=DASH_ADD_SPEED;
-            _onDash=true;
-            return;
-        }
-
-        // add speed update
+        // add speed / dash state update
         if(_onDash){
             _addSpeed-=DASH_ADD_SPEED_DECRESS*deltaTime;
             if(_addSpeed<=0){
@@ -139,21 +126,86 @@ public class Player extends CollisionBody implements IDrawable, IUpdateable {
             }
         }
 
+        _inSpaceBubble=(_actualBubble!=null);
+    }
+
+    private void movementUpdate(float deltaTime){
+        Point p = Input.getMousePos();
+        Vector2f a = getPosition().sub(new Vector2f(p.x,p.y));
+
+        _rotation=Math.acos(a.normilize().dot(new Vector2f(-1,0)));
+        _rotation*=(a.y<0)?1:-1;
+
+        // update ghost position
+        // (i know it's a visual and technicly it would be logical to put it on the draw update, but trust me)
+        _maxGhostPosition=Vector2f.lerp(_maxGhostPosition,_position,
+                0.03f/((_onDash)?10:1)*
+                        deltaTime
+        );
+
+        // dash
+        if(!_hasDash && Input.getMouseRight() && !_tragetDir.isNull()){
+            _hasDash=true;
+            _maxGhostPosition.set(_position);
+            _position.add(_tragetDir.copy().mult(DASH_DISTANCE));
+            _addSpeed=DASH_ADD_SPEED;
+            _onDash=true;
+            _direction.set(_tragetDir);
+            return;
+        }
+
+
+        if(_inSpaceBubble){
+            _direction.set(_tragetDir);
+        }
+
+
 
         if(_direction.isNull()){
-           return;
+            return;
         }
 
 
 
         // move the player normally
-        _position.add(_direction.copy().mult((MOVEMENT_SPEED+_addSpeed)*deltaTime));
+        _position.add(
+                _direction.copy().mult((MOVEMENT_SPEED+_addSpeed)*deltaTime)
+        );
+
+        // Space Bubble constraint
+
+        if(_inSpaceBubble){
+            // TODO : correct the position to restraint the player inside the bubble
+        }
+
+    }
+
+    private void atUpdateEnd(float deltaTime){
+
+        // rest the space bubble, use to manage collision without a enter / exit hook (i'm lazy)
+        _actualBubble=null;
+    }
+
+
+
+    //#endregion
+
+
+    @Override
+    public void update(float deltaTime) {
+
+        stateUpdate(deltaTime);
+        movementUpdate(deltaTime);
+        atUpdateEnd(deltaTime);
+
+        if(!_hasDebug && Input.getC()){
+            Game.DEBUG=(!Game.DEBUG);
+            _hasDebug=true;
+        }
     }
 
     @Override
     public void draw(Graphics g) {
-
-
 
         if(_sprite==null){
             return;
@@ -164,8 +216,8 @@ public class Player extends CollisionBody implements IDrawable, IUpdateable {
 
         // debug info
         if(Game.DEBUG){
-            g.setColor(Color.YELLOW);
-            g.fillOval((int)(_position.x-CollisionRadius/2),(int)(_position.y-CollisionRadius/2),(int)CollisionRadius,(int)CollisionRadius);
+            g.setColor(Color.magenta);
+            g.fillOval((int)(_position.x-CollisionRadius),(int)(_position.y-CollisionRadius),(int)CollisionRadius*2,(int)CollisionRadius*2);
         }
 
         BufferedImage img =new BufferedImage(
@@ -190,11 +242,22 @@ public class Player extends CollisionBody implements IDrawable, IUpdateable {
             float step = diff.magn() / _NUMBER_OF_GHOST;
             diff.normilize();
             for (int i = 0; i < _NUMBER_OF_GHOST; i++) {
+                // get ghost possition
                 Vector2f ghostPos = _maxGhostPosition.copy().add(diff.copy().mult(i * step));
+
+                // change ghost color
                 float f = (_onDash)?0.5f:0.2f;
-                float[] scales = {f, f, f, 0.3f};
-                float[] offsets = new float[4];
-                RescaleOp rop = new RescaleOp(scales, offsets, null);
+                float colorFactor =1f;
+
+                if(_onDash){
+                    colorFactor=0.5f+((float) i/_NUMBER_OF_GHOST);
+                }
+                float[] scales = {f*colorFactor, f*colorFactor, f, 0.3f};
+                float[] offsets = {0,0,0,0};
+                RescaleOp rop = new RescaleOp(scales,offsets, null);
+
+
+                // draw ghost
                 ((Graphics2D) g).drawImage(img, (BufferedImageOp) rop, (int)(ghostPos.x-recenterOffset.x), (int) (ghostPos.y-recenterOffset.y));
             }
         }
@@ -202,15 +265,56 @@ public class Player extends CollisionBody implements IDrawable, IUpdateable {
 
         // debug info
         if(Game.DEBUG){
+            // show state
+            Vector2f offset=new Vector2f(0, 50);
+
+            String[] debugInfo=new String[]{
+                    "Position : " + _position,
+                    "Taregt direction : " + _tragetDir,
+                    "Direction : " + _direction,
+                    "In Space buble : " + _inSpaceBubble,
+                    "On dash : " + _onDash
+            };
+
+            int debugRectW=0;
+            int debugRectH=20;
+            for (String s : debugInfo) {
+                debugRectH+=20;
+                int l = s.length()*7;
+                debugRectW=Math.max(debugRectW,l);
+            }
+
+            g.setColor(Color.YELLOW);
+            ((Graphics2D) g).setStroke(new BasicStroke(2));
+            g.drawLine((int)(_position.x),(int)(_position.y),(int)(_position.x+offset.x),(int)(_position.y+offset.y));
+
+
+            g.setColor(Color.BLACK);
+            g.fillRect((int)(_position.x+offset.x),(int)(_position.y+offset.y),debugRectW,debugRectH);
+            g.setColor(Color.YELLOW);
+            ((Graphics2D) g).setStroke(new BasicStroke(1));
+            g.drawRect((int)(_position.x+offset.x),(int)(_position.y+offset.y),debugRectW,debugRectH);
+            for (int i = 0; i < debugInfo.length; i++) {
+                g.drawString(debugInfo[i], (int)(_position.x+offset.x+5),(int)(_position.y+offset.y+20)+(i*20));
+            }
+
+
             g.setColor(Color.GREEN);
             g.fillOval((int)_position.x,(int)_position.y,(int)3,(int)3);
             g.setColor(Color.cyan);
             g.fillOval((int)_maxGhostPosition.x,(int)_maxGhostPosition.y,(int)3,(int)3);
+
+            // show aim line
+            Vector2f aimingVec = new Vector2f(1,0).rotate(_rotation).mult(40);
+            aimingVec.add(_position);
+            g.setColor(Color.CYAN);
+            ((Graphics2D) g).setStroke(new BasicStroke(2));
+            g.drawLine((int)(_position.x),(int)(_position.y),(int)(aimingVec.x),(int)(aimingVec.y));
         }
     }
 
     @Override
     public int getLayer() {
-        return 0;
+        return 1;
     }
 }

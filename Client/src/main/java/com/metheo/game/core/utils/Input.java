@@ -8,7 +8,21 @@ import java.awt.event.KeyListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 
+
 public class Input implements KeyListener, MouseListener {
+
+    public class InputMap{
+        public static final int UP = KeyEvent.VK_W;
+        public static final int DOWN = KeyEvent.VK_S;
+        public static final int LEFT = KeyEvent.VK_A;
+        public static final int RIGHT = KeyEvent.VK_D;
+        public static final int A = KeyEvent.VK_J;
+        public static final int B = KeyEvent.VK_K;
+        public static final int C = KeyEvent.VK_SPACE;
+        public static final int MOUSE_LEFT = MouseEvent.BUTTON1;
+        public static final int MOUSE_RIGHT = MouseEvent.BUTTON3;
+
+    }
 
     private static boolean _up=false;
     private static boolean _down=false;
@@ -55,26 +69,26 @@ public class Input implements KeyListener, MouseListener {
     @Override
     public void keyPressed(KeyEvent e) {
         switch (e.getKeyCode()){
-            case KeyEvent.VK_W -> _up=true;
-            case KeyEvent.VK_S -> _down=true;
-            case KeyEvent.VK_D -> _right=true;
-            case KeyEvent.VK_A -> _left=true;
-            case KeyEvent.VK_J -> _a=true;
-            case KeyEvent.VK_K -> _b=true;
-            case KeyEvent.VK_R -> _c=true;
+            case InputMap.UP -> _up=true;
+            case InputMap.DOWN -> _down=true;
+            case InputMap.RIGHT -> _right=true;
+            case InputMap.LEFT -> _left=true;
+            case InputMap.A -> _a=true;
+            case InputMap.B -> _b=true;
+            case InputMap.C -> _c=true;
         }
     }
 
     @Override
     public void keyReleased(KeyEvent e) {
         switch (e.getKeyCode()){
-            case KeyEvent.VK_W -> _up=false;
-            case KeyEvent.VK_S -> _down=false;
-            case KeyEvent.VK_D -> _right=false;
-            case KeyEvent.VK_A -> _left=false;
-            case KeyEvent.VK_J -> _a=false;
-            case KeyEvent.VK_K -> _b=false;
-            case KeyEvent.VK_R -> _c=false;
+            case InputMap.UP -> _up=false;
+            case InputMap.DOWN -> _down=false;
+            case InputMap.RIGHT -> _right=false;
+            case InputMap.LEFT -> _left=false;
+            case InputMap.A -> _a=false;
+            case InputMap.B -> _b=false;
+            case InputMap.C -> _c=false;
         }
     }
 
@@ -94,16 +108,16 @@ public class Input implements KeyListener, MouseListener {
     @Override
     public void mousePressed(MouseEvent e) {
         switch (e.getButton()){
-            case MouseEvent.BUTTON1 -> _mouseLeft=true;
-            case MouseEvent.BUTTON3 -> _mouseRight=true;
+            case InputMap.MOUSE_LEFT -> _mouseLeft=true;
+            case InputMap.MOUSE_RIGHT -> _mouseRight=true;
         }
     }
 
     @Override
     public void mouseReleased(MouseEvent e) {
         switch (e.getButton()){
-            case MouseEvent.BUTTON1 -> _mouseLeft=false;
-            case MouseEvent.BUTTON3 -> _mouseRight=false;
+            case InputMap.MOUSE_LEFT -> _mouseLeft=false;
+            case InputMap.MOUSE_RIGHT -> _mouseRight=false;
         }
     }
 
