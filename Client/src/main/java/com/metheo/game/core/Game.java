@@ -18,8 +18,6 @@ public class Game extends Thread {
 
     public Window Window;
 
-    public RessourceManager Ressources;
-
     // entity gestion
     public final ArrayList<IUpdateable> _updateables=new ArrayList<>();
     public final ArrayList<Entity> _toBeCreate=new ArrayList<>();
@@ -37,7 +35,9 @@ public class Game extends Thread {
     private float _deltaTime;
 
     private Game(boolean createWindow){
-        Window=new Window();
+        if(createWindow){
+            Window=new Window();
+        }
     }
 
 

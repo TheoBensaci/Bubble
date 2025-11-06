@@ -112,12 +112,12 @@ public class GameRender extends JPanel implements ActionListener {
     }
 
     public static void registerDrawable(IDrawable drawable){
-        if(Game.Instance==null)return;
+        if(Game.Instance==null || Game.Instance.Window==null)return;
         Game.Instance.Window.gameCanvas.addDrawables(drawable);
     }
 
     public static void unregisterDrawable(IDrawable drawable){
-        if(Game.Instance==null)return;
+        if(Game.Instance==null || Game.Instance.Window==null)return;
         Game.Instance.Window.gameCanvas.delDrawables(drawable);
     }
 

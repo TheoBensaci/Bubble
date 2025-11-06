@@ -93,6 +93,9 @@ public class Input implements KeyListener, MouseListener {
     }
 
     public static Point getMousePos(){
+        if(Game.Instance==null || Game.Instance.Window==null){
+            return new Point();
+        }
         Point p = MouseInfo.getPointerInfo().getLocation();
         Point q = Game.Instance.Window.gameCanvas.getLocationOnScreen();
         p.x-=q.x;

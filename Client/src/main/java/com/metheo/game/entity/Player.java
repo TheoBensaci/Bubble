@@ -4,6 +4,8 @@ import com.metheo.game.core.Game;
 import com.metheo.game.core.IUpdateable;
 import com.metheo.game.core.collision.CollisionBody;
 import com.metheo.game.core.render.IDrawable;
+import com.metheo.game.core.ressourceManagement.RessourceManager;
+import com.metheo.game.core.utils.DebugUtils;
 import com.metheo.game.core.utils.Input;
 import com.metheo.game.core.utils.Vector2f;
 
@@ -62,10 +64,8 @@ public class Player extends CollisionBody implements IDrawable, IUpdateable {
         _maxGhostPosition=initPosition.copy();
 
         // get the sprite
+        _sprite= RessourceManager.getTexture("textures/player"+playerNumber+".png");
 
-        try{
-            _sprite = ImageIO.read(Objects.requireNonNull(getClass().getClassLoader().getResource("textures/player"+playerNumber+".png")));
-        }catch(IOException e){e.printStackTrace();}
     }
 
     //#region GET
@@ -276,27 +276,7 @@ public class Player extends CollisionBody implements IDrawable, IUpdateable {
                     "On dash : " + _onDash
             };
 
-            int debugRectW=0;
-            int debugRectH=20;
-            for (String s : debugInfo) {
-                debugRectH+=20;
-                int l = s.length()*7;
-                debugRectW=Math.max(debugRectW,l);
-            }
-
-            g.setColor(Color.YELLOW);
-            ((Graphics2D) g).setStroke(new BasicStroke(2));
-            g.drawLine((int)(_position.x),(int)(_position.y),(int)(_position.x+offset.x),(int)(_position.y+offset.y));
-
-
-            g.setColor(Color.BLACK);
-            g.fillRect((int)(_position.x+offset.x),(int)(_position.y+offset.y),debugRectW,debugRectH);
-            g.setColor(Color.YELLOW);
-            ((Graphics2D) g).setStroke(new BasicStroke(1));
-            g.drawRect((int)(_position.x+offset.x),(int)(_position.y+offset.y),debugRectW,debugRectH);
-            for (int i = 0; i < debugInfo.length; i++) {
-                g.drawString(debugInfo[i], (int)(_position.x+offset.x+5),(int)(_position.y+offset.y+20)+(i*20));
-            }
+            DebugUtils.drawEntityDebugInfo(g,_position.copy(),new Vector2f(0, 50),debugInfo);
 
 
             g.setColor(Color.GREEN);
