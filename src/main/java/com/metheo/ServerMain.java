@@ -1,10 +1,14 @@
 package com.metheo;
 
 import com.metheo.network.Server;
+import java.io.*;
 
-public class Main {
+
+public class ServerMain {
     public static void main(String[] args) {
 
+
+        System.out.println("Try to Start the Server");
         Server server = new Server();
         server.start();
 

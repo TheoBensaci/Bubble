@@ -5,9 +5,8 @@ import com.metheo.game.core.render.GameRender;
 import com.metheo.game.core.utils.Vector2f;
 import com.metheo.game.entity.Player;
 import com.metheo.game.entity.SpaceBubble;
-import com.metheo.game.network.NetworkHandler;
 
-public class Main {
+public class ClientMain {
     public static void main(String[] args) {
         Game game = Game.creatGame(true);
         Player pl = new Player(2,new Vector2f(GameRender.WIDTH/2,GameRender.HEIGHT/2));

@@ -1,17 +1,17 @@
-package com.metheo.game.network;
+package com.metheo.network;
 
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.Socket;
 
-public class NetworkHandler {
+public class ClientNetworkHandler {
     private Socket _socket;
     private String _hostName;
     private int _port;
 
 
-    public NetworkHandler(String hostName, int port){
+    public ClientNetworkHandler(String hostName, int port){
         _port=port;
         _hostName=hostName;
     }
