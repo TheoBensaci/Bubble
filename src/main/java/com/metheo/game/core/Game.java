@@ -14,7 +14,7 @@ public class Game extends Thread {
     public static boolean DEBUG=false;
     public static final int TARGET_UPDATE_SPEED = 1;           // target update rate in millisecond (honeslty, with a system like this, idk how to make it pretier, sry :[)
 
-    public static Game Instance;
+    private static Game _instance;
 
     public Window Window;
 
@@ -34,24 +34,44 @@ public class Game extends Thread {
     // game state
     private float _deltaTime;
 
-    private Game(boolean createWindow){
+    public Game(boolean createWindow){
         if(createWindow){
             Window=new Window();
         }
     }
 
 
-    public static Game creatGame(boolean createWindow){
-        if(Instance!=null)return Instance;
-        Instance = new Game(createWindow);
-        Instance.start();
-        Instance._run=true;
-        return Instance;
+    /**
+     * Get the singoton instance of the game if it existe, else create with the following paramater
+     * @param createWindow
+     * @return
+     */
+    public static Game getGame(boolean createWindow){
+        if(_instance!=null)return _instance;
+        _instance = new Game(createWindow);
+        _instance.start();
+        _instance._run=true;
+        return _instance;
     }
 
-    public static void close(){
-        if(Game.Instance==null)return;
-        Game.Instance._run=false;
+    /**
+     * Get the singoton instance of the game if it existe, else create it with default parameter
+     * @return
+     */
+    public static Game getGame(){
+        if(_instance!=null)return _instance;
+        _instance = new Game(false);
+        _instance.start();
+        _instance._run=true;
+        return _instance;
+    }
+
+    public static boolean isGameOpen(){
+        return _instance!=null;
+    }
+
+    public void close(){
+        _run = false;
     }
 
     @Override
@@ -103,32 +123,34 @@ public class Game extends Thread {
         }
     }
 
-    public static float getDeltaTime(){
-        if(Instance==null)return 0;
-        return Instance._deltaTime;
+    public float getDeltaTime(){
+        return _deltaTime;
     }
 
 
     //#region Entity gestion
 
+    public Entity createEntity(Entity e){
+        requestEntityCreation(e);
+        return e;
+    }
 
-    public static void requestEntityCreation(Entity e) {
-        if(Instance==null)return;
+
+    public void requestEntityCreation(Entity e) {
         try{
-            Instance._semaphoreAdd.acquire();
-            Instance._toBeCreate.add(e);
-            Instance._semaphoreAdd.release();
+            _semaphoreAdd.acquire();
+            _toBeCreate.add(e);
+            _semaphoreAdd.release();
         } catch (InterruptedException ex) {
             throw new RuntimeException(ex);
         }
     }
 
-    public static void requestEntityDestruction(Entity e) {
-        if(Instance==null)return;
+    public  void requestEntityDestruction(Entity e) {
         try{
-            Instance._semaphoreDestroy.acquire();
-            Instance._toBeDestroy.add(e);
-            Instance._semaphoreDestroy.release();
+            _semaphoreDestroy.acquire();
+            _toBeDestroy.add(e);
+            _semaphoreDestroy.release();
         } catch (InterruptedException ex) {
             throw new RuntimeException(ex);
         }
@@ -139,8 +161,10 @@ public class Game extends Thread {
             _updateables.add((IUpdateable)ent);
         }
 
-        if(ent instanceof IDrawable){
-            GameRender.registerDrawable((IDrawable)ent);
+        if(Window!=null) {
+            if (ent instanceof IDrawable) {
+                Window.GameCanvas.registerDrawable((IDrawable) ent);
+            }
         }
 
         if(ent instanceof CollisionBody){
@@ -153,8 +177,10 @@ public class Game extends Thread {
             _updateables.remove((IUpdateable)ent);
         }
 
-        if(ent instanceof IDrawable){
-            GameRender.unregisterDrawable((IDrawable)ent);
+        if(Window!=null) {
+            if (ent instanceof IDrawable) {
+                Window.GameCanvas.unregisterDrawable((IDrawable) ent);
+            }
         }
 
         if(ent instanceof CollisionBody){
@@ -162,9 +188,8 @@ public class Game extends Thread {
         }
     }
 
-    public static int getNumberOfUpdateables(){
-        if(Instance==null)return 0;
-        return Instance._updateables.size();
+    public int getNumberOfUpdateables(){
+        return _updateables.size();
     }
 
     //#endregion

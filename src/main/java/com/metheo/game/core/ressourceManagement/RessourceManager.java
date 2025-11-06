@@ -53,7 +53,7 @@ public class RessourceManager {
     public static BufferedImage getTexture(String path){
         RessourceManager r = getRessourceManager();
 
-        if(Game.Instance==null || Game.Instance.Window==null){
+        if(!Game.isGameOpen() || Game.getGame().Window==null){
             r.Textures.put(path, r._default_texture);
             return r._default_texture;
         }

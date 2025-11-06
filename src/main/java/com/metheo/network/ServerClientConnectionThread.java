@@ -6,12 +6,12 @@ import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.Socket;
 
-public class ServerThread extends Thread{
+public class ServerClientConnectionThread extends Thread{
     private Socket _socket;
-    private Server _server;
+    private GameServer _server;
 
 
-    public ServerThread(Socket socket, Server server){
+    public ServerClientConnectionThread(Socket socket, GameServer server){
         super("ServerThread");
         this._socket=socket;
         _server=server;

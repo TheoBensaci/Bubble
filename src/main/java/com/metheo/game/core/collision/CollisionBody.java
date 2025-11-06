@@ -1,6 +1,7 @@
 package com.metheo.game.core.collision;
 
 import com.metheo.game.core.Entity;
+import com.metheo.game.core.Game;
 import com.metheo.game.core.utils.Vector2f;
 
 public class CollisionBody extends Entity {

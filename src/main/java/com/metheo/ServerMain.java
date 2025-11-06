@@ -1,30 +1,37 @@
 package com.metheo;
 
-import com.metheo.network.Server;
 import java.io.*;
+import com.metheo.network.GameServer;
 
 
 public class ServerMain {
     public static void main(String[] args) {
-
-
         System.out.println("Try to Start the Server");
-        Server server = new Server();
+        GameServer server = new GameServer();
         server.start();
 
-        boolean wait = true;
-        while (wait){
-            String u=System.console().readLine();
-            switch (u){
-                case "exit" :
-                    wait=false;
-                    server.close();
-                    break;
 
-                default:
-                    System.out.println("'"+u+"' is not know as a command :[");
-                    break;
+        // make a quick way to interact with the server
+        BufferedReader in = new BufferedReader(new InputStreamReader(System.in));
+        String line = "";
+        boolean wait = true;
+        try {
+            while (wait) {
+                line = in.readLine();
+                switch (line){
+                    case "exit" :
+                        wait=false;
+                        server.close();
+                        break;
+
+                    default:
+                        System.out.println("'"+line+"' is not know as a command :[");
+                        break;
+                }
             }
+            in.close();
+        } catch (IOException e) {
+            throw new RuntimeException(e);
         }
 
         System.out.println("Server running -> "+server.isRunning());

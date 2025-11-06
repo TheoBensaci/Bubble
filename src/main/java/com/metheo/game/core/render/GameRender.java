@@ -70,7 +70,7 @@ public class GameRender extends JPanel implements ActionListener {
         }
         g.setColor(Color.ORANGE);
         float a = (float)(System.nanoTime()-_updateStart)/1000000;
-        g.drawString("Game engine delta Time : "+Game.getDeltaTime()+"ms",10,40);
+        g.drawString("Game engine delta Time : "+Game.getGame().getDeltaTime()+"ms",10,40);
         g.drawString("Paint delta time : "+a+"ms",10,60);
     }
 
@@ -111,14 +111,12 @@ public class GameRender extends JPanel implements ActionListener {
         return _updateStart;
     }
 
-    public static void registerDrawable(IDrawable drawable){
-        if(Game.Instance==null || Game.Instance.Window==null)return;
-        Game.Instance.Window.gameCanvas.addDrawables(drawable);
+    public void registerDrawable(IDrawable drawable){
+        addDrawables(drawable);
     }
 
-    public static void unregisterDrawable(IDrawable drawable){
-        if(Game.Instance==null || Game.Instance.Window==null)return;
-        Game.Instance.Window.gameCanvas.delDrawables(drawable);
+    public void unregisterDrawable(IDrawable drawable){
+        delDrawables(drawable);
     }
 
     private void addDrawables(IDrawable drawable){

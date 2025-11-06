@@ -3,12 +3,12 @@ package com.metheo.network;
 import java.io.IOException;
 import java.net.ServerSocket;
 
-public class Server extends Thread {
+public class GameServer extends Thread {
     private ServerSocket _socket;
     private static final int PORT = 8000;
     private boolean _running=false;
 
-    public Server(){
+    public GameServer(){
     }
 
     @Override
@@ -16,7 +16,7 @@ public class Server extends Thread {
         super.run();
         try {
             while (_running){
-                new ServerThread(_socket.accept(),this).start();
+                new ServerClientConnectionThread(_socket.accept(),this).start();
             }
         } catch (IOException ignored) {}
     }

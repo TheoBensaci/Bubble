@@ -7,14 +7,14 @@ import javax.swing.*;
 
 
 public class Window extends JFrame {
-    public GameRender gameCanvas;
+    public GameRender GameCanvas;
 
 
     public Window(){
         // create a empty canvas
-        gameCanvas = new GameRender();
+        GameCanvas = new GameRender();
 
-        add(gameCanvas);
+        add(GameCanvas);
 
         // add input listener
         addKeyListener(new Input());
