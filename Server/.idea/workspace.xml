@@ -4,16 +4,7 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="d0f8a1e3-23b5-4827-acac-b0c991865ce6" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/../Client/src/main/java/com/metheo/game/network/NetworkHandler.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/com/metheo/network/Server.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/com/metheo/network/ServerThread.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../Client/.idea/vcs.xml" beforeDir="false" afterPath="$PROJECT_DIR$/../Client/.idea/vcs.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../Client/src/main/java/com/metheo/Main.java" beforeDir="false" afterPath="$PROJECT_DIR$/../Client/src/main/java/com/metheo/Main.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../Client/src/main/java/com/metheo/game/entity/Player.java" beforeDir="false" afterPath="$PROJECT_DIR$/../Client/src/main/java/com/metheo/game/entity/Player.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/metheo/Main.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/metheo/Main.java" afterDir="false" />
-    </list>
+    <list default="true" id="d0f8a1e3-23b5-4827-acac-b0c991865ce6" name="Changes" comment="" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
