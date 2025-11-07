@@ -1,6 +1,9 @@
 package com.metheo.game.core;
 
 public class Entity {
+
+    private Game _game;
+
     public Entity(){
     }
 
@@ -15,5 +18,13 @@ public class Entity {
 
     public void onDestroy(){
 
+    }
+
+    public Game getGame(){
+        return _game;
+    }
+
+    public void setGame(Game game){
+        _game=game;
     }
 }

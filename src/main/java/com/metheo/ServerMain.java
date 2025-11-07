@@ -1,7 +1,11 @@
 package com.metheo;
 
 import java.io.*;
-import com.metheo.network.GameServer;
+
+import com.metheo.network.packet.PacketUtils;
+import com.metheo.network.packet.PingPacket;
+import com.metheo.network.server.GameServer;
+import com.metheo.network.packet.Packet;
 
 
 public class ServerMain {

@@ -88,7 +88,7 @@ public class Player extends CollisionBody implements IDrawable, IUpdateable {
 
     //#region update
 
-    private void stateUpdate(float deltaTime){
+    protected void stateUpdate(float deltaTime){
         // input handling
         if(_hasDash){
             _hasDash=Input.getMouseRight();
@@ -129,7 +129,7 @@ public class Player extends CollisionBody implements IDrawable, IUpdateable {
         _inSpaceBubble=(_actualBubble!=null);
     }
 
-    private void movementUpdate(float deltaTime){
+    protected void movementUpdate(float deltaTime){
         Point p = Input.getMousePos();
         Vector2f a = getPosition().sub(new Vector2f(p.x,p.y));
 
@@ -180,7 +180,7 @@ public class Player extends CollisionBody implements IDrawable, IUpdateable {
 
     }
 
-    private void atUpdateEnd(float deltaTime){
+    protected void atUpdateEnd(float deltaTime){
 
         // rest the space bubble, use to manage collision without a enter / exit hook (i'm lazy)
         _actualBubble=null;

@@ -1,4 +1,4 @@
-package com.metheo.network;
+package com.metheo.network.server;
 
 import java.io.BufferedReader;
 import java.io.IOException;

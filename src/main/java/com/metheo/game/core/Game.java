@@ -16,6 +16,8 @@ public class Game extends Thread {
 
     private static Game _instance;
 
+    private final boolean _isServer;
+
     public Window Window;
 
     // entity gestion
@@ -34,10 +36,11 @@ public class Game extends Thread {
     // game state
     private float _deltaTime;
 
-    public Game(boolean createWindow){
+    public Game(boolean isServer,boolean createWindow){
         if(createWindow){
             Window=new Window();
         }
+        _isServer=isServer;
     }
 
 
@@ -46,9 +49,9 @@ public class Game extends Thread {
      * @param createWindow
      * @return
      */
-    public static Game getGame(boolean createWindow){
+    public static Game getGame(boolean isServer,boolean createWindow){
         if(_instance!=null)return _instance;
-        _instance = new Game(createWindow);
+        _instance = new Game(isServer,createWindow);
         _instance.start();
         _instance._run=true;
         return _instance;
@@ -60,7 +63,7 @@ public class Game extends Thread {
      */
     public static Game getGame(){
         if(_instance!=null)return _instance;
-        _instance = new Game(false);
+        _instance = new Game(true,false);
         _instance.start();
         _instance._run=true;
         return _instance;
@@ -132,6 +135,7 @@ public class Game extends Thread {
 
     public Entity createEntity(Entity e){
         requestEntityCreation(e);
+        e.setGame(this);
         return e;
     }
 

@@ -6,6 +6,7 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.geom.AffineTransform;
 import java.util.ArrayList;
 import java.util.concurrent.Semaphore;
 
@@ -21,9 +22,14 @@ public class GameRender extends JPanel implements ActionListener {
 
 
     // GAME SETTINGS
-    public static final int WIDTH=1020;
+    public static final int WIDTH=800;
     public static final int HEIGHT=800;
     public static final int REFRESH_RATE=3;
+
+    public int actualWidth=WIDTH;
+    public int actualHeight=HEIGHT;
+    private float _renderScale=1f;
+
 
     private float _deltaTime;
     private long _updateStart;
@@ -39,6 +45,16 @@ public class GameRender extends JPanel implements ActionListener {
         GameRenderThread th = new GameRenderThread(this);
         th.start();
     }
+
+    public void resizeCanavas(int targetWidth, int targetHeight){
+        actualWidth=targetWidth;
+        actualHeight=targetHeight;
+        _renderScale= (float) actualWidth /WIDTH;
+        setMaximumSize(new Dimension(targetWidth, targetHeight));
+        setMinimumSize(new Dimension(targetWidth, targetHeight));
+        setPreferredSize(new Dimension(targetWidth, targetHeight));
+    }
+
 
     @Override
     public void actionPerformed(ActionEvent e) {
@@ -58,6 +74,12 @@ public class GameRender extends JPanel implements ActionListener {
         at.rotate(Math.PI/4,WIDTH / 2, HEIGHT / 2);
         ((Graphics2D) g).transform(at);
         */
+
+        AffineTransform renderTransform = new AffineTransform();
+        //renderTransform.rotate(Math.PI/1,WIDTH/2,HEIGHT/2);
+        renderTransform.translate((double) (WIDTH - actualWidth)/2, (double) (HEIGHT - actualHeight)/2);
+        renderTransform.scale(_renderScale,_renderScale);
+        ((Graphics2D)g).transform(renderTransform);
 
         try {
             _semaphore.acquire();
