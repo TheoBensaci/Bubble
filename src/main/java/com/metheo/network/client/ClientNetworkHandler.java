@@ -28,6 +28,7 @@ public class ClientNetworkHandler extends Thread{
         } catch (SocketException e) {
             throw new RuntimeException(e);
         }
+        System.out.println("(0)");
     }
 
     @Override
@@ -41,12 +42,15 @@ public class ClientNetworkHandler extends Thread{
 
         byte[] outBuf = PacketUtils.serialize(packet);
         try {
+            System.out.println("(1)");
             outPkt = new DatagramPacket(outBuf, outBuf.length, InetAddress.getByName(_hostName), _port);
             _socket.send(outPkt);
+            System.out.println("(2)");
 
             byte[] inBuf = new byte[1000];
             inPkt = new DatagramPacket(inBuf, inBuf.length);
             _socket.receive(inPkt);
+            System.out.println("(3)");
             PingPacket result = PacketUtils.unSerialize(inBuf);
             if(result!=null) {
                 System.out.println("Recevied..." + result.Value);

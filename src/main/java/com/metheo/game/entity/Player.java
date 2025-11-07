@@ -89,6 +89,13 @@ public class Player extends CollisionBody implements IDrawable, IUpdateable {
     //#region update
 
     protected void stateUpdate(float deltaTime){
+
+        Point p = Input.getMousePos();
+        Vector2f a = getPosition().sub(new Vector2f(p.x,p.y));
+
+        _rotation=Math.acos(a.normilize().dot(new Vector2f(-1,0)));
+        _rotation*=(a.y<0)?1:-1;
+
         // input handling
         if(_hasDash){
             _hasDash=Input.getMouseRight();
@@ -130,11 +137,6 @@ public class Player extends CollisionBody implements IDrawable, IUpdateable {
     }
 
     protected void movementUpdate(float deltaTime){
-        Point p = Input.getMousePos();
-        Vector2f a = getPosition().sub(new Vector2f(p.x,p.y));
-
-        _rotation=Math.acos(a.normilize().dot(new Vector2f(-1,0)));
-        _rotation*=(a.y<0)?1:-1;
 
         // update ghost position
         // (i know it's a visual and technicly it would be logical to put it on the draw update, but trust me)
