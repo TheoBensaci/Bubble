@@ -1,6 +1,7 @@
 package com.metheo.game.core.render;
 
 import com.metheo.game.core.Game;
+import com.metheo.game.core.utils.Input;
 
 import javax.swing.*;
 import java.awt.*;
@@ -36,7 +37,8 @@ public class GameRender extends JPanel implements ActionListener {
 
 
     public GameRender(){
-        setPreferredSize(new Dimension(WIDTH, HEIGHT));
+        actualWidth=WIDTH;
+        actualHeight=HEIGHT;
         setBackground(new Color(0xff0055));
         setFocusable(false);
 
@@ -50,11 +52,30 @@ public class GameRender extends JPanel implements ActionListener {
         actualWidth=targetWidth;
         actualHeight=targetHeight;
         _renderScale= (float) actualWidth /WIDTH;
-        setMaximumSize(new Dimension(targetWidth, targetHeight));
-        setMinimumSize(new Dimension(targetWidth, targetHeight));
-        setPreferredSize(new Dimension(targetWidth, targetHeight));
     }
 
+    @Override
+    public Dimension getPreferredSize() {
+        return new Dimension(actualWidth, actualHeight);
+    }
+
+    @Override
+    public Dimension getMinimumSize() {
+        return getPreferredSize();
+    }
+
+    @Override
+    public Dimension getMaximumSize() {
+        return getPreferredSize();
+    }
+
+    public float getRenderScale(){
+        return _renderScale;
+    }
+
+    public float getSizeComposation(){
+        return WIDTH - actualWidth;
+    }
 
     @Override
     public void actionPerformed(ActionEvent e) {
@@ -77,9 +98,10 @@ public class GameRender extends JPanel implements ActionListener {
 
         AffineTransform renderTransform = new AffineTransform();
         //renderTransform.rotate(Math.PI/1,WIDTH/2,HEIGHT/2);
-        renderTransform.translate((double) (WIDTH - actualWidth)/2, (double) (HEIGHT - actualHeight)/2);
+        renderTransform.translate(0, 0);
         renderTransform.scale(_renderScale,_renderScale);
         ((Graphics2D)g).transform(renderTransform);
+
 
         try {
             _semaphore.acquire();
@@ -94,6 +116,10 @@ public class GameRender extends JPanel implements ActionListener {
         float a = (float)(System.nanoTime()-_updateStart)/1000000;
         g.drawString("Game engine delta Time : "+Game.getGame().getDeltaTime()+"ms",10,40);
         g.drawString("Paint delta time : "+a+"ms",10,60);
+
+        g.setColor(Color.ORANGE);
+        Point p = Input.getMousePos();
+        g.fillRect(p.x,p.y,10,10);
     }
 
 
@@ -122,7 +148,7 @@ public class GameRender extends JPanel implements ActionListener {
      */
     private void drawBackground(Graphics g){
         g.setColor(backgroundColor);
-        g.fillRect(0,0,WIDTH,HEIGHT);
+        g.fillRect(0,0,actualWidth+10,actualHeight+10);
     }
 
     /**

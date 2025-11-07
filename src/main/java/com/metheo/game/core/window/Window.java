@@ -5,8 +5,7 @@ import com.metheo.game.core.utils.Input;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.ComponentEvent;
-import java.awt.event.ComponentListener;
+import java.awt.event.*;
 
 
 public class Window extends JFrame {
@@ -29,16 +28,15 @@ public class Window extends JFrame {
         // add input listener
         addKeyListener(new Input());
         addMouseListener(new Input());
+        addWindowStateListener(e -> {
+            resizeGameCanavas(e.getComponent().getWidth(),e.getComponent().getHeight());
+        });
 
         addComponentListener(new ComponentListener()
         {
             @Override
             public void componentResized(ComponentEvent e) {
-                int s = Math.min(e.getComponent().getWidth(),e.getComponent().getHeight())-10;
-                GameCanvas.resizeCanavas(s,s);
-                System.out.println("New SIZE : ");
-                System.out.println(GameCanvas.actualWidth+"|"+GameCanvas.actualHeight);
-                System.out.println(GameCanvas.getWidth()+"|"+GameCanvas.getHeight());
+                resizeGameCanavas(e.getComponent().getWidth(),e.getComponent().getHeight());
             }
 
             @Override
@@ -63,5 +61,10 @@ public class Window extends JFrame {
         pack();
         setLocationRelativeTo(null);
         setVisible(true);
+    }
+
+    private void resizeGameCanavas(int newWindowWidth, int newWindowHeight){
+        int s = Math.min(newWindowWidth,newWindowHeight)-10;
+        GameCanvas.resizeCanavas(s,s);
     }
 }

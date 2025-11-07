@@ -1,6 +1,7 @@
 package com.metheo.game.core.utils;
 
 import com.metheo.game.core.Game;
+import com.metheo.game.core.render.GameRender;
 
 import java.awt.*;
 import java.awt.event.KeyEvent;
@@ -96,10 +97,16 @@ public class Input implements KeyListener, MouseListener {
         if(!Game.isGameOpen() || Game.getGame().Window==null){
             return new Point();
         }
+        GameRender r = Game.getGame().Window.GameCanvas;
         Point p = MouseInfo.getPointerInfo().getLocation();
-        Point q = Game.getGame().Window.GameCanvas.getLocationOnScreen();
-        p.x-=q.x;
-        p.y-=q.y;
+        Point q = r.getLocationOnScreen();
+        p.x-= q.x;
+        p.y-= q.y;
+
+        // correct the point to the right scaling
+        p.x= (int) (p.x/r.getRenderScale());
+        p.y= (int) (p.y/r.getRenderScale());
+
         return p;
     }
 
