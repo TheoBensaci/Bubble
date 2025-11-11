@@ -1,23 +1,27 @@
 package com.metheo.game.core;
 
-public class Entity {
+import java.util.Arrays;
+import java.util.Stack;
 
+public class Entity {
     private Game _game;
+    private int _id=0;
+
 
     public Entity(){
     }
 
-    public void onCreate(){
+    public void setId(int id){
+        if(id==0)return;
+        if(_id==0)_id=id;
     }
 
-
-    public boolean destroy(Game game){
-        game.requestEntityDestruction(this);
-        return true;
+    public int getId(){
+        return _id;
     }
 
-    public void onDestroy(){
-
+    public void clearId(){
+        _id=0;
     }
 
     public Game getGame(){

@@ -2,12 +2,15 @@ package com.metheo.game.core;
 
 import com.metheo.game.core.collision.CollisionBody;
 import com.metheo.game.core.collision.CollisionSystem;
-import com.metheo.game.core.render.GameRender;
 import com.metheo.game.core.render.IDrawable;
-import com.metheo.game.core.ressourceManagement.RessourceManager;
 import com.metheo.game.core.window.Window;
+import com.metheo.network.GameSocket;
+import com.metheo.network.INetworkSenderEntity;
+import com.metheo.network.NetworkHandlerSystem;
 
 import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.Stack;
 import java.util.concurrent.Semaphore;
 
 public class Game extends Thread {
@@ -18,29 +21,44 @@ public class Game extends Thread {
 
     private final boolean _isServer;
 
-    public Window Window;
+    public Window window;
 
     // entity gestion
-    public final ArrayList<IUpdateable> _updateables=new ArrayList<>();
-    public final ArrayList<Entity> _toBeCreate=new ArrayList<>();
-    public final ArrayList<Entity> _toBeDestroy=new ArrayList<>();
+    private final ArrayList<IUpdateable> _updateables=new ArrayList<>();
+    private final ArrayList<Entity> _toBeCreate=new ArrayList<>();
+    private final ArrayList<Entity> _toBeDestroy=new ArrayList<>();
+    private final Semaphore _toBeCreateSemaphore = new Semaphore(1);
+    private final Semaphore _toBeDestroySemaphore = new Semaphore(1);
+
+
+    private final Stack<Integer> _idPool=new Stack<>();
 
     // collision
-    public final CollisionSystem _collisionSystem=new CollisionSystem();
+    private final CollisionSystem _collisionSystem=new CollisionSystem();
 
     // thread
-    private final Semaphore _semaphoreAdd=new Semaphore(1);
-    private final Semaphore _semaphoreDestroy=new Semaphore(1);
     private boolean _run=false;
 
     // game state
     private float _deltaTime;
 
+    // networking
+    private NetworkHandlerSystem _networkHandler;
+    private GameSocket _gameSocket;
+
+
     public Game(boolean isServer,boolean createWindow){
         if(createWindow){
-            Window=new Window();
+            window =new Window();
         }
         _isServer=isServer;
+
+        // fill id pull
+        for (int i = 5000; i > 0 ; i--) {
+            _idPool.push(i);
+        }
+
+        _networkHandler=new NetworkHandlerSystem(this);
     }
 
 
@@ -75,56 +93,93 @@ public class Game extends Thread {
 
     public void close(){
         _run = false;
+        if(_gameSocket!=null){
+            _gameSocket.close();
+        }
+        if(window!=null){
+            window.GameCanvas.close();
+        }
+    }
+
+
+    //#region update
+
+    public void updateEntity(){
+        Iterator<IUpdateable> it = _updateables.iterator();
+        while (it.hasNext()){
+            it.next().update(_deltaTime);
+        }
+    }
+
+
+    /**
+     * Manage entity creation and destruction
+     */
+    public void updateEntityGestion(){
+        try {
+            _toBeCreateSemaphore.acquire();
+            for(Entity e : _toBeCreate){
+                e.setGame(this);
+                registerEntity(e);
+            }
+            _toBeCreate.clear();
+            _toBeCreateSemaphore.release();
+
+
+            _toBeDestroySemaphore.acquire();
+            for(Entity e : _toBeDestroy){
+                unregisterEntity(e);
+            }
+            _toBeDestroy.clear();
+            _toBeDestroySemaphore.release();
+        } catch (InterruptedException ex) {
+            throw new RuntimeException(ex);
+        }
     }
 
     @Override
     public void run() {
+
         try {
             while (_run) {
+
+                // feetch socket data
+                if(_gameSocket!=null){
+                    _networkHandler.receveUpdate(_gameSocket);
+                }
+
                 long time = System.nanoTime();
 
-                for (IUpdateable updateable : _updateables) {
-                    updateable.update(_deltaTime);
-                }
+                // update entity
+                updateEntity();
 
                 // collision
                 _collisionSystem.doCollisionUpdate();
 
 
-                // creation and destruction of entity
-                if(!_toBeCreate.isEmpty()){
-                    _semaphoreAdd.acquire();
-                    for (Entity e : _toBeCreate){
-                        e.onCreate();
-                        registerEntity(e);
-                    }
-                    _toBeCreate.clear();
-                    _semaphoreAdd.release();
-                }
+                // Entity gestion
+                updateEntityGestion();
 
-
-                if(!_toBeDestroy.isEmpty()){
-                    _semaphoreDestroy.acquire();
-                    for (Entity e : _toBeDestroy){
-                        e.onDestroy();
-                        unregisterEntity(e);
-                    }
-                    _toBeDestroy.clear();
-                    _semaphoreDestroy.release();
-                }
-
-
+                // delta time calculation
                 long i = (1 - (System.nanoTime() - time) / 1000000);
-
                 if (i > 0) {
                     Thread.sleep(i);
                 }
                 _deltaTime = (float) (float) (System.nanoTime() - time) / 1000000;
+
+                // send update data
+                if(_gameSocket!=null){
+                    _networkHandler.senderUpdate(_gameSocket);
+                }
+
             }
         } catch (Exception e) {
             System.out.println(e.toString());
         }
     }
+
+
+    //#endregion
 
     public float getDeltaTime(){
         return _deltaTime;
@@ -134,40 +189,47 @@ public class Game extends Thread {
     //#region Entity gestion
 
     public Entity createEntity(Entity e){
-        requestEntityCreation(e);
-        e.setGame(this);
+        try {
+            _toBeCreateSemaphore.acquire();
+            _toBeCreate.add(e);
+            _toBeCreateSemaphore.release();
+        } catch (InterruptedException ex) {
+            throw new RuntimeException(ex);
+        }
         return e;
     }
 
-
-    public void requestEntityCreation(Entity e) {
-        try{
-            _semaphoreAdd.acquire();
-            _toBeCreate.add(e);
-            _semaphoreAdd.release();
-        } catch (InterruptedException ex) {
-            throw new RuntimeException(ex);
-        }
-    }
-
-    public  void requestEntityDestruction(Entity e) {
-        try{
-            _semaphoreDestroy.acquire();
+    public void destroyEntity(Entity e){
+        try {
+            _toBeDestroySemaphore.acquire();
             _toBeDestroy.add(e);
-            _semaphoreDestroy.release();
+            _toBeDestroySemaphore.release();
         } catch (InterruptedException ex) {
             throw new RuntimeException(ex);
         }
     }
+
+    public void forceCreate(Entity entity){
+        registerEntity(entity);
+    }
+
+
 
     private void registerEntity(Entity ent){
+        // set entity id
+        if(ent.getId()==0){
+            ent.setId(_idPool.pop());
+        }
+
         if(ent instanceof IUpdateable){
             _updateables.add((IUpdateable)ent);
         }
 
-        if(Window!=null) {
+        _networkHandler.registerNetworkEntity(ent);
+
+        if(window !=null) {
             if (ent instanceof IDrawable) {
-                Window.GameCanvas.registerDrawable((IDrawable) ent);
+                window.GameCanvas.registerDrawable((IDrawable) ent);
             }
         }
 
@@ -177,13 +239,22 @@ public class Game extends Thread {
     }
 
     private void unregisterEntity(Entity ent){
+        // set entity id
+        if(ent.getId()!=0){
+            _idPool.push(ent.getId());
+        }
+
+
         if(ent instanceof IUpdateable){
             _updateables.remove((IUpdateable)ent);
         }
 
-        if(Window!=null) {
+        _networkHandler.unregisterNetworkEntity(ent);
+
+
+        if(window !=null) {
             if (ent instanceof IDrawable) {
-                Window.GameCanvas.unregisterDrawable((IDrawable) ent);
+                window.GameCanvas.unregisterDrawable((IDrawable) ent);
             }
         }
 
@@ -195,6 +266,29 @@ public class Game extends Thread {
     public int getNumberOfUpdateables(){
         return _updateables.size();
     }
+
+    public boolean isRunning(){
+        return _run;
+    }
+
+    public boolean isServer(){
+        return _isServer;
+    }
+
+    //#endregion
+
+
+    //#region network
+
+    public void setGameSocket(GameSocket gameSocket){
+        _gameSocket=gameSocket;
+        _gameSocket.start();
+    }
+
+    public GameSocket getGameSocket(){
+        return _gameSocket;
+    }
+
 
     //#endregion
 

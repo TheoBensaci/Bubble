@@ -1,38 +1,45 @@
 package com.metheo.game.core.collision;
 
 import com.metheo.game.core.Entity;
-import com.metheo.game.core.Game;
 import com.metheo.game.core.utils.Vector2f;
 
 public class CollisionBody extends Entity {
 
     protected final Vector2f _position;
-    public final float CollisionRadius;
-    public boolean Trigger;
+    public final float collisionRadius;
+    public boolean trigger;
 
     public CollisionBody(Vector2f initPosition, float collisionRadius, boolean initTrigger){
         _position=initPosition;
-        CollisionRadius=collisionRadius;
-        Trigger=initTrigger;
+        this.collisionRadius =collisionRadius;
+        trigger =initTrigger;
     }
 
     public Vector2f getPosition(){
         return _position.copy();
     }
 
+    public void setPosition(Vector2f vec){
+        _position.set(vec);
+    }
+
+    public void setPosition(float x, float y){
+        _position.set(x,y);
+    }
+
     public void collisionStepWith(CollisionBody oder){
         Vector2f diff = oder.getPosition().sub(getPosition());
         float distance = diff.magn();
 
-        if(distance<(CollisionRadius+oder.CollisionRadius)){
+        if(distance<(collisionRadius +oder.collisionRadius)){
             // trigger gestion
-            if(Trigger || oder.Trigger){
-                if(Trigger)onTrigger(oder);
-                if(oder.Trigger)oder.onTrigger(this);
+            if(trigger || oder.trigger){
+                if(trigger)onTrigger(oder);
+                if(oder.trigger)oder.onTrigger(this);
                 return;
             }
             diff.normilize();
-            distance-=CollisionRadius+oder.CollisionRadius;
+            distance-= collisionRadius +oder.collisionRadius;
             diff.mult(distance);
             _position.add(diff);
             oder._position.sub(diff);
