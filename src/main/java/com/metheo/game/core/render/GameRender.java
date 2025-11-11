@@ -31,9 +31,10 @@ public class GameRender extends JPanel implements ActionListener {
     public int actualHeight=HEIGHT;
     private float _renderScale=1f;
 
-
     private float _deltaTime;
     private long _updateStart;
+
+    private GameRenderThread _th;
 
 
     public GameRender(){
@@ -44,8 +45,8 @@ public class GameRender extends JPanel implements ActionListener {
 
 
         // this timer will call the actionPerformed() method every DELAY ms
-        GameRenderThread th = new GameRenderThread(this);
-        th.start();
+        _th = new GameRenderThread(this);
+        _th.start();
     }
 
     public void resizeCanavas(int targetWidth, int targetHeight){
@@ -119,12 +120,14 @@ public class GameRender extends JPanel implements ActionListener {
 
         g.setColor(Color.ORANGE);
         Point p = Input.getMousePos();
-        g.fillRect(p.x,p.y,10,10);
+        g.fillRect(p.x-5,p.y-5,10,10);
+
     }
 
 
     public class GameRenderThread extends Thread{
         private final GameRender _render;
+        private boolean _isRunning=true;
         public GameRenderThread(GameRender render){
             _render=render;
         }
@@ -132,9 +135,13 @@ public class GameRender extends JPanel implements ActionListener {
         @Override
         public void run() {
             super.run();
-            while (true) {
+            while (_isRunning) {
                 _render.repaint();
             }
+        }
+
+        public void close(){
+            _isRunning=false;
         }
     }
 
@@ -214,6 +221,11 @@ public class GameRender extends JPanel implements ActionListener {
         } catch (InterruptedException e) {
             throw new RuntimeException(e);
         }
+    }
+
+
+    public void close(){
+        _th.close();
     }
 
 

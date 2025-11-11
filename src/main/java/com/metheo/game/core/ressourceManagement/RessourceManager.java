@@ -10,16 +10,12 @@ import com.metheo.game.core.Game;
 import javax.imageio.ImageIO;
 import java.awt.*;
 import java.awt.image.BufferedImage;
-import java.io.File;
 import java.io.IOException;
-import java.net.URL;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Objects;
 
 public class RessourceManager {
-    public final Map<String,BufferedImage> Textures=new HashMap<>();
+    public final Map<String,BufferedImage> textures=new HashMap<>();
     private final BufferedImage _default_texture;
 
     private static RessourceManager _instance;
@@ -53,13 +49,13 @@ public class RessourceManager {
     public static BufferedImage getTexture(String path){
         RessourceManager r = getRessourceManager();
 
-        if(!Game.isGameOpen() || Game.getGame().Window==null){
-            r.Textures.put(path, r._default_texture);
+        if(!Game.isGameOpen() || Game.getGame().window ==null){
+            r.textures.put(path, r._default_texture);
             return r._default_texture;
         }
 
 
-        return RessourceManager.getAsset(path, r.Textures, data -> {
+        return RessourceManager.getAsset(path, r.textures, data -> {
             if(data==null){
                 return r._default_texture;
             }

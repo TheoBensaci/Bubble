@@ -9,15 +9,11 @@ import com.metheo.game.core.utils.DebugUtils;
 import com.metheo.game.core.utils.Input;
 import com.metheo.game.core.utils.Vector2f;
 
-import javax.imageio.ImageIO;
 import java.awt.*;
 import java.awt.geom.AffineTransform;
 import java.awt.image.BufferedImage;
 import java.awt.image.BufferedImageOp;
 import java.awt.image.RescaleOp;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Objects;
 
 public class Player extends CollisionBody implements IDrawable, IUpdateable {
 
@@ -27,26 +23,27 @@ public class Player extends CollisionBody implements IDrawable, IUpdateable {
     public static float DASH_ADD_SPEED = 1.5f;
     public static float DASH_ADD_SPEED_DECRESS = 0.02f;
 
-    public final int PlayerNumber;
+    public final int playerNumber;
 
-    private Vector2f _direction = new Vector2f(0,0);        // direction apply to the player
-    private Vector2f _tragetDir=new Vector2f(0,0);          // direction request by the player
-    private double _rotation=0;
-    private int _maxNumberDash=2;
-    private int _maxAmmo=5;
-    private int _numberDash=_maxNumberDash;
-    private int _ammo=_maxAmmo;
-    private float _addSpeed=0;
+    protected Vector2f _direction = new Vector2f(0,0);        // direction apply to the player
+    protected Vector2f _tragetDir=new Vector2f(0,0);          // direction request by the player
+    protected double _rotation=0;
+    protected int _maxNumberDash=2;
+    protected int _maxAmmo=5;
+    protected int _numberDash=_maxNumberDash;
+    protected int _ammo=_maxAmmo;
+    protected float _addSpeed=0;
 
     // state
-    private boolean _onDash=false;
-    private boolean _inSpaceBubble=false;
+    protected boolean _onDash=false;
+    protected boolean _inSpaceBubble=false;
 
-    private SpaceBubble _actualBubble;
+    protected SpaceBubble _actualBubble;
 
 
     // input handling
     private boolean _hasDash=false;
+    protected boolean _requestDash=false;
     private boolean _hasDebug=false;
 
 
@@ -60,7 +57,7 @@ public class Player extends CollisionBody implements IDrawable, IUpdateable {
 
     public Player(int playerNumber,Vector2f initPosition) {
         super(initPosition, 12, false);
-        PlayerNumber=playerNumber;
+        this.playerNumber =playerNumber;
         _maxGhostPosition=initPosition.copy();
 
         // get the sprite
@@ -80,16 +77,21 @@ public class Player extends CollisionBody implements IDrawable, IUpdateable {
         _actualBubble=bubble;
     }
 
-    // "phyisc"
+    //#region movmement
 
+    protected void startDash(){
+        _maxGhostPosition.set(_position);
+        _position.add(_tragetDir.copy().mult(DASH_DISTANCE));
+        _addSpeed=DASH_ADD_SPEED;
+        _onDash=true;
+        _direction.set(_tragetDir);
+    }
 
+    //#endregion
 
+    //#region input handling
 
-
-    //#region update
-
-    protected void stateUpdate(float deltaTime){
-
+    protected void inputUpdate(float delta){
         Point p = Input.getMousePos();
         Vector2f a = getPosition().sub(new Vector2f(p.x,p.y));
 
@@ -99,6 +101,10 @@ public class Player extends CollisionBody implements IDrawable, IUpdateable {
         // input handling
         if(_hasDash){
             _hasDash=Input.getMouseRight();
+        }
+        else{
+            _requestDash=Input.getMouseRight();
+            _hasDash=_requestDash;
         }
 
         if(_hasDebug){
@@ -123,6 +129,16 @@ public class Player extends CollisionBody implements IDrawable, IUpdateable {
         }
         _tragetDir.set(x,y).normilize();
 
+    }
+
+
+    //#enregion
+
+
+
+    //#region update
+
+    protected void stateUpdate(float deltaTime){
 
         // add speed / dash state update
         if(_onDash){
@@ -133,26 +149,23 @@ public class Player extends CollisionBody implements IDrawable, IUpdateable {
             }
         }
 
-        _inSpaceBubble=(_actualBubble!=null);
+        _inSpaceBubble=true;//(_actualBubble!=null);
     }
 
-    protected void movementUpdate(float deltaTime){
-
+    private void ghostUpdate(float deltaTime){
         // update ghost position
         // (i know it's a visual and technicly it would be logical to put it on the draw update, but trust me)
         _maxGhostPosition=Vector2f.lerp(_maxGhostPosition,_position,
                 0.03f/((_onDash)?10:1)*
                         deltaTime
         );
+    }
 
+    protected void movementUpdate(float deltaTime){
         // dash
-        if(!_hasDash && Input.getMouseRight() && !_tragetDir.isNull()){
-            _hasDash=true;
-            _maxGhostPosition.set(_position);
-            _position.add(_tragetDir.copy().mult(DASH_DISTANCE));
-            _addSpeed=DASH_ADD_SPEED;
-            _onDash=true;
-            _direction.set(_tragetDir);
+        if(_requestDash && !_tragetDir.isNull()){
+            _requestDash=false;
+            startDash();
             return;
         }
 
@@ -195,8 +208,9 @@ public class Player extends CollisionBody implements IDrawable, IUpdateable {
 
     @Override
     public void update(float deltaTime) {
-
+        inputUpdate(deltaTime);
         stateUpdate(deltaTime);
+        ghostUpdate(deltaTime);
         movementUpdate(deltaTime);
         atUpdateEnd(deltaTime);
 
@@ -219,7 +233,7 @@ public class Player extends CollisionBody implements IDrawable, IUpdateable {
         // debug info
         if(Game.DEBUG){
             g.setColor(Color.magenta);
-            g.fillOval((int)(_position.x-CollisionRadius),(int)(_position.y-CollisionRadius),(int)CollisionRadius*2,(int)CollisionRadius*2);
+            g.fillOval((int)(_position.x- collisionRadius),(int)(_position.y- collisionRadius),(int) collisionRadius *2,(int) collisionRadius *2);
         }
 
         BufferedImage img =new BufferedImage(
@@ -271,6 +285,7 @@ public class Player extends CollisionBody implements IDrawable, IUpdateable {
             Vector2f offset=new Vector2f(0, 50);
 
             String[] debugInfo=new String[]{
+                    "ID : "+getId(),
                     "Position : " + _position,
                     "Taregt direction : " + _tragetDir,
                     "Direction : " + _direction,
