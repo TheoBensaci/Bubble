@@ -3,6 +3,7 @@ package com.metheo;
 
 import com.metheo.game.core.Game;
 import com.metheo.game.core.utils.Vector2f;
+import com.metheo.game.coreVariant.ClientGame;
 import com.metheo.game.entity.ClientPlayer;
 import com.metheo.network.GameSocket;
 
@@ -13,7 +14,8 @@ public class ClientMain {
     public static void main(String[] args) {
         char [] usernameChar = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890?.,-_:;<>*/+%&=¦@#°§¬|¢()[]$!".toCharArray();
 
-        Game game = Game.getGame(false,true);
+        ClientGame game = new ClientGame(true);
+        game.start();
         game.setGameSocket(new GameSocket("localhost"));
 
         StringBuilder sb = new StringBuilder();
@@ -25,6 +27,7 @@ public class ClientMain {
         }
 
 
-        game.createEntity(new ClientPlayer(sb.toString(),1,new Vector2f(0,0)));
+        ClientPlayer cp =(ClientPlayer)game.createEntity(new ClientPlayer(sb.toString(),1,new Vector2f(0,0)));
+
     }
 }

@@ -21,6 +21,8 @@ public class GameRender extends JPanel implements ActionListener {
 
     private final ArrayList<IDrawable> _drawables = new ArrayList<>();
 
+    public final Game game;
+
 
     // GAME SETTINGS
     public static final int WIDTH=800;
@@ -37,11 +39,13 @@ public class GameRender extends JPanel implements ActionListener {
     private GameRenderThread _th;
 
 
-    public GameRender(){
-        actualWidth=WIDTH;
-        actualHeight=HEIGHT;
+    public GameRender(Game game){
+        this.actualWidth=WIDTH;
+        this.actualHeight=HEIGHT;
         setBackground(new Color(0xff0055));
         setFocusable(false);
+
+        this.game = game;
 
 
         // this timer will call the actionPerformed() method every DELAY ms
@@ -115,11 +119,12 @@ public class GameRender extends JPanel implements ActionListener {
         }
         g.setColor(Color.ORANGE);
         float a = (float)(System.nanoTime()-_updateStart)/1000000;
-        g.drawString("Game engine delta Time : "+Game.getGame().getDeltaTime()+"ms",10,40);
+        g.drawString("Game engine delta Time : "+game.getDeltaTime()+"ms",10,40);
         g.drawString("Paint delta time : "+a+"ms",10,60);
+        g.drawString("Number of IUpdateble : "+game.getNumberOfUpdateables(),10,80);
 
         g.setColor(Color.ORANGE);
-        Point p = Input.getMousePos();
+        Point p = game.input.getMousePos();
         g.fillRect(p.x-5,p.y-5,10,10);
 
     }

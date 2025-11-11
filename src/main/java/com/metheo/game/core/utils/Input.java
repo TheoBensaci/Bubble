@@ -25,45 +25,47 @@ public class Input implements KeyListener, MouseListener {
 
     }
 
-    private static boolean _up=false;
-    private static boolean _down=false;
-    private static boolean _right=false;
-    private static boolean _left=false;
-    private static boolean _a=false;
-    private static boolean _b=false;
-    private static boolean _c=false;
-    private static boolean _mouseLeft=false;
-    private static boolean _mouseRight=false;
+    private boolean _up=false;
+    private boolean _down=false;
+    private boolean _right=false;
+    private boolean _left=false;
+    private boolean _a=false;
+    private boolean _b=false;
+    private boolean _c=false;
+    private boolean _mouseLeft=false;
+    private boolean _mouseRight=false;
+
+    private final Game _game;
 
     @Override
     public void keyTyped(KeyEvent e) {
 
     }
 
-    public static boolean getUp(){
+    public boolean getUp(){
         return _up;
     }
-    public static boolean getDown(){
+    public boolean getDown(){
         return _down;
     }
-    public static boolean getLeft(){
+    public boolean getLeft(){
         return _left;
     }
-    public static boolean getRight(){
+    public boolean getRight(){
         return _right;
     }
 
-    public static boolean getA(){ return _a;}
-    public static boolean getB(){
+    public boolean getA(){ return _a;}
+    public boolean getB(){
         return _b;
     }
-    public static boolean getC(){
+    public boolean getC(){
         return _c;
     }
-    public static boolean getMouseLeft(){
+    public boolean getMouseLeft(){
         return _mouseLeft;
     }
-    public static boolean getMouseRight(){
+    public boolean getMouseRight(){
         return _mouseRight;
     }
 
@@ -93,11 +95,8 @@ public class Input implements KeyListener, MouseListener {
         }
     }
 
-    public static Point getMousePos(){
-        if(!Game.isGameOpen() || Game.getGame().window ==null){
-            return new Point();
-        }
-        GameRender r = Game.getGame().window.GameCanvas;
+    public Point getMousePos(){
+        GameRender r = _game.window.gameCanvas;
         Point p = MouseInfo.getPointerInfo().getLocation();
         Point q = r.getLocationOnScreen();
         p.x-= q.x;
@@ -139,5 +138,9 @@ public class Input implements KeyListener, MouseListener {
     @Override
     public void mouseExited(MouseEvent e) {
 
+    }
+
+    public Input(Game game){
+        _game=game;
     }
 }

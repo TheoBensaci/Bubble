@@ -92,7 +92,7 @@ public class Player extends CollisionBody implements IDrawable, IUpdateable {
     //#region input handling
 
     protected void inputUpdate(float delta){
-        Point p = Input.getMousePos();
+        Point p = getGame().input.getMousePos();
         Vector2f a = getPosition().sub(new Vector2f(p.x,p.y));
 
         _rotation=Math.acos(a.normilize().dot(new Vector2f(-1,0)));
@@ -100,31 +100,31 @@ public class Player extends CollisionBody implements IDrawable, IUpdateable {
 
         // input handling
         if(_hasDash){
-            _hasDash=Input.getMouseRight();
+            _hasDash=getGame().input.getMouseRight();
         }
         else{
-            _requestDash=Input.getMouseRight();
+            _requestDash=getGame().input.getMouseRight();
             _hasDash=_requestDash;
         }
 
         if(_hasDebug){
-            _hasDebug=Input.getC();
+            _hasDebug=getGame().input.getC();
         }
 
         // define direction
         int x=0;
         int y=0;
 
-        if(Input.getRight()){
+        if(getGame().input.getRight()){
             x++;
         }
-        if(Input.getLeft()){
+        if(getGame().input.getLeft()){
             x--;
         }
-        if(Input.getUp()){
+        if(getGame().input.getUp()){
             y--;
         }
-        if(Input.getDown()){
+        if(getGame().input.getDown()){
             y++;
         }
         _tragetDir.set(x,y).normilize();
@@ -214,7 +214,7 @@ public class Player extends CollisionBody implements IDrawable, IUpdateable {
         movementUpdate(deltaTime);
         atUpdateEnd(deltaTime);
 
-        if(!_hasDebug && Input.getC()){
+        if(!_hasDebug && getGame().input.getC()){
             Game.DEBUG=(!Game.DEBUG);
             _hasDebug=true;
         }

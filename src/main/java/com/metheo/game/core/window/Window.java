@@ -1,5 +1,6 @@
 package com.metheo.game.core.window;
 
+import com.metheo.game.core.Game;
 import com.metheo.game.core.render.GameRender;
 import com.metheo.game.core.utils.Input;
 
@@ -9,25 +10,31 @@ import java.awt.event.*;
 
 
 public class Window extends JFrame {
-    public GameRender GameCanvas;
-    private JPanel panel = new JPanel( );
+    public GameRender gameCanvas;
+    public final Game game;
+    private JPanel _panel = new JPanel( );
 
 
-    public Window(){
-        super("Bubble");
+    public Window(Game game, String title){
+        super(title);
 
-        panel.setLayout(new GridBagLayout());
+        this.game=game;
+
+        _panel.setLayout(new GridBagLayout());
 
         // create a empty canvas
-        GameCanvas = new GameRender();
+        gameCanvas = new GameRender(this.game);
 
-        panel.add(GameCanvas);
+        _panel.add(gameCanvas);
 
-        add(panel);
+        add(_panel);
+
+        // create input
+        game.input=new Input(game);
 
         // add input listener
-        addKeyListener(new Input());
-        addMouseListener(new Input());
+        addKeyListener(game.input);
+        addMouseListener(game.input);
         addWindowStateListener(e -> {
             resizeGameCanavas(e.getComponent().getWidth(),e.getComponent().getHeight());
         });
@@ -57,7 +64,14 @@ public class Window extends JFrame {
         });
 
 
-        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
+        addWindowListener( new WindowAdapter() {
+            @Override
+            public void windowClosing(WindowEvent we) {
+                game.close();
+                dispose();
+            }
+        } );
         pack();
         setLocationRelativeTo(null);
         setVisible(true);
@@ -65,6 +79,6 @@ public class Window extends JFrame {
 
     private void resizeGameCanavas(int newWindowWidth, int newWindowHeight){
         int s = Math.min(newWindowWidth,newWindowHeight)-10;
-        GameCanvas.resizeCanavas(s,s);
+        gameCanvas.resizeCanavas(s,s);
     }
 }

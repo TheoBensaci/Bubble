@@ -2,8 +2,7 @@ package com.metheo.game.entity;
 
 import com.metheo.game.core.utils.DebugUtils;
 import com.metheo.game.core.utils.Vector2f;
-import com.metheo.network.INetworkReceverEntity;
-import com.metheo.network.packet.data.InputData;
+import com.metheo.game.core.networkHandler.INetworkReceverEntity;
 import com.metheo.network.packet.data.PacketData;
 
 import java.awt.*;
@@ -31,20 +30,7 @@ public class NetworkSenderPlayer extends Player implements INetworkReceverEntity
 
     @Override
     public void applyData(PacketData data) {
-        if(data instanceof InputData id) {
-            if(!id.username.equals(username))return;
-            _tragetDir.set(id.targetDirectionX, id.targetDirectionY);
-            _rotation = id.rotation;
-            _requestDash = id.dash;
 
-        /*
-        PlayerData pd = (PlayerData) data;
-        setPosition(pd.positionX,pd.positionY);
-        _rotation=pd.rotation;
-        _ammo=pd.amo;
-
-        _numberDash=pd.numberOfDash;*/
-        }
     }
 
     /*

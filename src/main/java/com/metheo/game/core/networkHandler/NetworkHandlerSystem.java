@@ -1,19 +1,14 @@
-package com.metheo.network;
+package com.metheo.game.core.networkHandler;
 
-import com.metheo.ClientMain;
 import com.metheo.game.core.Entity;
 import com.metheo.game.core.Game;
-import com.metheo.game.core.utils.Vector2f;
 import com.metheo.game.entity.ClientPlayer;
-import com.metheo.game.entity.NetworkSenderPlayer;
+import com.metheo.network.GameSocket;
 import com.metheo.network.packet.Packet;
 import com.metheo.network.packet.PacketType;
 import com.metheo.network.packet.SimpleDataPacket;
-import com.metheo.network.packet.data.InputData;
-import com.metheo.network.packet.data.PlayerData;
 
 import java.util.ArrayList;
-import java.util.Objects;
 
 public class NetworkHandlerSystem {
     private final Game _game;
@@ -45,6 +40,7 @@ public class NetworkHandlerSystem {
             for ( Packet p : buffer){
                 switch(p.type){
                     case PacketType.playerInput :
+                        /*
                         InputData data = (InputData)((SimpleDataPacket) p).data;
 
                         boolean found = false;
@@ -63,6 +59,8 @@ public class NetworkHandlerSystem {
 
                         // if no player found, create one
                         _game.forceCreate(new NetworkSenderPlayer(data.username,2,new Vector2f(0,0)));
+                        */
+
                     break;
                 }
             }

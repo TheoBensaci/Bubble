@@ -3,10 +3,10 @@ package com.metheo.game.core;
 import com.metheo.game.core.collision.CollisionBody;
 import com.metheo.game.core.collision.CollisionSystem;
 import com.metheo.game.core.render.IDrawable;
+import com.metheo.game.core.utils.Input;
 import com.metheo.game.core.window.Window;
 import com.metheo.network.GameSocket;
-import com.metheo.network.INetworkSenderEntity;
-import com.metheo.network.NetworkHandlerSystem;
+import com.metheo.game.core.networkHandler.NetworkHandlerSystem;
 
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -17,11 +17,8 @@ public class Game extends Thread {
     public static boolean DEBUG=false;
     public static final int TARGET_UPDATE_SPEED = 1;           // target update rate in millisecond (honeslty, with a system like this, idk how to make it pretier, sry :[)
 
-    private static Game _instance;
-
-    private final boolean _isServer;
-
     public Window window;
+    public Input input;
 
     // entity gestion
     private final ArrayList<IUpdateable> _updateables=new ArrayList<>();
@@ -42,64 +39,47 @@ public class Game extends Thread {
     // game state
     private float _deltaTime;
 
-    // networking
-    private NetworkHandlerSystem _networkHandler;
-    private GameSocket _gameSocket;
-
-
-    public Game(boolean isServer,boolean createWindow){
+    public Game(boolean createWindow, String title){
         if(createWindow){
-            window =new Window();
+            window =new Window(this,title);
         }
-        _isServer=isServer;
 
         // fill id pull
         for (int i = 5000; i > 0 ; i--) {
             _idPool.push(i);
         }
-
-        _networkHandler=new NetworkHandlerSystem(this);
     }
 
-
-    /**
-     * Get the singoton instance of the game if it existe, else create with the following paramater
-     * @param createWindow
-     * @return
-     */
-    public static Game getGame(boolean isServer,boolean createWindow){
-        if(_instance!=null)return _instance;
-        _instance = new Game(isServer,createWindow);
-        _instance.start();
-        _instance._run=true;
-        return _instance;
+    public Game(boolean createWindow){
+        this(createWindow,"Bubble");
     }
 
-    /**
-     * Get the singoton instance of the game if it existe, else create it with default parameter
-     * @return
-     */
-    public static Game getGame(){
-        if(_instance!=null)return _instance;
-        _instance = new Game(true,false);
-        _instance.start();
-        _instance._run=true;
-        return _instance;
-    }
-
-    public static boolean isGameOpen(){
-        return _instance!=null;
-    }
 
     public void close(){
         _run = false;
-        if(_gameSocket!=null){
-            _gameSocket.close();
-        }
         if(window!=null){
-            window.GameCanvas.close();
+            window.gameCanvas.close();
         }
     }
+
+    //#region Game state
+    public boolean isRunning(){
+        return _run;
+    }
+
+    /**
+     * Discribe if the current game need to comport as a sever or not, check the doc for more information
+     * @return if this game is a server or not
+     */
+    public boolean isServer(){
+        return false;
+    }
+
+    public float getDeltaTime(){
+        return _deltaTime;
+    }
+
+    //#endregion
 
 
     //#region update
@@ -110,6 +90,22 @@ public class Game extends Thread {
             it.next().update(_deltaTime);
         }
     }
+
+    /**
+     * Function call before the start of the update, can be use as a hook
+     */
+    public void preUpdate(){
+        return;
+    }
+
+    /**
+     * Function call after the end of the update, can be use as a hook
+     */
+    public void postUpdate(){
+        return;
+    }
+
+
 
 
     /**
@@ -139,14 +135,10 @@ public class Game extends Thread {
 
     @Override
     public void run() {
-
         try {
             while (_run) {
 
-                // feetch socket data
-                if(_gameSocket!=null){
-                    _networkHandler.receveUpdate(_gameSocket);
-                }
+                preUpdate();
 
                 long time = System.nanoTime();
 
@@ -154,7 +146,7 @@ public class Game extends Thread {
                 updateEntity();
 
                 // collision
-                _collisionSystem.doCollisionUpdate();
+                if(this.isServer())_collisionSystem.doCollisionUpdate();
 
 
                 // Entity gestion
@@ -167,10 +159,7 @@ public class Game extends Thread {
                 }
                 _deltaTime = (float) (float) (System.nanoTime() - time) / 1000000;
 
-                // send update data
-                if(_gameSocket!=null){
-                    _networkHandler.senderUpdate(_gameSocket);
-                }
+                postUpdate();
 
             }
         } catch (Exception e) {
@@ -181,9 +170,6 @@ public class Game extends Thread {
 
     //#endregion
 
-    public float getDeltaTime(){
-        return _deltaTime;
-    }
 
 
     //#region Entity gestion
@@ -215,7 +201,7 @@ public class Game extends Thread {
 
 
 
-    private void registerEntity(Entity ent){
+    protected void registerEntity(Entity ent){
         // set entity id
         if(ent.getId()==0){
             ent.setId(_idPool.pop());
@@ -225,11 +211,9 @@ public class Game extends Thread {
             _updateables.add((IUpdateable)ent);
         }
 
-        _networkHandler.registerNetworkEntity(ent);
-
         if(window !=null) {
             if (ent instanceof IDrawable) {
-                window.GameCanvas.registerDrawable((IDrawable) ent);
+                window.gameCanvas.registerDrawable((IDrawable) ent);
             }
         }
 
@@ -238,7 +222,7 @@ public class Game extends Thread {
         }
     }
 
-    private void unregisterEntity(Entity ent){
+    protected void unregisterEntity(Entity ent){
         // set entity id
         if(ent.getId()!=0){
             _idPool.push(ent.getId());
@@ -249,12 +233,9 @@ public class Game extends Thread {
             _updateables.remove((IUpdateable)ent);
         }
 
-        _networkHandler.unregisterNetworkEntity(ent);
-
-
         if(window !=null) {
             if (ent instanceof IDrawable) {
-                window.GameCanvas.unregisterDrawable((IDrawable) ent);
+                window.gameCanvas.unregisterDrawable((IDrawable) ent);
             }
         }
 
@@ -267,29 +248,13 @@ public class Game extends Thread {
         return _updateables.size();
     }
 
-    public boolean isRunning(){
-        return _run;
-    }
-
-    public boolean isServer(){
-        return _isServer;
+    @Override
+    public void start() {
+        _run=true;
+        super.start();
     }
 
     //#endregion
 
-
-    //#region network
-
-    public void setGameSocket(GameSocket gameSocket){
-        _gameSocket=gameSocket;
-        _gameSocket.start();
-    }
-
-    public GameSocket getGameSocket(){
-        return _gameSocket;
-    }
-
-
-    //#endregion
 
 }
