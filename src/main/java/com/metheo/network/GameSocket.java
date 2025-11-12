@@ -1,6 +1,5 @@
 package com.metheo.network;
 
-import com.metheo.game.core.render.GameRender;
 import com.metheo.network.packet.*;
 
 import java.io.IOException;
@@ -10,20 +9,14 @@ import java.util.List;
 import java.util.concurrent.Semaphore;
 
 public class GameSocket extends Thread {
-    public final boolean isServer;
     private DatagramSocket _socket;
     private static final int PORT = 8000;
-    private static final int CLIENT_PORT = 8001;
     private boolean _running=false;
 
-    // server data
-    public List<InetAddress> clientsConnected;
-
-
-    // client data
     private String _hostname;
     private InetAddress _addr;
-    private boolean _isConnected=false;
+    private final int _listendefaultPort;
+    private final int _targetDefaultPort;
     private ClientSearchThread _cst;
 
     public final List<Packet> receivedPackets=new ArrayList<>();
@@ -31,22 +24,33 @@ public class GameSocket extends Thread {
 
 
     public GameSocket(){
-        isServer=true;
-        clientsConnected=new ArrayList<>();
+        _listendefaultPort=PORT;
+        _targetDefaultPort=PORT;
     }
 
-    public GameSocket(String hostName) {
-        isServer=false;
+    public GameSocket(int listenDefaultPort){
+        _listendefaultPort=listenDefaultPort;
+        _targetDefaultPort=PORT;
+    }
+
+    public GameSocket(String hostName,int targetDefaultPort,int listenDefaultPort) {
         _hostname=hostName;
+        _targetDefaultPort=targetDefaultPort;
+        _listendefaultPort=listenDefaultPort;
         try {
             _addr= InetAddress.getByName(_hostname);
         }  catch (UnknownHostException e) {
             _addr=null;
         }
+    }
 
-        /*
-        _cst=new ClientSearchThread(new JoinPacket());
-        _cst.start();*/
+    /**
+     * Do somthing on receve of a packet, if the methods return false, the packet is drop and not add to receivedPackets lst
+     * @param packet packet receve
+     * @return if the packet is to be keep of not
+     */
+    public boolean onReceivePacket(Packet packet){
+        return true;
     }
 
 
@@ -66,42 +70,13 @@ public class GameSocket extends Thread {
                 Packet p = Packet.unserialize(inPkt.getData());
                 if(p==null)continue;
 
+                if(!onReceivePacket(p))continue;
+
                 mutex.acquire();
-                switch (p.type){
-                    case PacketType.gameState:
-
-                        break;
-
-                    case PacketType.joiningGameValidation:
-
-                        break;
-
-                    case PacketType.playerInput:
-                        if(isServer){
-                            if(clientsConnected.contains(inPkt.getAddress())){
-                                clientsConnected.add(inPkt.getAddress());
-                            }
-                            receivedPackets.add(p);
-                        }
-                        break;
-
-
-                    default :
-                        break;
-
-                }
+                receivedPackets.add(p);
                 mutex.release();
-
-                // If sever and if packet = join game -> register the target
-
-
-                // else packet -> receve packet
-
-
             }
-        } catch (IOException e) {
-            System.out.println(e);
-        } catch (InterruptedException e) {
+        } catch (IOException | InterruptedException e) {
             System.out.println(e);
         }
     }
@@ -109,15 +84,12 @@ public class GameSocket extends Thread {
     public void start(){
         _running=true;
         try {
-            _socket=new DatagramSocket((isServer)?PORT:CLIENT_PORT);
+            _socket=new DatagramSocket(_listendefaultPort);
         } catch (SocketException e) {
             throw new RuntimeException(e);
         }
         super.start();
 
-        if(isServer){
-            System.out.println("Sever start");
-        }
     }
 
     public boolean isRunning(){
@@ -131,7 +103,7 @@ public class GameSocket extends Thread {
     }
 
     public <E extends Packet> void send(E packet) {
-        send(packet,_addr,PORT);
+        send(packet,_addr,_targetDefaultPort);
     }
 
     private <E extends Packet> void send(E packet,InetAddress inetAddress, int port){

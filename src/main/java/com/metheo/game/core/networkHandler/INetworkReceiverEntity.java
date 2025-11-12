@@ -1,8 +1,8 @@
-package com.metheo.network;
+package com.metheo.game.core.networkHandler;
 
 import com.metheo.network.packet.data.PacketData;
 
-public interface INetworkReceverEntity {
+public interface INetworkReceiverEntity {
 
     void applyData(PacketData data);
 }

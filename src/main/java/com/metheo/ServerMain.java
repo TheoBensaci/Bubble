@@ -2,16 +2,20 @@ package com.metheo;
 
 import java.io.*;
 
-import com.metheo.game.core.Game;
+import com.metheo.game.coreVariant.ServerGame;
 import com.metheo.network.GameSocket;
 
 
 public class ServerMain {
     public static void main(String[] args) {
         System.out.println("Try to Start the Server");
-        Game gameServer = Game.getGame(true,true);
+        ServerGame gameServer = new ServerGame(true);
+        gameServer.start();
         GameSocket socket = new GameSocket();
         gameServer.setGameSocket(socket);
+
+
+        System.out.println("Server socket -> "+(socket.isRunning()?"Running":"Stopped"));
 
 
         // make a quick way to interact with the server
@@ -19,7 +23,7 @@ public class ServerMain {
         String line = "";
         boolean wait = true;
         try {
-            while (wait) {
+            while (wait && gameServer.isRunning()) {
                 line = in.readLine();
                 switch (line){
                     case "exit" :
@@ -37,6 +41,6 @@ public class ServerMain {
             throw new RuntimeException(e);
         }
 
-        System.out.println("Server running -> "+gameServer.isRunning());
+        System.out.println("Server socket -> "+(socket.isRunning()?"Running":"Stopped"));
     }
 }

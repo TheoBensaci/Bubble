@@ -29,30 +29,10 @@ public class RessourceManager {
         g.fillRect(50,50,50,50);
         g.fillRect(0,0,50,50);
         g.dispose();
-        /*
-
-        File file = new File(String.valueOf(Objects.requireNonNull(RessourceManager.class.getClassLoader().getResource(path))));
-
-        // load texture
-        for (final File fileEntry : folder.listFiles()) {
-            if (fileEntry.isDirectory()) {
-                //listFilesForFolder(fileEntry);
-            } else {
-                System.out.println(fileEntry.getName());
-            }
-        }/*
-        try{
-            _sprite = ImageIO.read(Objects.requireNonNull(getClass().getClassLoader().getResource("player"+playerNumber+".png")));
-        }catch(IOException e){e.printStackTrace();}*/
     }
 
     public static BufferedImage getTexture(String path){
         RessourceManager r = getRessourceManager();
-
-        if(!Game.isGameOpen() || Game.getGame().window ==null){
-            r.textures.put(path, r._default_texture);
-            return r._default_texture;
-        }
 
 
         return RessourceManager.getAsset(path, r.textures, data -> {
