@@ -1,8 +1,25 @@
 # Bubble
 Bubble is a twin stick shooter online where space is a ressource, it's just a prototype
 
+## Installation 
 
 
-# Architecture
 
-## Game loop
+## Usage
+
+
+## Credit / Auteur
+- Theo Bensaci : [@TheoBensaci](https://github.com/TheoBensaci), [@Me-Theo](https://github.com/Me-Theo)
+  - [List of thing]
+- Gasmi Yasser : [@yss-g5](https://github.com/yss-g5)
+    - [List of thing]
+
+## Documentation
+All the documentation is on the [Documentation](/oder/Documentation) folder
+
+## Contribution
+If you want to contribute, go a head, i made this project for fun and i will be happy to see it grow.
+Just, there is a [naming convention](/oder/NamingConvention.md) so please follow it if you want to contribute to the code base, thx :]
+
+## Licence
+
