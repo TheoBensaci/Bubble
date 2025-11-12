@@ -6,6 +6,8 @@ import java.util.Stack;
 public class Entity {
     private Game _game;
     private int _id=0;
+    private int _group=0;
+    public Tag tag=Tag.none;
 
 
     public Entity(){
@@ -30,5 +32,17 @@ public class Entity {
 
     public void setGame(Game game){
         _game=game;
+    }
+
+    /**
+     * Get the entity group of this entity
+     * @return
+     */
+    public int getGroup(){
+        return _group;
+    }
+
+    public void setGroup(int group){
+        _group=group;
     }
 }

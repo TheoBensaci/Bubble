@@ -11,6 +11,7 @@ import java.awt.event.*;
 
 public class Window extends JFrame {
     public GameRender gameCanvas;
+    private boolean _close=false;
     public final Game game;
     private JPanel _panel = new JPanel( );
 
@@ -69,7 +70,6 @@ public class Window extends JFrame {
             @Override
             public void windowClosing(WindowEvent we) {
                 game.close();
-                dispose();
             }
         } );
         pack();

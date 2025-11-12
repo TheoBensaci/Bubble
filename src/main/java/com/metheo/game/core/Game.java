@@ -5,8 +5,6 @@ import com.metheo.game.core.collision.CollisionSystem;
 import com.metheo.game.core.render.IDrawable;
 import com.metheo.game.core.utils.Input;
 import com.metheo.game.core.window.Window;
-import com.metheo.network.GameSocket;
-import com.metheo.game.core.networkHandler.NetworkHandlerSystem;
 
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -21,7 +19,7 @@ public class Game extends Thread {
     public Input input;
 
     // entity gestion
-    private final ArrayList<IUpdateable> _updateables=new ArrayList<>();
+    private final ArrayList<IUpdatable> _updateables=new ArrayList<>();
     private final ArrayList<Entity> _toBeCreate=new ArrayList<>();
     private final ArrayList<Entity> _toBeDestroy=new ArrayList<>();
     private final Semaphore _toBeCreateSemaphore = new Semaphore(1);
@@ -58,6 +56,7 @@ public class Game extends Thread {
     public void close(){
         _run = false;
         if(window!=null){
+            window.dispose();
             window.gameCanvas.close();
         }
     }
@@ -85,7 +84,7 @@ public class Game extends Thread {
     //#region update
 
     public void updateEntity(){
-        Iterator<IUpdateable> it = _updateables.iterator();
+        Iterator<IUpdatable> it = _updateables.iterator();
         while (it.hasNext()){
             it.next().update(_deltaTime);
         }
@@ -195,20 +194,14 @@ public class Game extends Thread {
         }
     }
 
-    public void forceCreate(Entity entity){
-        registerEntity(entity);
-    }
-
-
-
     protected void registerEntity(Entity ent){
         // set entity id
         if(ent.getId()==0){
             ent.setId(_idPool.pop());
         }
 
-        if(ent instanceof IUpdateable){
-            _updateables.add((IUpdateable)ent);
+        if(ent instanceof IUpdatable){
+            _updateables.add((IUpdatable)ent);
         }
 
         if(window !=null) {
@@ -229,8 +222,8 @@ public class Game extends Thread {
         }
 
 
-        if(ent instanceof IUpdateable){
-            _updateables.remove((IUpdateable)ent);
+        if(ent instanceof IUpdatable){
+            _updateables.remove((IUpdatable)ent);
         }
 
         if(window !=null) {
@@ -244,7 +237,7 @@ public class Game extends Thread {
         }
     }
 
-    public int getNumberOfUpdateables(){
+    public int getNumberOfUpdatable(){
         return _updateables.size();
     }
 
@@ -253,6 +246,8 @@ public class Game extends Thread {
         _run=true;
         super.start();
     }
+
+
 
     //#endregion
 

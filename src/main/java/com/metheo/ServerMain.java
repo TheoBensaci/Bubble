@@ -15,12 +15,15 @@ public class ServerMain {
         gameServer.setGameSocket(socket);
 
 
+        System.out.println("Server socket -> "+(socket.isRunning()?"Running":"Stopped"));
+
+
         // make a quick way to interact with the server
         BufferedReader in = new BufferedReader(new InputStreamReader(System.in));
         String line = "";
         boolean wait = true;
         try {
-            while (wait) {
+            while (wait && gameServer.isRunning()) {
                 line = in.readLine();
                 switch (line){
                     case "exit" :
@@ -38,6 +41,6 @@ public class ServerMain {
             throw new RuntimeException(e);
         }
 
-        System.out.println("Server running -> "+gameServer.isRunning());
+        System.out.println("Server socket -> "+(socket.isRunning()?"Running":"Stopped"));
     }
 }

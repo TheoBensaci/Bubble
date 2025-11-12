@@ -1,12 +1,11 @@
 package com.metheo.game.entity;
 
 import com.metheo.game.core.Game;
-import com.metheo.game.core.IUpdateable;
+import com.metheo.game.core.IUpdatable;
 import com.metheo.game.core.collision.CollisionBody;
 import com.metheo.game.core.render.IDrawable;
 import com.metheo.game.core.ressourceManagement.RessourceManager;
 import com.metheo.game.core.utils.DebugUtils;
-import com.metheo.game.core.utils.Input;
 import com.metheo.game.core.utils.Vector2f;
 
 import java.awt.*;
@@ -15,7 +14,7 @@ import java.awt.image.BufferedImage;
 import java.awt.image.BufferedImageOp;
 import java.awt.image.RescaleOp;
 
-public class Player extends CollisionBody implements IDrawable, IUpdateable {
+public class Player extends CollisionBody implements IDrawable, IUpdatable {
 
     public static float MOVEMENT_SPEED=0.2f;
     public static float SPACE_MOVEMENT_SPEED=0.4f;
@@ -26,7 +25,7 @@ public class Player extends CollisionBody implements IDrawable, IUpdateable {
     public final int playerNumber;
 
     protected Vector2f _direction = new Vector2f(0,0);        // direction apply to the player
-    protected Vector2f _tragetDir=new Vector2f(0,0);          // direction request by the player
+    protected Vector2f _targetDir =new Vector2f(0,0);          // direction request by the player
     protected double _rotation=0;
     protected int _maxNumberDash=2;
     protected int _maxAmmo=5;
@@ -42,9 +41,9 @@ public class Player extends CollisionBody implements IDrawable, IUpdateable {
 
 
     // input handling
-    private boolean _hasDash=false;
+    protected boolean _hasDash=false;
     protected boolean _requestDash=false;
-    private boolean _hasDebug=false;
+    protected boolean _hasDebug=false;
 
 
 
@@ -81,10 +80,10 @@ public class Player extends CollisionBody implements IDrawable, IUpdateable {
 
     protected void startDash(){
         _maxGhostPosition.set(_position);
-        _position.add(_tragetDir.copy().mult(DASH_DISTANCE));
+        _position.add(_targetDir.copy().mult(DASH_DISTANCE));
         _addSpeed=DASH_ADD_SPEED;
         _onDash=true;
-        _direction.set(_tragetDir);
+        _direction.set(_targetDir);
     }
 
     //#endregion
@@ -101,6 +100,7 @@ public class Player extends CollisionBody implements IDrawable, IUpdateable {
         // input handling
         if(_hasDash){
             _hasDash=getGame().input.getMouseRight();
+            _requestDash=false;
         }
         else{
             _requestDash=getGame().input.getMouseRight();
@@ -110,6 +110,20 @@ public class Player extends CollisionBody implements IDrawable, IUpdateable {
         if(_hasDebug){
             _hasDebug=getGame().input.getC();
         }
+        else if(getGame().input.getC()){
+            Game.DEBUG=(!Game.DEBUG);
+            _hasDebug=true;
+        }
+
+
+        if(getGame().input.getNum0()){
+            getGame().window.gameCanvas.actualGroupRender=0;
+        }
+
+        if(getGame().input.getNum1()){
+            getGame().window.gameCanvas.actualGroupRender=1;
+        }
+
 
         // define direction
         int x=0;
@@ -127,7 +141,7 @@ public class Player extends CollisionBody implements IDrawable, IUpdateable {
         if(getGame().input.getDown()){
             y++;
         }
-        _tragetDir.set(x,y).normilize();
+        _targetDir.set(x,y).normilize();
 
     }
 
@@ -163,7 +177,7 @@ public class Player extends CollisionBody implements IDrawable, IUpdateable {
 
     protected void movementUpdate(float deltaTime){
         // dash
-        if(_requestDash && !_tragetDir.isNull()){
+        if(_requestDash && !_targetDir.isNull()){
             _requestDash=false;
             startDash();
             return;
@@ -171,7 +185,7 @@ public class Player extends CollisionBody implements IDrawable, IUpdateable {
 
 
         if(_inSpaceBubble){
-            _direction.set(_tragetDir);
+            _direction.set(_targetDir);
         }
 
 
@@ -214,10 +228,6 @@ public class Player extends CollisionBody implements IDrawable, IUpdateable {
         movementUpdate(deltaTime);
         atUpdateEnd(deltaTime);
 
-        if(!_hasDebug && getGame().input.getC()){
-            Game.DEBUG=(!Game.DEBUG);
-            _hasDebug=true;
-        }
     }
 
     @Override
@@ -287,7 +297,7 @@ public class Player extends CollisionBody implements IDrawable, IUpdateable {
             String[] debugInfo=new String[]{
                     "ID : "+getId(),
                     "Position : " + _position,
-                    "Taregt direction : " + _tragetDir,
+                    "Taregt direction : " + _targetDir,
                     "Direction : " + _direction,
                     "In Space buble : " + _inSpaceBubble,
                     "On dash : " + _onDash

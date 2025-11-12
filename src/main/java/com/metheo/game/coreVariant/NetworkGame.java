@@ -8,12 +8,13 @@ import com.metheo.network.GameSocket;
 public class NetworkGame extends Game {
 
     // networking
-    private final NetworkHandlerSystem _networkHandler;
-    private GameSocket _gameSocket;
+    protected final NetworkHandlerSystem _networkHandler;
+    protected GameSocket _gameSocket;
 
-    public NetworkGame(boolean createWindow, String title) {
+    public NetworkGame(boolean createWindow, String title, NetworkHandlerSystem networkHandler) {
         super(createWindow, title);
-        _networkHandler=new NetworkHandlerSystem(this);
+        _networkHandler=networkHandler;
+        _networkHandler.setGame(this);
     }
 
     @Override
@@ -30,7 +31,7 @@ public class NetworkGame extends Game {
 
         // feetch socket data
         if(_gameSocket!=null){
-            _networkHandler.receveUpdate(_gameSocket);
+            _networkHandler.receiveUpdate(_gameSocket);
         }
     }
 

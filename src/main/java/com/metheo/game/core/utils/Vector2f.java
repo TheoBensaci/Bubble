@@ -127,8 +127,13 @@ public class Vector2f {
         return this;
     }
 
-    public Vector2f set(Vector2f oder){
-        return set(oder.x,oder.y);
+    public Vector2f set(Vector2f vec){
+        return set(vec.x,vec.y);
+    }
+
+
+    public boolean isEqual(Vector2f vec){
+        return this.x== vec.x && this.y==vec.y;
     }
 
 

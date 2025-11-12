@@ -1,7 +1,7 @@
 package com.metheo.game.core.render;
 
+import com.metheo.game.core.Entity;
 import com.metheo.game.core.Game;
-import com.metheo.game.core.utils.Input;
 
 import javax.swing.*;
 import java.awt.*;
@@ -22,6 +22,8 @@ public class GameRender extends JPanel implements ActionListener {
     private final ArrayList<IDrawable> _drawables = new ArrayList<>();
 
     public final Game game;
+
+    public int actualGroupRender=0;
 
 
     // GAME SETTINGS
@@ -111,6 +113,9 @@ public class GameRender extends JPanel implements ActionListener {
         try {
             _semaphore.acquire();
             for (IDrawable drawable : _drawables){
+                if(drawable instanceof Entity ent){
+                    if(ent.getGroup()!=actualGroupRender)continue;
+                }
                 drawable.draw(g);
             }
             _semaphore.release();
@@ -121,7 +126,7 @@ public class GameRender extends JPanel implements ActionListener {
         float a = (float)(System.nanoTime()-_updateStart)/1000000;
         g.drawString("Game engine delta Time : "+game.getDeltaTime()+"ms",10,40);
         g.drawString("Paint delta time : "+a+"ms",10,60);
-        g.drawString("Number of IUpdateble : "+game.getNumberOfUpdateables(),10,80);
+        g.drawString("Number of IUpdateble : "+game.getNumberOfUpdatable(),10,80);
 
         g.setColor(Color.ORANGE);
         Point p = game.input.getMousePos();

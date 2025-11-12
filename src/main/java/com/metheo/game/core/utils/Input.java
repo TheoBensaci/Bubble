@@ -22,6 +22,16 @@ public class Input implements KeyListener, MouseListener {
         public static final int C = KeyEvent.VK_SPACE;
         public static final int MOUSE_LEFT = MouseEvent.BUTTON1;
         public static final int MOUSE_RIGHT = MouseEvent.BUTTON3;
+        public static final int NUM_0 = KeyEvent.VK_0;
+        public static final int NUM_1 = KeyEvent.VK_1;
+        public static final int NUM_2 = KeyEvent.VK_2;
+        public static final int NUM_3 = KeyEvent.VK_3;
+        public static final int NUM_4 = KeyEvent.VK_4;
+        public static final int NUM_5 = KeyEvent.VK_5;
+        public static final int NUM_6 = KeyEvent.VK_6;
+        public static final int NUM_7 = KeyEvent.VK_7;
+        public static final int NUM_8 = KeyEvent.VK_8;
+        public static final int NUM_9 = KeyEvent.VK_9;
 
     }
 
@@ -34,6 +44,16 @@ public class Input implements KeyListener, MouseListener {
     private boolean _c=false;
     private boolean _mouseLeft=false;
     private boolean _mouseRight=false;
+    private boolean _num_0=false;
+    private boolean _num_1=false;
+    private boolean _num_2=false;
+    private boolean _num_3=false;
+    private boolean _num_4=false;
+    private boolean _num_5=false;
+    private boolean _num_6=false;
+    private boolean _num_7=false;
+    private boolean _num_8=false;
+    private boolean _num_9=false;
 
     private final Game _game;
 
@@ -68,6 +88,18 @@ public class Input implements KeyListener, MouseListener {
     public boolean getMouseRight(){
         return _mouseRight;
     }
+    public boolean getNum0(){ return _num_0;}
+    public boolean getNum1(){ return _num_1;}
+    public boolean getNum2(){ return _num_2;}
+    public boolean getNum3(){ return _num_3;}
+    public boolean getNum4(){ return _num_4;}
+    public boolean getNum5(){ return _num_5;}
+    public boolean getNum6(){ return _num_6;}
+    public boolean getNum7(){ return _num_7;}
+    public boolean getNum8(){ return _num_8;}
+    public boolean getNum9(){ return _num_9;}
+
+
 
     @Override
     public void keyPressed(KeyEvent e) {
@@ -79,6 +111,15 @@ public class Input implements KeyListener, MouseListener {
             case InputMap.A -> _a=true;
             case InputMap.B -> _b=true;
             case InputMap.C -> _c=true;
+            case InputMap.NUM_0 -> _num_0=true;
+            case InputMap.NUM_1 -> _num_1=true;
+            case InputMap.NUM_2 -> _num_2=true;
+            case InputMap.NUM_4 -> _num_4=true;
+            case InputMap.NUM_5 -> _num_5=true;
+            case InputMap.NUM_6 -> _num_6=true;
+            case InputMap.NUM_7 -> _num_7=true;
+            case InputMap.NUM_8 -> _num_8=true;
+            case InputMap.NUM_9 -> _num_9=true;
         }
     }
 
@@ -92,6 +133,15 @@ public class Input implements KeyListener, MouseListener {
             case InputMap.A -> _a=false;
             case InputMap.B -> _b=false;
             case InputMap.C -> _c=false;
+            case InputMap.NUM_0 -> _num_0=false;
+            case InputMap.NUM_1 -> _num_1=false;
+            case InputMap.NUM_2 -> _num_2=false;
+            case InputMap.NUM_4 -> _num_4=false;
+            case InputMap.NUM_5 -> _num_5=false;
+            case InputMap.NUM_6 -> _num_6=false;
+            case InputMap.NUM_7 -> _num_7=false;
+            case InputMap.NUM_8 -> _num_8=false;
+            case InputMap.NUM_9 -> _num_9=false;
         }
     }
 
