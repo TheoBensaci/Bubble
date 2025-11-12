@@ -3,7 +3,8 @@ Bubble is a twin stick shooter online where space is a ressource, it's just a pr
 
 ## Installation 
 
-
+### WSL
+You can technically install it with WSL and launch it with it, but, WSL is limited and not perfect when it comme to GUI, so you will experience sever performance issue.
 
 ## Usage
 
