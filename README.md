@@ -16,11 +16,48 @@ You can technically install it with WSL and launch it with it, but, WSL is limit
     - [List of thing]
 
 ## Documentation
-All the documentation is on the [Documentation](/oder/Documentation) folder
+All the documentation is on the [Documentation](/other/documentation) folder
+### Project structure
+```
+/
+├── .idea
+│   └── ...
+├── other
+│   └── documentation
+│       ├── core
+│       │   └── ...
+│       ├── network
+│       │   └── ...
+│       ├── other
+│       │   └── ...
+│       └── ...
+├── src
+│   └── main
+│       ├── java
+│       │   └── ch
+│       │       └── heig
+│       │           ├── game
+│       │           │   ├── core
+│       │           │   │   └── ...
+│       │           │   ├── coreVariant
+│       │           │   │   └── ...
+│       │           │   ├── entity
+│       │           │   │   └── ...
+│       │           │   └── ...
+│       │           ├── network
+│       │           │   ├── packet
+│       │           │   │   └── ...
+│       │           │   └── ...
+│       │           └── ...
+│       └── ressources
+│           └── textures
+│               └── ...
+└── ...
+```
 
 ## Contribution
 If you want to contribute, go a head, i made this project for fun and i will be happy to see it grow.
-Just, there is a [naming convention](/oder/NamingConvention.md) so please follow it if you want to contribute to the code base, thx :]
+Just, there is a [naming convention](/other/namingConvention.md) so please follow it if you want to contribute to the code base, thx :]
 
 ## Licence
 
