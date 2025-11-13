@@ -6,7 +6,7 @@
 
 package ch.heig.network.packet.data;
 
-public class PlayerData extends EntityPacketData {
+public class PlayerData extends EntityData {
     public float positionX;
     public float positionY;
     public double rotation;

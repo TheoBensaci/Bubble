@@ -7,16 +7,21 @@
 package ch.heig.game.coreVariant;
 
 import ch.heig.game.core.networkHandler.ClientNetworkHandlerSystem;
+import ch.heig.game.core.utils.Vector2f;
+import ch.heig.game.entity.ClientPlayer;
+import ch.heig.network.packet.LoginPacket;
 
 public class ClientGame extends NetworkGame {
     public final String username;
-    public ClientGame(String username,String title) {
+    public ClientPlayer player;
+    public ClientGame(LoginPacket loginPacket, String title) {
         super(true, title,new ClientNetworkHandlerSystem());
-        this.username=username;
+        this.username=loginPacket.username;
+        this.player = (ClientPlayer) createEntity(new ClientPlayer(1,new Vector2f(0,0)),loginPacket.id);
     }
 
-    public ClientGame(String username) {
-        this(username, "Bubble - Client");
+    public ClientGame(LoginPacket loginPacket) {
+        this(loginPacket, "Bubble - Client");
     }
 
     @Override

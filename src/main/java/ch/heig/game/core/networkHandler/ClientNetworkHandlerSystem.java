@@ -6,7 +6,7 @@
 
 package ch.heig.game.core.networkHandler;
 
-import ch.heig.game.entity.ClientPlayer;
+import ch.heig.game.coreVariant.ClientGame;
 import ch.heig.network.GameSocket;
 
 public class ClientNetworkHandlerSystem extends NetworkHandlerSystem{
@@ -19,11 +19,9 @@ public class ClientNetworkHandlerSystem extends NetworkHandlerSystem{
 
 
     public void senderUpdate(GameSocket socket){
-        for (INetworkSenderEntity r : _sender) {
-            if (r instanceof ClientPlayer player) {
-                if(System.nanoTime()-player.getLastInputTime() < _UPDATE_SEND_FREQUENCY)continue;
-                socket.send(player.createPacket());
-            }
-        }
+        ClientGame cg = (ClientGame) _game;
+        if(cg.player==null)return;
+        if(System.nanoTime()-cg.player.getLastInputTime() < _UPDATE_SEND_FREQUENCY)return;
+        socket.send(cg.player.createPacket());
     }
 }

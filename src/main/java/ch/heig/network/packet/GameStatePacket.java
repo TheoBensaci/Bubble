@@ -8,14 +8,16 @@ package ch.heig.network.packet;
 
 import java.util.Arrays;
 
+import ch.heig.network.packet.data.EntityData;
 import ch.heig.network.packet.data.PacketData;
 
 public class GameStatePacket extends Packet{
     public static final int PACKET_MAX_SIZE=3000;
-    public final PacketData[] data;
+    public final EntityData[] data;
 
-    public GameStatePacket(PacketData ... data){
+    public GameStatePacket(EntityData ... data){
         this.data= Arrays.copyOf(data,data.length);
+        this.type=PacketType.gameState;
     }
 
 }

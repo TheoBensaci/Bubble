@@ -95,7 +95,7 @@ public class Game extends Thread {
      * @return if this game is a server or not
      */
     public boolean isServer(){
-        return false;
+        return true;
     }
 
     /**
@@ -210,8 +210,26 @@ public class Game extends Thread {
      * @return entity to create
      */
     public Entity createEntity(Entity e){
+        return createEntity(e,0);
+    }
+
+
+    /**
+     * Create a new entity
+     * @param e entity to create
+     * @param forceId id imposed, if 0 -> generate a new id else set the entity with the force id
+     * @return entity to create
+     */
+    public Entity createEntity(Entity e, int forceId){
+
         try {
             _toBeCreateSemaphore.acquire();
+
+            // set entity id, we need to do it early to simplfy corrdination
+            if(e.getId()==0){
+                e.setId((forceId==0)?_idPool.pop():forceId);
+            }
+
             _toBeCreate.add(e);
             _toBeCreateSemaphore.release();
         } catch (InterruptedException ex) {
@@ -239,10 +257,6 @@ public class Game extends Thread {
      * @param ent entity to register
      */
     protected void registerEntity(Entity ent){
-        // set entity id
-        if(ent.getId()==0){
-            ent.setId(_idPool.pop());
-        }
 
         if(ent instanceof IUpdatable){
             _updateables.add((IUpdatable)ent);

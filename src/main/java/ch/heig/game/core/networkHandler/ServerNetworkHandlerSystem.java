@@ -8,9 +8,14 @@ package ch.heig.game.core.networkHandler;
 
 import ch.heig.game.coreVariant.ServerGame;
 import ch.heig.network.GameSocket;
+import ch.heig.network.packet.GameStatePacket;
 import ch.heig.network.packet.InputPacket;
 import ch.heig.network.packet.Packet;
 import ch.heig.network.packet.PacketType;
+import ch.heig.network.packet.data.EntityData;
+import ch.heig.network.packet.data.PacketData;
+
+import java.util.ArrayList;
 
 public class ServerNetworkHandlerSystem extends NetworkHandlerSystem{
     public ServerNetworkHandlerSystem() {
@@ -41,10 +46,9 @@ public class ServerNetworkHandlerSystem extends NetworkHandlerSystem{
                 case PacketType.playerInput :
                     InputPacket ip = (InputPacket) (p);
                     if(!server.serverPlayers.containsKey(ip.username)){
-                        server.createNewPlayer(ip.username);
                         return;
                     }
-                    server.serverPlayers.get(ip.username).receiveInput(ip.input);
+                    server.serverPlayers.get(ip.username).entity.receiveInput(ip.input);
                     break;
             }
         }
@@ -52,8 +56,6 @@ public class ServerNetworkHandlerSystem extends NetworkHandlerSystem{
 
     @Override
     public void senderUpdate(GameSocket socket) {
-        if(System.nanoTime() - _lastUpdateSend < _UPDATE_SEND_FREQUENCY)return;
-
-        _lastUpdateSend=System.nanoTime();
+        return;
     }
 }

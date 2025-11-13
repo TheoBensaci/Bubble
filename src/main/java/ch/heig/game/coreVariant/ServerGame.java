@@ -6,16 +6,19 @@
 
 package ch.heig.game.coreVariant;
 
+import java.net.InetAddress;
 import java.util.HashMap;
 import java.util.Map;
 
+import ch.heig.game.core.Entity;
 import ch.heig.game.core.networkHandler.ServerNetworkHandlerSystem;
 import ch.heig.game.core.utils.Vector2f;
 import ch.heig.game.entity.ServerPlayer;
+import ch.heig.network.ClientData;
 
 public class ServerGame extends NetworkGame {
 
-    public final Map<String, ServerPlayer> serverPlayers=new HashMap<>();
+    public final Map<String, ClientData> serverPlayers=new HashMap<>();
 
     public ServerGame(boolean createWindow, String title) {
         super(createWindow, title, new ServerNetworkHandlerSystem());
@@ -30,8 +33,13 @@ public class ServerGame extends NetworkGame {
         return true;
     }
 
-    public void createNewPlayer(String username){
+    public Entity createNewPlayer(String username, InetAddress addr, int port){
         ServerPlayer sp = (ServerPlayer) createEntity(new ServerPlayer(username,2,new Vector2f(0,0)));
-        serverPlayers.put(username,sp);
+        ClientData cd = new ClientData();
+        cd.entity=sp;
+        cd.address=addr;
+        cd.port=port;
+        serverPlayers.put(username,cd);
+        return sp;
     }
 }

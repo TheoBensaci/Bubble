@@ -6,6 +6,7 @@
 
 package ch.heig.game.core.networkHandler;
 
+import ch.heig.network.packet.data.EntityData;
 import ch.heig.network.packet.data.PacketData;
 
 public interface INetworkSenderEntity {
@@ -14,5 +15,5 @@ public interface INetworkSenderEntity {
      * Generate a packet data from this entity data
      * @return
      */
-    PacketData getData();
+    EntityData getData();
 }

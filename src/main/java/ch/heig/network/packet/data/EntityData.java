@@ -6,6 +6,6 @@
 
 package ch.heig.network.packet.data;
 
-public class EntityPacketData extends PacketData {
-    int id=0;
+public class EntityData extends PacketData {
+    public int id=0;
 }

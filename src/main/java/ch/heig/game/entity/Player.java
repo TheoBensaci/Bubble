@@ -8,6 +8,7 @@ package ch.heig.game.entity;
 
 import ch.heig.game.core.Game;
 import ch.heig.game.core.IUpdatable;
+import ch.heig.game.core.Tag;
 import ch.heig.game.core.collision.CollisionBody;
 import ch.heig.game.core.render.IDrawable;
 import ch.heig.game.core.ressourceManagement.RessourceManager;
@@ -62,6 +63,10 @@ public class Player extends CollisionBody implements IDrawable, IUpdatable {
 
     public Player(int playerNumber,Vector2f initPosition) {
         super(initPosition, 12, false);
+
+        this.tag=Tag.player;
+
+
         this.playerNumber =playerNumber;
         _maxGhostPosition=initPosition.copy();
 

@@ -8,9 +8,8 @@ package ch.heig.network.packet;
 
 public enum PacketType{
     none,
-    joinServer,
+    login,
     gameState,
-    joiningGameValidation,
     playerInput,
     exitServer
 }

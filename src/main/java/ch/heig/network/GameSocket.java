@@ -59,7 +59,7 @@ public class GameSocket extends Thread {
      * @param packet packet receve
      * @return if the packet is to be keep of not
      */
-    public boolean onReceivePacket(Packet packet){
+    public boolean onReceivePacket(Packet packet, InetAddress addr, int port){
         return true;
     }
 
@@ -80,7 +80,7 @@ public class GameSocket extends Thread {
                 Packet p = Packet.unserialize(inPkt.getData());
                 if(p==null)continue;
 
-                if(!onReceivePacket(p))continue;
+                if(!onReceivePacket(p,inPkt.getAddress(),inPkt.getPort()))continue;
 
                 mutex.acquire();
                 receivedPackets.add(p);
@@ -117,8 +117,8 @@ public class GameSocket extends Thread {
         send(packet,_addr,_targetDefaultPort);
     }
 
-    private <E extends Packet> void send(E packet,InetAddress inetAddress, int port){
-        byte[] buf = new byte[1000];
+    public <E extends Packet> void send(E packet,InetAddress inetAddress, int port){
+        byte[] buf = new byte[GameStatePacket.PACKET_MAX_SIZE];
         try {
             DatagramPacket datagram = new DatagramPacket(buf, buf.length, inetAddress, port);
             datagram.setData(packet.serialize());

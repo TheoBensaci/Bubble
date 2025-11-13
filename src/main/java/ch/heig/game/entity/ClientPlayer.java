@@ -14,10 +14,11 @@ import ch.heig.game.core.networkHandler.INetworkSenderEntity;
 import ch.heig.game.core.utils.Vector2f;
 import ch.heig.game.coreVariant.ClientGame;
 import ch.heig.network.packet.InputPacket;
+import ch.heig.network.packet.data.EntityData;
 import ch.heig.network.packet.data.InputData;
 import ch.heig.network.packet.data.PacketData;
 
-public class ClientPlayer extends Player implements INetworkSenderEntity {
+public class ClientPlayer extends Player {
     public Vector2f lastDir;
     public InputData[] inputDataHistroy=new InputData[InputPacket.INPUT_HISTORY_LENGTH];
     private int _inputNumber=0;
@@ -61,10 +62,6 @@ public class ClientPlayer extends Player implements INetworkSenderEntity {
         g.drawString("Number : "+inputDataHistroy[0].number,(int)(_position.x),(int)(_position.y+60));
     }
 
-    @Override
-    public PacketData getData() {
-        return createInputSnapshot();
-    }
 
 
     private InputData createInputSnapshot(){

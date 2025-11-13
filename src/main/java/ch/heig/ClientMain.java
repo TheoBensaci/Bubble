@@ -7,33 +7,39 @@
 package ch.heig;
 
 
-import ch.heig.game.core.utils.Vector2f;
 import ch.heig.game.coreVariant.ClientGame;
-import ch.heig.game.entity.ClientPlayer;
 import ch.heig.network.GameSocket;
+import ch.heig.network.LoginSocket;
+import ch.heig.network.packet.GameStatePacket;
+import ch.heig.network.packet.Packet;
+import ch.heig.network.packet.PacketType;
+import ch.heig.network.packet.LoginPacket;
 
+import java.io.IOException;
+import java.net.*;
 import java.util.Random;
 
 
 public class ClientMain {
     public static void main(String[] args) {
-        char [] usernameChar = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890?.,-_:;<>*/+%&=¦@#°§¬|¢()[]$!".toCharArray();
 
+        InetAddress hostName ;
 
-        StringBuilder sb = new StringBuilder();
-        Random rand = new Random();
-
-        for (int i = 0; i < 15; i++) {
-            int index = rand.nextInt(0,usernameChar.length);
-            sb.append(usernameChar[index]);
+        try{
+            hostName = InetAddress.getByName("localhost");
+        } catch (UnknownHostException e) {
+            throw new RuntimeException(e);
         }
+        int port=8001;
+        int hostPort = 8000;
 
-        ClientGame game = new ClientGame(sb.toString());
+        LoginSocket loginSocket=new LoginSocket(hostName,hostPort,port);
+
+        ClientGame game = new ClientGame(loginSocket.login());
         game.start();
         game.setGameSocket(new GameSocket("localhost",8000,8001));
-        game.createEntity(new ClientPlayer(1,new Vector2f(0,0)));
 
-        //ClientPlayer cp =(ClientPlayer)game.createEntity(new ClientPlayer(sb.toString(),1,new Vector2f(0,0)));
+
         try {
             game.join();
         } catch (InterruptedException e) {

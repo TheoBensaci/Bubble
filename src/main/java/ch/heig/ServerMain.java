@@ -10,8 +10,10 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 
+import ch.heig.game.core.Game;
 import ch.heig.game.coreVariant.ServerGame;
 import ch.heig.network.GameSocket;
+import ch.heig.network.ServerSocket;
 
 
 public class ServerMain {
@@ -19,7 +21,7 @@ public class ServerMain {
         System.out.println("Try to Start the Server");
         ServerGame gameServer = new ServerGame(true);
         gameServer.start();
-        GameSocket socket = new GameSocket();
+        ServerSocket socket = new ServerSocket(gameServer);
         gameServer.setGameSocket(socket);
 
 

@@ -10,5 +10,6 @@ public enum PacketDataType {
     Player,
     Bullet,
     Bubble,
-    Score
+    Score,
+    TestNetworkEntity
 }

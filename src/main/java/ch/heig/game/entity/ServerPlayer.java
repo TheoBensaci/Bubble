@@ -12,6 +12,7 @@ import java.util.LinkedList;
 import ch.heig.game.core.networkHandler.INetworkSenderEntity;
 import ch.heig.game.core.utils.DebugUtils;
 import ch.heig.game.core.utils.Vector2f;
+import ch.heig.network.packet.data.EntityData;
 import ch.heig.network.packet.data.InputData;
 import ch.heig.network.packet.data.PacketData;
 
@@ -116,7 +117,7 @@ public class ServerPlayer extends Player implements INetworkSenderEntity {
     }
 
     @Override
-    public PacketData getData() {
+    public EntityData getData() {
         return null;
     }
 }

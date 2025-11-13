@@ -153,7 +153,10 @@ public class Input implements KeyListener, MouseListener {
 
     public Point getMousePos(){
         GameRender r = _game.window.gameCanvas;
-        Point p = MouseInfo.getPointerInfo().getLocation();
+        PointerInfo pi = MouseInfo.getPointerInfo();
+        if(pi==null)return new Point();
+
+        Point p = pi.getLocation();
         Point q = r.getLocationOnScreen();
         p.x-= q.x;
         p.y-= q.y;
