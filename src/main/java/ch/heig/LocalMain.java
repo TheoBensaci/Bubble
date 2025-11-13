@@ -1,3 +1,9 @@
+/**
+ *   Autheur: Theo Bensaci
+ *   Date: 18:06 12.11.2025
+ *   Description: Main use to test the game with out networking, useful to devlope the "game" aspect of this project
+ */
+
 package ch.heig;
 
 import ch.heig.game.core.Game;

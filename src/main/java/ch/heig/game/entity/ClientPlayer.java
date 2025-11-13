@@ -1,14 +1,21 @@
+/**
+ *   Autheur: Theo Bensaci
+ *   Date: 18:06 12.11.2025
+ *   Description: Player use by the client in the client
+ */
+
 package ch.heig.game.entity;
 
-import ch.heig.game.core.utils.Vector2f;
+import java.awt.Color;
+import java.awt.Graphics;
+import java.util.Arrays;
+
 import ch.heig.game.core.networkHandler.INetworkSenderEntity;
+import ch.heig.game.core.utils.Vector2f;
 import ch.heig.game.coreVariant.ClientGame;
 import ch.heig.network.packet.InputPacket;
 import ch.heig.network.packet.data.InputData;
 import ch.heig.network.packet.data.PacketData;
-
-import java.awt.*;
-import java.util.Arrays;
 
 public class ClientPlayer extends Player implements INetworkSenderEntity {
     public Vector2f lastDir;

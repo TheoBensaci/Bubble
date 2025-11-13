@@ -15,6 +15,7 @@
 
 ### Constant (UPPER_CASE)
 #### Private Constant (_UPPER_CASE)
+Constant in java = **static final**
 
 ---
 
@@ -36,14 +37,14 @@
 ---
 
 ### Interface
-All ways named "I{insert name **UpperCamelCase**}" | ✅ `IComponent`
+Always named "I{insert name **UpperCamelCase**}" | ✅ `IComponent`
 
 ---
 
 ### Abstract Class
-All ways named "Abstract{insert name **UpperCamelCase**}" | ✅ `AbstractComponent`
+Always named "Abstract{insert name **UpperCamelCase**}" | ✅ `AbstractComponent`
 
 
 ---
 
-#### By : (@TheoBensaci)
+#### By : [@TheoBensaci](https://github.com/TheoBensaci)

@@ -1,4 +1,15 @@
+/**
+ *   Autheur: Theo Bensaci
+ *   Date: 18:06 12.11.2025
+ *   Description: Class use to manage a instance of a game, it's aim to be the main loop and orginizer of the instance
+ */
+
 package ch.heig.game.core;
+
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.Stack;
+import java.util.concurrent.Semaphore;
 
 import ch.heig.game.core.collision.CollisionBody;
 import ch.heig.game.core.collision.CollisionSystem;
@@ -6,37 +17,38 @@ import ch.heig.game.core.render.IDrawable;
 import ch.heig.game.core.utils.Input;
 import ch.heig.game.core.window.Window;
 
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.Stack;
-import java.util.concurrent.Semaphore;
-
 public class Game extends Thread {
-    public static boolean DEBUG=false;
-    public static final int TARGET_UPDATE_SPEED = 1;           // target update rate in millisecond (honeslty, with a system like this, idk how to make it pretier, sry :[)
 
-    public Window window;
-    public Input input;
+    public boolean debug=false;
+
+    public Window window;                                                           // instance of the window use by this instance of game, if there is one
+    public Input input;                                                             // input manager of this instance, null if there is no window
 
     // entity gestion
-    private final ArrayList<IUpdatable> _updateables=new ArrayList<>();
-    private final ArrayList<Entity> _toBeCreate=new ArrayList<>();
-    private final ArrayList<Entity> _toBeDestroy=new ArrayList<>();
-    private final Semaphore _toBeCreateSemaphore = new Semaphore(1);
-    private final Semaphore _toBeDestroySemaphore = new Semaphore(1);
+    private final ArrayList<IUpdatable> _updateables=new ArrayList<>();             // List of entity (can really be any thing other then a Entity as long it implement IUpdatable) to update every tick
+    private final ArrayList<Entity> _toBeCreate=new ArrayList<>();                  // list of entity to create
+    private final ArrayList<Entity> _toBeDestroy=new ArrayList<>();                 // list of entity to destroy
+    private final Semaphore _toBeCreateSemaphore = new Semaphore(1);        // since _toBeCreate can be alter by a other thread, we need to protected
+    private final Semaphore _toBeDestroySemaphore = new Semaphore(1);       // since _toBeDestroy can be alter by a other thread, we need to protected
 
 
-    private final Stack<Integer> _idPool=new Stack<>();
+    private final Stack<Integer> _idPool=new Stack<>();                             // id pool use to give a unique id to all entity needing one
 
     // collision
-    private final CollisionSystem _collisionSystem=new CollisionSystem();
+    private final CollisionSystem _collisionSystem=new CollisionSystem();           // Collision system use to manage collision on this instance
 
     // thread
-    private boolean _run=false;
+    private boolean _run=false;                                                     // if the game is running
 
     // game state
-    private float _deltaTime;
+    private float _deltaTime;                                                       // delta time of the start - end excution of the last game update
 
+
+    /**
+     * Create a game
+     * @param createWindow if this instance need a window
+     * @param title title of the window if needed one
+     */
     public Game(boolean createWindow, String title){
         if(createWindow){
             window =new Window(this,title);
@@ -48,11 +60,18 @@ public class Game extends Thread {
         }
     }
 
+    /**
+     * Create a game
+     * @param createWindow if this instance need a window
+     */
     public Game(boolean createWindow){
         this(createWindow,"Bubble");
     }
 
 
+    /**
+     * Close this game
+     */
     public void close(){
         _run = false;
         if(window!=null){
@@ -62,6 +81,11 @@ public class Game extends Thread {
     }
 
     //#region Game state
+
+    /**
+     * If this game instance is running
+     * @return
+     */
     public boolean isRunning(){
         return _run;
     }
@@ -74,6 +98,10 @@ public class Game extends Thread {
         return false;
     }
 
+    /**
+     * Get delta time of the last update
+     * @return
+     */
     public float getDeltaTime(){
         return _deltaTime;
     }
@@ -83,6 +111,9 @@ public class Game extends Thread {
 
     //#region update
 
+    /**
+     * Update all entity
+     */
     public void updateEntity(){
         Iterator<IUpdatable> it = _updateables.iterator();
         while (it.hasNext()){
@@ -173,6 +204,11 @@ public class Game extends Thread {
 
     //#region Entity gestion
 
+    /**
+     * Create a new entity
+     * @param e entity to create
+     * @return entity to create
+     */
     public Entity createEntity(Entity e){
         try {
             _toBeCreateSemaphore.acquire();
@@ -184,6 +220,10 @@ public class Game extends Thread {
         return e;
     }
 
+    /**
+     * Destroy a entity
+     * @param e entity to destroy
+     */
     public void destroyEntity(Entity e){
         try {
             _toBeDestroySemaphore.acquire();
@@ -194,6 +234,10 @@ public class Game extends Thread {
         }
     }
 
+    /**
+     * Register a entity to all "service" this entity can be register
+     * @param ent entity to register
+     */
     protected void registerEntity(Entity ent){
         // set entity id
         if(ent.getId()==0){
@@ -215,6 +259,10 @@ public class Game extends Thread {
         }
     }
 
+    /**
+     * Unregister a entity to all "service" this entity can be unregister
+     * @param ent entity to register
+     */
     protected void unregisterEntity(Entity ent){
         // set entity id
         if(ent.getId()!=0){
@@ -237,10 +285,17 @@ public class Game extends Thread {
         }
     }
 
+    /**
+     * Get the number of entity update every game update
+     * @return
+     */
     public int getNumberOfUpdatable(){
         return _updateables.size();
     }
 
+    /**
+     * Start the game instance
+     */
     @Override
     public void start() {
         _run=true;

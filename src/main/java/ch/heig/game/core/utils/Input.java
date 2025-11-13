@@ -1,3 +1,9 @@
+/**
+ *   Autheur: Theo Bensaci
+ *   Date: 18:06 12.11.2025
+ *   Description: Class use to manage input
+ */
+
 package ch.heig.game.core.utils;
 
 import ch.heig.game.core.Game;

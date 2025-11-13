@@ -1,3 +1,9 @@
+/**
+ *   Autheur: Theo Bensaci
+ *   Date: 18:06 12.11.2025
+ *   Description: Player
+ */
+
 package ch.heig.game.entity;
 
 import ch.heig.game.core.Game;
@@ -111,7 +117,7 @@ public class Player extends CollisionBody implements IDrawable, IUpdatable {
             _hasDebug=getGame().input.getC();
         }
         else if(getGame().input.getC()){
-            Game.DEBUG=(!Game.DEBUG);
+            getGame().debug=(!getGame().debug);
             _hasDebug=true;
         }
 
@@ -241,7 +247,7 @@ public class Player extends CollisionBody implements IDrawable, IUpdatable {
         Vector2f recenterOffset=new Vector2f((float) w /2, (float) h /2);
 
         // debug info
-        if(Game.DEBUG){
+        if(getGame().debug){
             g.setColor(Color.magenta);
             g.fillOval((int)(_position.x- collisionRadius),(int)(_position.y- collisionRadius),(int) collisionRadius *2,(int) collisionRadius *2);
         }
@@ -290,7 +296,7 @@ public class Player extends CollisionBody implements IDrawable, IUpdatable {
         g.drawImage(img,(int)(_position.x-recenterOffset.x),(int)(_position.y-recenterOffset.y),null);
 
         // debug info
-        if(Game.DEBUG){
+        if(getGame().debug){
             // show state
             Vector2f offset=new Vector2f(0, 50);
 

@@ -1,8 +1,19 @@
+/**
+ *   Autheur: Theo Bensaci
+ *   Date: 18:06 12.11.2025
+ *   Description: Interface use to implement all function needed to render something
+ */
+
 package ch.heig.game.core.render;
 
-import java.awt.*;
+import java.awt.Graphics;
 
 public interface IDrawable {
+
+    /**
+     * Call every frame
+     * @param g Graphics context
+     */
     void draw(Graphics g);
 
     /**

@@ -1,3 +1,9 @@
+/**
+ *   Autheur: Theo Bensaci
+ *   Date: 18:06 12.11.2025
+ *   Description: Entity of the game, use to implement id, tag, group. Check the doc for more information.
+ */
+
 package ch.heig.game.core;
 
 public class Entity {

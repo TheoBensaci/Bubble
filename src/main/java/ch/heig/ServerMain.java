@@ -1,6 +1,14 @@
+/**
+ *   Autheur: Theo Bensaci
+ *   Date: 18:06 12.11.2025
+ *   Description: Main use for the server build
+ */
+
 package ch.heig;
 
-import java.io.*;
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
 
 import ch.heig.game.coreVariant.ServerGame;
 import ch.heig.network.GameSocket;

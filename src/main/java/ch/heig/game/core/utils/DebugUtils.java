@@ -1,9 +1,22 @@
+/**
+ *   Autheur: Theo Bensaci
+ *   Date: 18:06 12.11.2025
+ *   Description: debug utils
+ */
+
 package ch.heig.game.core.utils;
 
 import java.awt.*;
 
 public class DebugUtils {
 
+    /**
+     * Make a debug "UI" square
+     * @param g graphics context
+     * @param position position
+     * @param offset offset
+     * @param infos List of information to show
+     */
     public static void drawEntityDebugInfo(Graphics g,Vector2f position,Vector2f offset, String[] infos){
         int debugRectW=0;
         int debugRectH=20;

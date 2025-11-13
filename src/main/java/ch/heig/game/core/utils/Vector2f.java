@@ -1,3 +1,9 @@
+/**
+ *   Autheur: Theo Bensaci
+ *   Date: 18:06 12.11.2025
+ *   Description: Class use to manage a geometric vector of 2 float
+ */
+
 package ch.heig.game.core.utils;
 
 public class Vector2f {
@@ -8,6 +14,14 @@ public class Vector2f {
     public Vector2f(float initX, float initY){
         x=initX;
         y=initY;
+    }
+
+    /**
+     * Copy a vector to a other
+     * @param vec vec to copy
+     */
+    public Vector2f(Vector2f vec){
+        this(vec.x,vec.y);
     }
 
     /**
@@ -99,7 +113,7 @@ public class Vector2f {
      * @return new vector similar to the hold one
      */
     public Vector2f copy(){
-        return new Vector2f(x,y);
+        return new Vector2f(this);
     }
 
     /**
@@ -121,17 +135,33 @@ public class Vector2f {
         return x == 0 && y == 0;
     }
 
+    /**
+     * Set the x and y value of this vector in one call
+     * @param x new x value
+     * @param y new y value
+     * @return this vector
+     */
     public Vector2f set(float x, float y){
         this.x=x;
         this.y=y;
         return this;
     }
 
+    /**
+     * Set the x and y value of this vector to a other vector x and y in one call
+     * @param vec referenced vector
+     * @return this vector
+     */
     public Vector2f set(Vector2f vec){
         return set(vec.x,vec.y);
     }
 
 
+    /**
+     * Check if 2 vector are equal
+     * @param vec other vector
+     * @return if this vector and the other vector are the same
+     */
     public boolean isEqual(Vector2f vec){
         return this.x== vec.x && this.y==vec.y;
     }

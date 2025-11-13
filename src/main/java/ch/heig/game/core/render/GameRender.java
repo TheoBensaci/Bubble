@@ -1,44 +1,51 @@
+/**
+ *   Autheur: Theo Bensaci
+ *   Date: 18:06 12.11.2025
+ *   Description: panel use to render the game
+ */
+
 package ch.heig.game.core.render;
 
-import ch.heig.game.core.Entity;
-import ch.heig.game.core.Game;
-
-import javax.swing.*;
-import java.awt.*;
+import java.awt.Color;
+import java.awt.Dimension;
+import java.awt.Graphics;
+import java.awt.Graphics2D;
+import java.awt.Point;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.geom.AffineTransform;
 import java.util.ArrayList;
 import java.util.concurrent.Semaphore;
 
+import javax.swing.JPanel;
+
+import ch.heig.game.core.Entity;
+import ch.heig.game.core.Game;
+
 public class GameRender extends JPanel implements ActionListener {
 
-    public float x,y = 100;
+    public Color backgroundColor=new Color(0x16162a);                   // game render background colore
 
-    public Color backgroundColor=new Color(0x16162a);
+    private final Semaphore _semaphore = new Semaphore(1);           // semphore use to protect the list of drawables
 
-    private final Semaphore _semaphore = new Semaphore(1);
+    private final ArrayList<IDrawable> _drawables = new ArrayList<>();      // list of entity to be render
 
-    private final ArrayList<IDrawable> _drawables = new ArrayList<>();
+    public final Game game;                                                 // game linked to this game render
 
-    public final Game game;
-
-    public int actualGroupRender=0;
+    public int actualGroupRender=0;                                         // actual group of entity rendered
 
 
     // GAME SETTINGS
-    public static final int WIDTH=800;
-    public static final int HEIGHT=800;
-    public static final int REFRESH_RATE=3;
+    public static final int WIDTH=800;                                      // default render width
+    public static final int HEIGHT=800;                                     // default render height
 
-    public int actualWidth=WIDTH;
-    public int actualHeight=HEIGHT;
-    private float _renderScale=1f;
+    public int actualWidth=WIDTH;                                           // actual render width
+    public int actualHeight=HEIGHT;                                         // actual render height
+    private float _renderScale=1f;                                          // actual render scale
 
-    private float _deltaTime;
-    private long _updateStart;
+    private long _updateStart;                                              // last render update time, use to monitor render perofmance
 
-    private GameRenderThread _th;
+    private GameRenderThread _th;                                           // thread use to render, need to be thread to avoid slowing down the entier UI
 
 
     public GameRender(Game game){
@@ -55,7 +62,12 @@ public class GameRender extends JPanel implements ActionListener {
         _th.start();
     }
 
-    public void resizeCanavas(int targetWidth, int targetHeight){
+    /**
+     * Resize the game render
+     * @param targetWidth target width
+     * @param targetHeight target height
+     */
+    public void resizeGameRender(int targetWidth, int targetHeight){
         actualWidth=targetWidth;
         actualHeight=targetHeight;
         _renderScale= (float) actualWidth /WIDTH;
@@ -76,13 +88,14 @@ public class GameRender extends JPanel implements ActionListener {
         return getPreferredSize();
     }
 
+    /**
+     * get the actual render scale
+     * @return
+     */
     public float getRenderScale(){
         return _renderScale;
     }
 
-    public float getSizeComposation(){
-        return WIDTH - actualWidth;
-    }
 
     @Override
     public void actionPerformed(ActionEvent e) {
@@ -160,7 +173,7 @@ public class GameRender extends JPanel implements ActionListener {
     // -------------- DEFAULT GRAPHIC --------------
 
     /**
-     * Draw a backrgound color
+     * Draw a background color
      * @param g
      */
     private void drawBackground(Graphics g){
@@ -169,21 +182,25 @@ public class GameRender extends JPanel implements ActionListener {
     }
 
     /**
-     * Get time stamp of the last update start (in nano)
-     * @return
+     * Register a drawable
+     * @param drawable object (wich implement IDrawable) to be register
      */
-    public long getLastUpdateStart(){
-        return _updateStart;
-    }
-
     public void registerDrawable(IDrawable drawable){
         addDrawables(drawable);
     }
 
+    /**
+     * Unregister a drawable
+     * @param drawable object (wich implement IDrawable) to be unregister
+     */
     public void unregisterDrawable(IDrawable drawable){
         delDrawables(drawable);
     }
 
+    /**
+     * Add a new drawable
+     * @param drawable
+     */
     private void addDrawables(IDrawable drawable){
         // add in to the right order
         if(_drawables.isEmpty()){
@@ -223,6 +240,10 @@ public class GameRender extends JPanel implements ActionListener {
         }
     }
 
+    /**
+     * remove a new drawable
+     * @param drawable
+     */
     private void delDrawables(IDrawable drawable){
         try {
             _semaphore.acquire();
@@ -234,6 +255,9 @@ public class GameRender extends JPanel implements ActionListener {
     }
 
 
+    /**
+     * Close the game render
+     */
     public void close(){
         _th.close();
     }

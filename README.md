@@ -57,7 +57,10 @@ All the documentation is on the [Documentation](/other/documentation) folder
 
 ## Contribution
 If you want to contribute, go a head, i made this project for fun and i will be happy to see it grow.
-Just, there is a [naming convention](/other/namingConvention.md) so please follow it if you want to contribute to the code base, thx :]
+Just, there is a [naming convention](/other/naming_convention.md) so please follow it if you want to contribute to the code base, thx :]
 
 ## Licence
 
+
+## AI usage
+No AI as been use to make this project :]

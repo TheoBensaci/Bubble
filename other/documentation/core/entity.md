@@ -1,5 +1,5 @@
 # Entity
-
+Class use to manage basic entity behavior like Identification, grouping and tagging
 ### Group
 For many raison, separate entity in sup group can be useful, tipicly if you want to make some entity interact only with a set of entity with out making a new game instance.
 Entity group aim to resolve that.

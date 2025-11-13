@@ -1,3 +1,9 @@
+/**
+ *   Autheur: Theo Bensaci
+ *   Date: 18:06 12.11.2025
+ *   Description: Class use to manage the window where the ame is rendered
+ */
+
 package ch.heig.game.core.window;
 
 import ch.heig.game.core.Game;
@@ -77,8 +83,13 @@ public class Window extends JFrame {
         setVisible(true);
     }
 
+    /**
+     * resize the game canavas to fit new window size
+     * @param newWindowWidth new window width
+     * @param newWindowHeight new window height
+     */
     private void resizeGameCanavas(int newWindowWidth, int newWindowHeight){
         int s = Math.min(newWindowWidth,newWindowHeight)-10;
-        gameCanvas.resizeCanavas(s,s);
+        gameCanvas.resizeGameRender(s,s);
     }
 }

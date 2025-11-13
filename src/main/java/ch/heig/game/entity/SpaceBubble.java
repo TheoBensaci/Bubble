@@ -1,10 +1,19 @@
+/**
+ *   Autheur: Theo Bensaci
+ *   Date: 18:06 12.11.2025
+ *   Description: Bubble (check design)
+ */
+
 package ch.heig.game.entity;
+
+import java.awt.BasicStroke;
+import java.awt.Color;
+import java.awt.Graphics;
+import java.awt.Graphics2D;
 
 import ch.heig.game.core.collision.CollisionBody;
 import ch.heig.game.core.render.IDrawable;
 import ch.heig.game.core.utils.Vector2f;
-
-import java.awt.*;
 
 public class SpaceBubble extends CollisionBody implements IDrawable {
     public static final float PLAYER_COLLISION_MARGE=5f;

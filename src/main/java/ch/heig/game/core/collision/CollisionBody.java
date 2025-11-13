@@ -1,3 +1,9 @@
+/**
+ *   Autheur: Theo Bensaci
+ *   Date: 18:06 12.11.2025
+ *   Description: Entity implementing basic collision
+ */
+
 package ch.heig.game.core.collision;
 
 import ch.heig.game.core.Entity;
@@ -5,7 +11,7 @@ import ch.heig.game.core.utils.Vector2f;
 
 public class CollisionBody extends Entity {
 
-    protected final Vector2f _position;
+    protected final Vector2f _position;                     // position
     public final float collisionRadius;
     public boolean trigger;
 
@@ -15,42 +21,68 @@ public class CollisionBody extends Entity {
         trigger =initTrigger;
     }
 
+    /**
+     * Get a copy of the actual position of this instance
+     * @return
+     */
     public Vector2f getPosition(){
         return _position.copy();
     }
 
-    public void setPosition(Vector2f vec){
-        _position.set(vec);
+    /**
+     * Set the position of this instance
+     * @param position
+     */
+    public void setPosition(Vector2f position){
+        _position.set(position);
     }
 
+    /**
+     * Set the position of this instance
+     * @param x
+     * @param y
+     */
     public void setPosition(float x, float y){
         _position.set(x,y);
     }
 
-    public void collisionStepWith(CollisionBody oder){
-        Vector2f diff = oder.getPosition().sub(getPosition());
+    /**
+     * Do the collision with a other collision body
+     * A collision is : Check distance -> collision resolution
+     * @param other other collision body
+     */
+    public void doCollision(CollisionBody other){
+        Vector2f diff = other.getPosition().sub(getPosition());
         float distance = diff.magn();
 
-        if(distance<(collisionRadius +oder.collisionRadius)){
+        if(distance<(collisionRadius +other.collisionRadius)){
             // trigger gestion
-            if(trigger || oder.trigger){
-                if(trigger)onTrigger(oder);
-                if(oder.trigger)oder.onTrigger(this);
+            if(trigger || other.trigger){
+                if(trigger)onTrigger(other);
+                if(other.trigger)other.onTrigger(this);
                 return;
             }
             diff.normilize();
-            distance-= collisionRadius +oder.collisionRadius;
+            distance-= collisionRadius +other.collisionRadius;
             diff.mult(distance);
             _position.add(diff);
-            oder._position.sub(diff);
+            other._position.sub(diff);
         }
     }
 
-    public void onCollision(CollisionBody oder){
+    /**
+     * Call when 2 collision body collide
+     * @param other
+     */
+    public void onCollision(CollisionBody other){
 
     }
 
-    public void onTrigger(CollisionBody oder){
+    /**
+     * Call if this instance is set to trigger and it collide with a other collision body
+     * @param other
+     */
+    public void onTrigger(CollisionBody other){
 
     }
 

@@ -1,11 +1,17 @@
+/**
+ *   Autheur: Theo Bensaci
+ *   Date: 18:06 12.11.2025
+ *   Description: Server variant of the game
+ */
+
 package ch.heig.game.coreVariant;
+
+import java.util.HashMap;
+import java.util.Map;
 
 import ch.heig.game.core.networkHandler.ServerNetworkHandlerSystem;
 import ch.heig.game.core.utils.Vector2f;
 import ch.heig.game.entity.ServerPlayer;
-
-import java.util.HashMap;
-import java.util.Map;
 
 public class ServerGame extends NetworkGame {
 

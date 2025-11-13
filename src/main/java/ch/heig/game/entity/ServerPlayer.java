@@ -1,13 +1,19 @@
+/**
+ *   Autheur: Theo Bensaci
+ *   Date: 18:06 12.11.2025
+ *   Description: Player use by the server in the server
+ */
+
 package ch.heig.game.entity;
+
+import java.awt.Graphics;
+import java.util.LinkedList;
 
 import ch.heig.game.core.networkHandler.INetworkSenderEntity;
 import ch.heig.game.core.utils.DebugUtils;
 import ch.heig.game.core.utils.Vector2f;
 import ch.heig.network.packet.data.InputData;
 import ch.heig.network.packet.data.PacketData;
-
-import java.awt.*;
-import java.util.LinkedList;
 
 public class ServerPlayer extends Player implements INetworkSenderEntity {
 

@@ -1,14 +1,23 @@
+/**
+ *   Autheur: Theo Bensaci
+ *   Date: 18:06 12.11.2025
+ *   Description: General socket of the game
+ */
+
 package ch.heig.network;
 
-import ch.heig.network.packet.GameStatePacket;
-import ch.heig.network.packet.Packet;
-import com.metheo.network.packet.*;
-
 import java.io.IOException;
-import java.net.*;
+import java.net.DatagramPacket;
+import java.net.DatagramSocket;
+import java.net.InetAddress;
+import java.net.SocketException;
+import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.Semaphore;
+
+import ch.heig.network.packet.GameStatePacket;
+import ch.heig.network.packet.Packet;
 
 public class GameSocket extends Thread {
     private DatagramSocket _socket;
@@ -19,7 +28,6 @@ public class GameSocket extends Thread {
     private InetAddress _addr;
     private final int _listendefaultPort;
     private final int _targetDefaultPort;
-    private ClientSearchThread _cst;
 
     public final List<Packet> receivedPackets=new ArrayList<>();
     public final Semaphore mutex=new Semaphore(1);
@@ -104,6 +112,7 @@ public class GameSocket extends Thread {
         _running=false;
     }
 
+
     public <E extends Packet> void send(E packet) {
         send(packet,_addr,_targetDefaultPort);
     }
@@ -119,38 +128,6 @@ public class GameSocket extends Thread {
         } catch (Exception e) {
             System.out.println(e.toString());
             return;
-        }
-    }
-
-
-    public class ClientSearchThread extends Thread{
-        private boolean _isRunning=true;
-        public Packet toSendPacket;
-        public ClientSearchThread(Packet packet){
-            toSendPacket=packet;
-        }
-
-        @Override
-        public void run() {
-            super.run();
-            byte[] buf;
-            DatagramPacket datagramPacket;
-            try {
-                while (_isRunning && _addr!=null) {
-                    buf = new byte[1000];
-                    datagramPacket = new DatagramPacket(buf, buf.length);
-                    datagramPacket.setData(toSendPacket.serialize());
-                    datagramPacket.setAddress(_addr);
-                    datagramPacket.setPort(PORT);
-                    _socket.send(datagramPacket);
-                }
-            } catch (IOException e) {
-                throw new RuntimeException(e);
-            }
-        }
-
-        public void close(){
-            _isRunning=false;
         }
     }
 }

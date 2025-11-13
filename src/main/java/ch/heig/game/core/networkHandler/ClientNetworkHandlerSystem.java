@@ -1,3 +1,9 @@
+/**
+ *   Autheur: Theo Bensaci
+ *   Date: 18:06 12.11.2025
+ *   Description: Client network handler
+ */
+
 package ch.heig.game.core.networkHandler;
 
 import ch.heig.game.entity.ClientPlayer;
