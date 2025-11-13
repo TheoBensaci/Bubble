@@ -1,19 +1,19 @@
 We want to make a twin stick shooter (we're not gonna support controller, it's just the name a of the gender, we are talking mouse and keyboard).
 But there is twist, limited space, our idea is to make a 1v1 twin stick shooter were the space it self is a resource you need to manage at best to win.
 
-To explain, let's imagine a map :
-░░○░░
-░○░○░
-░░○░░
+To explain, let's imagine a map :<br>
+░░○░░<br>
+░○░○░<br>
+░░○░░<br>
 
 (○ =bubble and ░ = void)
 
 So, the game is 1v1, you player a space ship witch can :
 
-    move in 8 direction (keyboard control)
-    shoot in all direction (with the mouse), you have got 5 ammo and it reload it self when you don't shoot
-    2 dash, witch can be use to avoid opponents bullet and move your self, it reload is self after a short time
-    1 life, get hit and you'r dead >:[
+move in 8 direction (keyboard control)
+shoot in all direction (with the mouse), you have got 5 ammo and it reload it self when you don't shoot
+2 dash, witch can be use to avoid opponents bullet and move your self, it reload is self after a short time
+1 life, get hit and you'r dead >:[
 
 All those is true, as long as you are in a bubbles , when you outside, no more movement, no more reload of your ammo, no more reload of you dash, the moment you'r outside bubbles, resource become limited.
 

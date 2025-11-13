@@ -1,4 +1,5 @@
 # Documentation
+TODO : Documentation introduction
 ## Core
 - ### [Entity](./core/entity.md)
 - ### [Game core](./core/game_core.md)
@@ -16,3 +17,41 @@
 - ### [Game design](./other/game_design.md)
 - ### [Bibliography and oder](./other/bibliography.md)
 - ### [Naming convention](../naming_convention.md)
+
+## Project structure
+```
+/
+├── .idea
+│   └── ...
+├── other
+│   └── documentation
+│       ├── core
+│       │   └── ...
+│       ├── network
+│       │   └── ...
+│       ├── other
+│       │   └── ...
+│       └── ...
+├── src
+│   └── main
+│       ├── java
+│       │   └── ch
+│       │       └── heig
+│       │           ├── game
+│       │           │   ├── core
+│       │           │   │   └── ...
+│       │           │   ├── coreVariant
+│       │           │   │   └── ...
+│       │           │   ├── entity
+│       │           │   │   └── ...
+│       │           │   └── ...
+│       │           ├── network
+│       │           │   ├── packet
+│       │           │   │   └── ...
+│       │           │   └── ...
+│       │           └── ...
+│       └── ressources
+│           └── textures
+│               └── ...
+└── ...
+```

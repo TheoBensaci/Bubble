@@ -23,44 +23,8 @@ TODO
     - [List of thing]
 
 ## Documentation
-All the documentation is on the [documentation](/other/documentation) folder
-### Project structure
-```
-/
-├── .idea
-│   └── ...
-├── other
-│   └── documentation
-│       ├── core
-│       │   └── ...
-│       ├── network
-│       │   └── ...
-│       ├── other
-│       │   └── ...
-│       └── ...
-├── src
-│   └── main
-│       ├── java
-│       │   └── ch
-│       │       └── heig
-│       │           ├── game
-│       │           │   ├── core
-│       │           │   │   └── ...
-│       │           │   ├── coreVariant
-│       │           │   │   └── ...
-│       │           │   ├── entity
-│       │           │   │   └── ...
-│       │           │   └── ...
-│       │           ├── network
-│       │           │   ├── packet
-│       │           │   │   └── ...
-│       │           │   └── ...
-│       │           └── ...
-│       └── ressources
-│           └── textures
-│               └── ...
-└── ...
-```
+All the documentation is on the [documentation](/other/documentation/README.md) folder
+
 
 ## Contribution
 If you want to contribute, go a head, i made this project for fun and i will be happy to see it grow.
