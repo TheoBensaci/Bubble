@@ -24,7 +24,7 @@ public class ServerPlayer extends Player {
     public LinkedList<InputData> inputDataHistroy=new LinkedList<>();
 
     private static final float _MAX_SYNC_DISTANCE=5f;
-    private static final int _MAX_INPUT_STACK=10;
+    private static final int _MAX_INPUT_STACK=6;
     private int _lastInputNumber=-1;
     private long _lastInputTime;
     private long t;
@@ -60,6 +60,10 @@ public class ServerPlayer extends Player {
     public void receiveInput(InputData[] inputDatas){
         if(inputDataHistroy.isEmpty()){
             _lastInputNumber=inputDatas[0].number-1;
+        }
+
+        if(inputDataHistroy.size()>_MAX_INPUT_STACK){
+            inputDataHistroy.clear();
         }
 
         for (int i = inputDatas.length-1; i >=0 ; i--) {
