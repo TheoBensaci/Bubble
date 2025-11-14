@@ -6,10 +6,10 @@
 
 package ch.heig.game.entity;
 
-import java.awt.Color;
-import java.awt.Graphics;
+import java.awt.*;
 import java.util.Arrays;
 
+import ch.heig.game.core.networkHandler.INetworkReceiverEntity;
 import ch.heig.game.core.networkHandler.INetworkSenderEntity;
 import ch.heig.game.core.utils.Vector2f;
 import ch.heig.game.coreVariant.ClientGame;
@@ -18,7 +18,7 @@ import ch.heig.network.packet.data.EntityData;
 import ch.heig.network.packet.data.InputData;
 import ch.heig.network.packet.data.PacketData;
 
-public class ClientPlayer extends Player {
+public class ClientPlayer extends Player implements INetworkReceiverEntity {
     public Vector2f lastDir;
     public InputData[] inputDataHistroy=new InputData[InputPacket.INPUT_HISTORY_LENGTH];
     private int _inputNumber=0;
@@ -54,12 +54,16 @@ public class ClientPlayer extends Player {
 
     @Override
     public void draw(Graphics g) {
-        super.draw(g);
-        g.setColor(Color.white);
         ClientGame cp = (ClientGame)getGame();
-        g.drawString(cp.username,(int)(_position.x-cp.username.length()*3),(int)(_position.y+25));
-        g.drawString("Input : "+inputDataHistroy[0],(int)(_position.x),(int)(_position.y+40));
-        g.drawString("Number : "+inputDataHistroy[0].number,(int)(_position.x),(int)(_position.y+60));
+        float usernameSize= cp.username.length()*6.5f;
+        Vector2f offset=new Vector2f(20+usernameSize/2,-5);
+        Vector2f usernamePos=getPosition().add(offset);
+        g.setColor(new Color(0xffff55));
+        g.fillRect((int)(usernamePos.x-usernameSize/2),(int)(usernamePos.y-17),(int)(usernameSize),4);
+        ((Graphics2D) g).setStroke(new BasicStroke(3));
+        g.drawLine((int)(usernamePos.x-usernameSize/2),(int)(usernamePos.y-15),(int)(_position.x),(int)(_position.y));
+        g.drawString(cp.username,(int)(usernamePos.x-usernameSize/2),(int)(usernamePos.y-25));
+        super.draw(g);
     }
 
 
@@ -106,5 +110,10 @@ public class ClientPlayer extends Player {
 
     public long getLastInputTime(){
         return _lastInputTime;
+    }
+
+    @Override
+    public void applyData(PacketData data) {
+
     }
 }

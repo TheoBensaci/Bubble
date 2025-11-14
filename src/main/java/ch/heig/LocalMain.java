@@ -12,6 +12,8 @@ import ch.heig.game.core.utils.Vector2f;
 import ch.heig.game.entity.Player;
 import ch.heig.game.entity.SpaceBubble;
 import ch.heig.game.entity.TestNetworkEntity;
+import ch.heig.network.packet.LoginPacket;
+import ch.heig.network.packet.Packet;
 
 public class LocalMain {
     public static void main(String[] args) {

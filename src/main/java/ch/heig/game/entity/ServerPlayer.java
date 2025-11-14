@@ -15,14 +15,16 @@ import ch.heig.game.core.utils.Vector2f;
 import ch.heig.network.packet.data.EntityData;
 import ch.heig.network.packet.data.InputData;
 import ch.heig.network.packet.data.PacketData;
+import ch.heig.network.packet.data.PacketDataType;
 
-public class ServerPlayer extends Player implements INetworkSenderEntity {
+public class ServerPlayer extends Player {
 
     public final String username;
 
     public LinkedList<InputData> inputDataHistroy=new LinkedList<>();
 
     private static final float _MAX_SYNC_DISTANCE=5f;
+    private static final int _MAX_INPUT_STACK=10;
     private int _lastInputNumber=-1;
     private long _lastInputTime;
     private long t;
@@ -68,6 +70,7 @@ public class ServerPlayer extends Player implements INetworkSenderEntity {
             }
             addInput(id);
         }
+
 
     }
 
@@ -116,8 +119,25 @@ public class ServerPlayer extends Player implements INetworkSenderEntity {
         DebugUtils.drawEntityDebugInfo(g,_position.copy(),new Vector2f(0, 50),debugInfo);
     }
 
-    @Override
+    public static class Data extends EntityData {
+        public double rotation;
+        public boolean isAlive;
+        public boolean onDash;
+        public int amo;
+        public int numberOfDash;
+
+        public Data(Player ent) {
+            super(ent);
+            type = PacketDataType.Player;
+            this.rotation = ent._rotation;
+            this.isAlive = true;
+            this.onDash = ent._onDash;
+            this.amo = ent._ammo;
+            this.numberOfDash = ent._numberDash;
+        }
+    }
+
     public EntityData getData() {
-        return null;
+        return new EntityData(this);
     }
 }

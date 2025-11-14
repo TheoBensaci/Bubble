@@ -115,9 +115,10 @@ public class Game extends Thread {
      * Update all entity
      */
     public void updateEntity(){
-        Iterator<IUpdatable> it = _updateables.iterator();
-        while (it.hasNext()){
-            it.next().update(_deltaTime);
+        for (IUpdatable up : _updateables){
+            Entity ent = (Entity) up;
+            if(ent.isDestroy())continue;
+            up.update(_deltaTime);
         }
     }
 
@@ -193,7 +194,7 @@ public class Game extends Thread {
 
             }
         } catch (Exception e) {
-            System.out.println(e.toString());
+            throw new RuntimeException(e);
         }
     }
 
@@ -246,6 +247,7 @@ public class Game extends Thread {
         try {
             _toBeDestroySemaphore.acquire();
             _toBeDestroy.add(e);
+            e.markAsDestroy();
             _toBeDestroySemaphore.release();
         } catch (InterruptedException ex) {
             throw new RuntimeException(ex);

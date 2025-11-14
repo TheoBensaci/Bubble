@@ -7,6 +7,7 @@
 package ch.heig.network.packet.data;
 
 public enum PacketDataType {
+    Entity,
     Player,
     Bullet,
     Bubble,

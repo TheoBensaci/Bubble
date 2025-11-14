@@ -6,16 +6,17 @@
 
 package ch.heig.game.core.networkHandler;
 
+import ch.heig.game.core.Entity;
 import ch.heig.game.coreVariant.ServerGame;
+import ch.heig.network.ClientData;
 import ch.heig.network.GameSocket;
-import ch.heig.network.packet.GameStatePacket;
-import ch.heig.network.packet.InputPacket;
-import ch.heig.network.packet.Packet;
-import ch.heig.network.packet.PacketType;
+import ch.heig.network.packet.*;
 import ch.heig.network.packet.data.EntityData;
 import ch.heig.network.packet.data.PacketData;
 
 import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.Map;
 
 public class ServerNetworkHandlerSystem extends NetworkHandlerSystem{
     public ServerNetworkHandlerSystem() {
@@ -50,12 +51,23 @@ public class ServerNetworkHandlerSystem extends NetworkHandlerSystem{
                     }
                     server.serverPlayers.get(ip.username).entity.receiveInput(ip.input);
                     break;
+                case PacketType.login:
+                    LoginPacket lp = (LoginPacket)p;
+                    if(server.serverPlayers.containsKey(lp.username)){
+                        lp.id=-1;
+                        socket.send(lp,p.inetAddress,p.port);
+                        break;
+                    }
+
+                    Entity e = server.createNewPlayer(lp.username,p.inetAddress,p.port);
+                    lp.id=e.getId();
+                    socket.send(lp,p.inetAddress,p.port);
+                    break;
             }
         }
     }
 
     @Override
     public void senderUpdate(GameSocket socket) {
-        return;
     }
 }

@@ -81,6 +81,8 @@ public class GameSocket extends Thread {
                 if(p==null)continue;
 
                 if(!onReceivePacket(p,inPkt.getAddress(),inPkt.getPort()))continue;
+                p.inetAddress=inPkt.getAddress();
+                p.port=inPkt.getPort();
 
                 mutex.acquire();
                 receivedPackets.add(p);

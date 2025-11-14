@@ -11,9 +11,10 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 
 import ch.heig.game.core.Game;
+import ch.heig.game.core.utils.Vector2f;
 import ch.heig.game.coreVariant.ServerGame;
+import ch.heig.game.entity.TestNetworkEntity;
 import ch.heig.network.GameSocket;
-import ch.heig.network.ServerSocket;
 
 
 public class ServerMain {
@@ -21,11 +22,9 @@ public class ServerMain {
         System.out.println("Try to Start the Server");
         ServerGame gameServer = new ServerGame(true);
         gameServer.start();
-        ServerSocket socket = new ServerSocket(gameServer);
-        gameServer.setGameSocket(socket);
+        gameServer.setGameSocket(new GameSocket());
 
-
-        System.out.println("Server socket -> "+(socket.isRunning()?"Running":"Stopped"));
+        gameServer.createEntity(new TestNetworkEntity(new Vector2f(300,300),20));
 
 
         // make a quick way to interact with the server
@@ -51,6 +50,6 @@ public class ServerMain {
             throw new RuntimeException(e);
         }
 
-        System.out.println("Server socket -> "+(socket.isRunning()?"Running":"Stopped"));
+        System.out.println("Server socket -> "+(gameServer.isRunning()?"Running":"Stopped"));
     }
 }
