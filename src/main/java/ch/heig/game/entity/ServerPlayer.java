@@ -29,6 +29,7 @@ public class ServerPlayer extends Player {
     private long _lastInputTime;
     private long t;
     private int _currentInput=0;
+    private float _clock=0;
 
 
     public ServerPlayer(String username, int playerNumber, Vector2f initPosition) {
@@ -40,13 +41,14 @@ public class ServerPlayer extends Player {
 
     @Override
     protected void inputUpdate(float delta) {
+        _clock+=delta;
          t = System.nanoTime() - _lastInputTime;
 
         if(inputDataHistroy.isEmpty()){
             //applyInput(new InputData());
             return;
         }
-        if(t>=inputDataHistroy.getFirst().delatTimeStart){
+        if(_clock>=inputDataHistroy.getFirst().delatTimeStart){
             applyNextInput();
         }
     }
@@ -60,18 +62,13 @@ public class ServerPlayer extends Player {
     public void receiveInput(InputData[] inputDatas){
         if(inputDataHistroy.isEmpty()){
             _lastInputNumber=inputDatas[0].number-1;
+            inputDatas[0].delatTimeStart=0;
         }
 
-        if(inputDataHistroy.size()>_MAX_INPUT_STACK){
-            inputDataHistroy.clear();
-        }
 
         for (int i = inputDatas.length-1; i >=0 ; i--) {
             InputData id = inputDatas[i];
             if(id.number-1 != _lastInputNumber && !(id.number==Integer.MIN_VALUE && _lastInputNumber==Integer.MAX_VALUE))continue;
-            if(inputDataHistroy.isEmpty()){
-                id.delatTimeStart=0;
-            }
             addInput(id);
         }
 
@@ -95,7 +92,7 @@ public class ServerPlayer extends Player {
         _rotation=id.rotation;
         _requestDash=id.dash;
         _currentInput=id.number;
-        _lastInputTime=System.nanoTime();
+        _clock=0;
         Vector2f targetPos=new Vector2f(id.positionX,id.positionY);
         Vector2f diff=getPosition().sub(targetPos);
         if(diff.magn()<_MAX_SYNC_DISTANCE){

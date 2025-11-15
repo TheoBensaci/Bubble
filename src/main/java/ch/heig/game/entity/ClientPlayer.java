@@ -21,18 +21,19 @@ import ch.heig.network.packet.data.PacketData;
 public class ClientPlayer extends Player implements INetworkReceiverEntity {
     public Vector2f lastDir;
     public InputData[] inputDataHistroy=new InputData[InputPacket.INPUT_HISTORY_LENGTH];
+    private float _clock=0;
     private int _inputNumber=0;
-    private long _lastInputTime=-1;
 
     public ClientPlayer(int playerNumber, Vector2f initPosition) {
         super(playerNumber, initPosition);
         Arrays.fill(this.inputDataHistroy,new InputData());
-        _lastInputTime=System.nanoTime();
     }
 
     @Override
     protected void inputUpdate(float delta) {
         super.inputUpdate(delta);
+
+        _clock+=delta;
 
         if(lastDir!=null && _targetDir.isEqual(lastDir) && !_requestDash){
             return;
@@ -61,7 +62,13 @@ public class ClientPlayer extends Player implements INetworkReceiverEntity {
         g.setColor(new Color(0xffff55));
         g.fillRect((int)(usernamePos.x-usernameSize/2),(int)(usernamePos.y-17),(int)(usernameSize),4);
         ((Graphics2D) g).setStroke(new BasicStroke(3));
-        g.drawLine((int)(usernamePos.x-usernameSize/2),(int)(usernamePos.y-15),(int)(_position.x),(int)(_position.y));
+        Vector2f lineStartPose=new Vector2f(new Vector2f((usernamePos.x-usernameSize/2),(int)(usernamePos.y-15)));
+
+        Vector2f diff = getPosition().sub(lineStartPose);
+
+        Vector2f lineEndPos=lineStartPose.copy().add(diff.copy().mult(0.3f));
+
+        g.drawLine((int)(lineStartPose.x),(int)(lineStartPose.y),(int)(lineEndPos.x),(int)(lineEndPos.y));
         g.drawString(cp.username,(int)(usernamePos.x-usernameSize/2),(int)(usernamePos.y-25));
         super.draw(g);
     }
@@ -74,12 +81,12 @@ public class ClientPlayer extends Player implements INetworkReceiverEntity {
         id.targetDirectionX=Math.round(_targetDir.x);
         id.rotation=_rotation;
         id.dash=_requestDash;
-        id.delatTimeStart=(System.nanoTime()-_lastInputTime);
+        id.delatTimeStart=_clock;
         id.number=_inputNumber;
         id.positionX=_position.x;
         id.positionY= _position.y;
         _inputNumber++;
-        _lastInputTime=System.nanoTime();
+        _clock=0;
 
         // add input data to the history
         addInputDataToHistory(id);
@@ -108,8 +115,8 @@ public class ClientPlayer extends Player implements INetworkReceiverEntity {
         return ip;
     }
 
-    public long getLastInputTime(){
-        return _lastInputTime;
+    public float getClock(){
+        return _clock;
     }
 
     @Override

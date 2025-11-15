@@ -47,7 +47,7 @@ public class ServerNetworkHandlerSystem extends NetworkHandlerSystem{
                 case PacketType.playerInput :
                     InputPacket ip = (InputPacket) (p);
                     if(!server.serverPlayers.containsKey(ip.username)){
-                        return;
+                        break;
                     }
                     server.serverPlayers.get(ip.username).entity.receiveInput(ip.input);
                     break;
