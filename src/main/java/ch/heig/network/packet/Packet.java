@@ -12,9 +12,14 @@ import java.io.ObjectInput;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.Serializable;
+import java.net.InetAddress;
 
 public abstract class Packet implements Serializable {
     public PacketType type;
+
+    public transient InetAddress inetAddress;
+    public transient int port;
+
     public byte[] serialize(){
         ByteArrayOutputStream bos = new ByteArrayOutputStream();
         try (ObjectOutputStream out = new ObjectOutputStream(bos)) {

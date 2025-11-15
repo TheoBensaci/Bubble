@@ -60,7 +60,7 @@ public class NetworkGame extends Game {
     @Override
     protected void unregisterEntity(Entity ent) {
         super.unregisterEntity(ent);
-        _networkHandler.registerNetworkEntity(ent);
+        _networkHandler.unregisterNetworkEntity(ent);
     }
 
 

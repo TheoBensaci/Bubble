@@ -10,6 +10,8 @@ import ch.heig.game.coreVariant.ClientGame;
 import ch.heig.network.GameSocket;
 
 public class ClientNetworkHandlerSystem extends NetworkHandlerSystem{
+
+
     public ClientNetworkHandlerSystem() {
         super();
     }
@@ -21,7 +23,10 @@ public class ClientNetworkHandlerSystem extends NetworkHandlerSystem{
     public void senderUpdate(GameSocket socket){
         ClientGame cg = (ClientGame) _game;
         if(cg.player==null)return;
-        if(System.nanoTime()-cg.player.getLastInputTime() < _UPDATE_SEND_FREQUENCY)return;
+        if(cg.player.getClock() < 50)return;
         socket.send(cg.player.createPacket());
     }
+
+
+
 }

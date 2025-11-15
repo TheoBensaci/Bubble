@@ -11,6 +11,7 @@ public class Entity {
     private int _id=0;
     private int _group=0;
     public Tag tag=Tag.none;
+    private boolean _toBeDestroy=false;
 
 
     public Entity(){
@@ -47,5 +48,13 @@ public class Entity {
 
     public void setGroup(int group){
         _group=group;
+    }
+
+    public void markAsDestroy(){
+        _toBeDestroy=true;
+    }
+
+    public boolean isDestroy(){
+        return _toBeDestroy;
     }
 }

@@ -8,7 +8,7 @@ package ch.heig.network.packet.data;
 
 public class InputData extends PacketData{
     public int number=0;
-    public long delatTimeStart=0;
+    public float delatTimeStart=0;
     public int targetDirectionX=0;
     public int targetDirectionY=0;
     public boolean dash=false;
