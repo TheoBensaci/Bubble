@@ -62,6 +62,7 @@ public class ServerNetworkHandlerSystem extends NetworkHandlerSystem{
                     Entity e = server.createNewPlayer(lp.username,p.inetAddress,p.port);
                     lp.id=e.getId();
                     socket.send(lp,p.inetAddress,p.port);
+                    System.out.println("test");
                     break;
             }
         }
@@ -69,5 +70,20 @@ public class ServerNetworkHandlerSystem extends NetworkHandlerSystem{
 
     @Override
     public void senderUpdate(GameSocket socket) {
+        if(System.nanoTime() - _lastUpdateSend < _UPDATE_SEND_FREQUENCY)return;
+        ServerGame server = (ServerGame)_game;
+
+        // build game state packet
+        ArrayList<EntityData> data = new ArrayList<>();
+        for (INetworkSenderEntity e : _sender) {
+            data.add(e.getData());
+        }
+        GameStatePacket gsp = new GameStatePacket(data.toArray(new EntityData[0]));
+
+        // send it to all player
+        for(Map.Entry<String, ClientData> entry : server.serverPlayers.entrySet()){
+            socket.send(gsp,entry.getValue().address,entry.getValue().port);
+        }
+        _lastUpdateSend=System.nanoTime();
     }
 }
