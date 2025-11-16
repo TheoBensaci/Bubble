@@ -24,6 +24,7 @@ public class TestNetworkEntity extends CollisionBody implements IDrawable, IUpda
 
     public TestNetworkEntity(Vector2f initPosition, float collisionRadius) {
         super(initPosition, collisionRadius, true);
+        setGroup(1);
     }
 
     @Override

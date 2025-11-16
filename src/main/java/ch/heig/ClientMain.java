@@ -34,7 +34,10 @@ public class ClientMain {
         ClientGame game = new ClientGame(loginSocket.login());
         game.start();
         game.setGameSocket(new GameSocket("localhost",8000,8001));
-        game.createEntity(new Arena(new Vector2f(GameRender.WIDTH/2,GameRender.HEIGHT/2),400),100);
+
+        // set arenna
+        Arena.position.set(GameRender.WIDTH/2,GameRender.HEIGHT/2);
+        Arena.radiuse=400f;
 
         /*
         port=7999;

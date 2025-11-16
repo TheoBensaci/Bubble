@@ -6,11 +6,14 @@
 
 package ch.heig.core.collision;
 
+import ch.heig.core.Entity;
+
 import java.util.ArrayList;
 
 public class CollisionSystem {
 
     private final ArrayList<CollisionBody> _bodys=new ArrayList<>();            // list of collision body managed
+    private final ArrayList<CollisionGroup> _groups=new ArrayList<>();
 
     public CollisionSystem(){
 
@@ -22,7 +25,16 @@ public class CollisionSystem {
      * @param body
      */
     public void registerBody(CollisionBody body){
-        _bodys.add(body);
+        //_bodys.add(body);
+        for (CollisionGroup group : _groups){
+            if(group.index==body.getGroup()){
+                group.bodies.add(body);
+                return;
+            }
+        }
+        CollisionGroup group = new CollisionGroup(body.getGroup());
+        group.bodies.add(body);
+        _groups.add(group);
     }
 
     /**
@@ -30,7 +42,15 @@ public class CollisionSystem {
      * @param body
      */
     public void unregisterBody(CollisionBody body){
-        _bodys.remove(body);
+        for (CollisionGroup group : _groups){
+            if(group.bodies.contains(body)){
+                group.bodies.remove(body);
+                if(group.bodies.isEmpty()){
+                    _groups.remove(group);
+                }
+                return;
+            }
+        }
     }
 
 
@@ -38,10 +58,20 @@ public class CollisionSystem {
      * Do the collsion update on every collsion body register
      */
     public void doCollisionUpdate(){
-        for (int i = 0; i < _bodys.size(); i++) {
-            for (int j = i+1; j < _bodys.size(); j++) {
-                _bodys.get(i).doCollision(_bodys.get(j));
-            }
+        for (CollisionGroup group : _groups){
+            group.doCollisionUpdate();
         }
+    }
+
+    public void updateBodyGroup(CollisionBody body){
+        unregisterBody(body);
+        registerBody(body);
+    }
+
+    private CollisionGroup getCollisionGroup(int index){
+        for (CollisionGroup group : _groups){
+            if(group.index==index)return group;
+        }
+        return null;
     }
 }

@@ -25,7 +25,10 @@ public class LocalMain {
         game.createEntity(new SpaceBubble(new Vector2f(GameRender.WIDTH/2,GameRender.HEIGHT/2+200),50));
         game.createEntity(new SpaceBubble(new Vector2f(GameRender.WIDTH/2,GameRender.HEIGHT/2-200),50));
         game.createEntity(new TestNetworkEntity(new Vector2f(GameRender.WIDTH/2+200,GameRender.HEIGHT/2+200),30));
-        game.createEntity(new Arena(new Vector2f(GameRender.WIDTH/2,GameRender.HEIGHT/2),400));
+
+        // set arenna
+        Arena.position.set(GameRender.WIDTH/2,GameRender.HEIGHT/2);
+        Arena.radiuse=400f;
 
         try {
             game.join();
