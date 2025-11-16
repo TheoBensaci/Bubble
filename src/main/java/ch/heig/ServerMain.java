@@ -32,7 +32,11 @@ public class ServerMain {
         gameServer.createEntity(new TestNetworkEntity(new Vector2f(300,300),20));
 
         gameServer.createEntity(new SpaceBubble(new Vector2f(GameRender.WIDTH/2,GameRender.HEIGHT/2),150));
-        gameServer.createEntity(new Arena(new Vector2f(GameRender.WIDTH/2,GameRender.HEIGHT/2),400),-10);
+
+
+        // set arenna
+        Arena.position.set(GameRender.WIDTH/2,GameRender.HEIGHT/2);
+        Arena.radiuse=400f;
 
 
 

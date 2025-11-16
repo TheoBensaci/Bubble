@@ -13,12 +13,13 @@ public class CollisionBody extends Entity{
 
     protected final Vector2f _position;                     // position
     public float collisionRadius;
-    public boolean trigger;
+    public boolean collisionTrigger;
+    public boolean collisionEnable =true;
 
     public CollisionBody(Vector2f initPosition, float collisionRadius, boolean initTrigger){
         _position=initPosition;
         this.collisionRadius =collisionRadius;
-        trigger =initTrigger;
+        collisionTrigger =initTrigger;
     }
 
     /**
@@ -52,14 +53,15 @@ public class CollisionBody extends Entity{
      * @param other other collision body
      */
     public void doCollision(CollisionBody other){
+        if(!collisionEnable || !other.collisionEnable)return;
         Vector2f diff = other.getPosition().sub(getPosition());
         float distance = diff.magn();
 
         if(distance<(collisionRadius +other.collisionRadius)){
             // trigger gestion
-            if(trigger || other.trigger){
-                if(trigger)onTrigger(other);
-                if(other.trigger)other.onTrigger(this);
+            if(collisionTrigger || other.collisionTrigger){
+                if(collisionTrigger)onTrigger(other);
+                if(other.collisionTrigger)other.onTrigger(this);
                 return;
             }
             diff.normilize();

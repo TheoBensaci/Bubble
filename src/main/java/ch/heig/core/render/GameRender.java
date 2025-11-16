@@ -21,6 +21,7 @@ import javax.swing.JPanel;
 
 import ch.heig.core.Entity;
 import ch.heig.core.Game;
+import ch.heig.entity.Arena;
 
 public class GameRender extends JPanel implements ActionListener {
 
@@ -107,6 +108,9 @@ public class GameRender extends JPanel implements ActionListener {
         super.paintComponent(g);
         _updateStart=System.nanoTime();
         drawBackground(g);
+
+        // draw arena
+        if(Arena.active)Arena.draw(g);
 
         // apply tranform, use to creat screen shake
         /*

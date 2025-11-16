@@ -300,6 +300,15 @@ public class Game extends Thread {
         }
     }
 
+
+    public void changeEntityGroup(Entity entity, int newGroup){
+        entity.setGroup(newGroup);
+
+        if(entity instanceof CollisionBody body){
+            _collisionSystem.updateBodyGroup(body);
+        }
+    }
+
     /**
      * Get the number of entity update every game update
      * @return

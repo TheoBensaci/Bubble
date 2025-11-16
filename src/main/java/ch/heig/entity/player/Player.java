@@ -130,11 +130,17 @@ public class Player extends CollisionBody implements IDrawable, IUpdatable {
 
         if(getGame().input.getNum0()){
             getGame().window.gameCanvas.actualGroupRender=0;
+            getGame().changeEntityGroup(this,0);
         }
 
         if(getGame().input.getNum1()){
             getGame().window.gameCanvas.actualGroupRender=1;
+            getGame().changeEntityGroup(this,1);
         }
+
+
+
+
 
 
         // define direction
@@ -228,10 +234,10 @@ public class Player extends CollisionBody implements IDrawable, IUpdatable {
             velo = (SPACE_MOVEMENT_SPEED+_addSpeed)*deltaTime;
         }
 
-        if(Arena.actualArena!=null){
+        if(Arena.active){
             // check disatnce to center
-            Vector2f diff = getPosition().sub(Arena.actualArena.getPosition());
-            if(diff.magn()>Arena.actualArena.radiuse){
+            Vector2f diff = getPosition().sub(Arena.getPosition());
+            if(diff.magn()>Arena.radiuse){
                 _direction=diff.normilize().mult(-1);
             }
         }
