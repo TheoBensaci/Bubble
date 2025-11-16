@@ -228,17 +228,17 @@ public class Player extends CollisionBody implements IDrawable, IUpdatable {
             velo = (SPACE_MOVEMENT_SPEED+_addSpeed)*deltaTime;
         }
 
-
-        if(_direction.isNull()){
-            return;
-        }
-
         if(Arena.actualArena!=null){
             // check disatnce to center
             Vector2f diff = getPosition().sub(Arena.actualArena.getPosition());
             if(diff.magn()>Arena.actualArena.radiuse){
                 _direction=diff.normilize().mult(-1);
             }
+        }
+
+
+        if(_direction.isNull()){
+            return;
         }
 
 

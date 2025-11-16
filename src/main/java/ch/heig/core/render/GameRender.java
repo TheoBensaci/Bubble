@@ -133,7 +133,7 @@ public class GameRender extends JPanel implements ActionListener {
             }
             _semaphore.release();
         } catch (InterruptedException e) {
-            System.out.println(e.toString());
+            throw new RuntimeException(e);
         }
         g.setColor(Color.ORANGE);
         float a = (float)(System.nanoTime()-_updateStart)/1000000;

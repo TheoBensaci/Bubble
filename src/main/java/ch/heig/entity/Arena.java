@@ -30,6 +30,7 @@ public class Arena extends Entity implements IDrawable {
 
     @Override
     public void draw(Graphics g) {
+
         g.setColor(Color.WHITE);
         ((Graphics2D) g).setStroke(new BasicStroke(3));
         g.drawOval((int)(_position.x- radiuse),(int)(_position.y- radiuse),(int) radiuse *2,(int) radiuse *2);
@@ -37,7 +38,7 @@ public class Arena extends Entity implements IDrawable {
 
     @Override
     public int getLayer() {
-        return -1;
+        return 0;
     }
 
 

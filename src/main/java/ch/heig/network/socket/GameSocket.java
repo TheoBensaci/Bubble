@@ -50,6 +50,7 @@ public class GameSocket extends Thread {
         try {
             _addr= InetAddress.getByName(_hostname);
         }  catch (UnknownHostException e) {
+            System.out.println("UNKOW ADDRESS");
             _addr=null;
         }
     }

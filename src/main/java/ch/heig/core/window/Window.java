@@ -19,7 +19,7 @@ public class Window extends JFrame {
     public GameRender gameCanvas;
     private boolean _close=false;
     public final Game game;
-    private JPanel _panel = new JPanel( );
+    private JLayeredPane _panel = new JLayeredPane( );
 
 
     public Window(Game game, String title){
@@ -27,11 +27,16 @@ public class Window extends JFrame {
 
         this.game=game;
 
+
         _panel.setLayout(new GridBagLayout());
+
+        GridBagConstraints c = new GridBagConstraints();
 
         // create a empty canvas
         gameCanvas = new GameRender(this.game);
 
+        c.gridx=1;
+        c.gridy=0;
         _panel.add(gameCanvas);
 
         add(_panel);

@@ -13,6 +13,7 @@ import java.io.InputStreamReader;
 import ch.heig.cli.ServerCliUtils;
 import ch.heig.core.render.GameRender;
 import ch.heig.core.utils.Vector2f;
+import ch.heig.entity.Arena;
 import ch.heig.network.coreVariant.ServerGame;
 import ch.heig.entity.SpaceBubble;
 import ch.heig.entity.TestNetworkEntity;
@@ -31,6 +32,7 @@ public class ServerMain {
         gameServer.createEntity(new TestNetworkEntity(new Vector2f(300,300),20));
 
         gameServer.createEntity(new SpaceBubble(new Vector2f(GameRender.WIDTH/2,GameRender.HEIGHT/2),150));
+        gameServer.createEntity(new Arena(new Vector2f(GameRender.WIDTH/2,GameRender.HEIGHT/2),400),-10);
 
 
 
