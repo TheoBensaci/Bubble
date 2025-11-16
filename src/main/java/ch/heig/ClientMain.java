@@ -7,17 +7,11 @@
 package ch.heig;
 
 
-import ch.heig.game.coreVariant.ClientGame;
-import ch.heig.network.GameSocket;
-import ch.heig.network.LoginSocket;
-import ch.heig.network.packet.GameStatePacket;
-import ch.heig.network.packet.Packet;
-import ch.heig.network.packet.PacketType;
-import ch.heig.network.packet.LoginPacket;
+import ch.heig.network.coreVariant.ClientGame;
+import ch.heig.network.socket.GameSocket;
+import ch.heig.network.socket.LoginSocket;
 
-import java.io.IOException;
 import java.net.*;
-import java.util.Random;
 
 
 public class ClientMain {
@@ -37,7 +31,17 @@ public class ClientMain {
 
         ClientGame game = new ClientGame(loginSocket.login());
         game.start();
-        game.setGameSocket(new GameSocket("localhost",8000,8001));
+        game.setGameSocket(new GameSocket("localhost",8000,port));
+
+
+        port=7999;
+        hostPort = 8000;
+
+        loginSocket=new LoginSocket(hostName,hostPort,port);
+
+        ClientGame game2 = new ClientGame(loginSocket.login());
+        game2.start();
+        game2.setGameSocket(new GameSocket("localhost",8000,port));
 
 
         try {

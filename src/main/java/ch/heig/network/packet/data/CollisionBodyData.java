@@ -1,7 +1,7 @@
 package ch.heig.network.packet.data;
 
-import ch.heig.game.core.collision.CollisionBody;
-import ch.heig.game.core.utils.Vector2f;
+import ch.heig.core.collision.CollisionBody;
+import ch.heig.core.utils.Vector2f;
 
 public class CollisionBodyData extends EntityData {
     public float positionX=0;
