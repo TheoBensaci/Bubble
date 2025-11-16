@@ -9,10 +9,10 @@ package ch.heig.network.packet;
 import java.util.Arrays;
 
 import ch.heig.network.packet.data.EntityData;
-import ch.heig.network.packet.data.PacketData;
 
 public class GameStatePacket extends Packet{
     public static final int PACKET_MAX_SIZE=3000;
+    public int number=0;
     public final EntityData[] data;
 
     public GameStatePacket(EntityData ... data){

@@ -8,10 +8,11 @@ package ch.heig.network;
 
 import java.net.InetAddress;
 
-import ch.heig.game.entity.ServerPlayer;
+import ch.heig.entity.player.ServerPlayer;
 
 public class ClientData {
     public ServerPlayer entity;
     public InetAddress address;
     public int port;
+    public float lastUpdateClock=0;
 }

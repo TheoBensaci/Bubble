@@ -7,24 +7,21 @@
 package ch.heig;
 
 
-import ch.heig.game.coreVariant.ClientGame;
-import ch.heig.network.GameSocket;
-import ch.heig.network.LoginSocket;
-import ch.heig.network.packet.GameStatePacket;
-import ch.heig.network.packet.Packet;
-import ch.heig.network.packet.PacketType;
+import ch.heig.core.render.GameRender;
+import ch.heig.core.utils.Vector2f;
+import ch.heig.entity.Arena;
+import ch.heig.network.coreVariant.ClientGame;
 import ch.heig.network.packet.LoginPacket;
+import ch.heig.network.socket.GameSocket;
+import ch.heig.network.socket.LoginSocket;
 
-import java.io.IOException;
 import java.net.*;
-import java.util.Random;
 
 
 public class ClientMain {
     public static void main(String[] args) {
 
         InetAddress hostName ;
-
         try{
             hostName = InetAddress.getByName("localhost");
         } catch (UnknownHostException e) {
@@ -34,10 +31,21 @@ public class ClientMain {
         int hostPort = 8000;
 
         LoginSocket loginSocket=new LoginSocket(hostName,hostPort,port);
-
         ClientGame game = new ClientGame(loginSocket.login());
         game.start();
         game.setGameSocket(new GameSocket("localhost",8000,8001));
+        game.createEntity(new Arena(new Vector2f(GameRender.WIDTH/2,GameRender.HEIGHT/2),400),100);
+
+        /*
+        port=7999;
+        hostPort = 8000;
+
+        loginSocket=new LoginSocket(hostName,hostPort,port);
+
+        ClientGame game2 = new ClientGame(loginSocket.login());
+        game2.start();
+        game2.setGameSocket(new GameSocket("localhost",8000,port));
+        game2.createEntity(new Arena(new Vector2f(GameRender.WIDTH/2,GameRender.HEIGHT/2),400));*/
 
 
         try {

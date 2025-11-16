@@ -6,14 +6,13 @@
 
 package ch.heig;
 
-import ch.heig.game.core.Game;
-import ch.heig.game.core.render.GameRender;
-import ch.heig.game.core.utils.Vector2f;
-import ch.heig.game.entity.Player;
-import ch.heig.game.entity.SpaceBubble;
-import ch.heig.game.entity.TestNetworkEntity;
-import ch.heig.network.packet.LoginPacket;
-import ch.heig.network.packet.Packet;
+import ch.heig.core.Game;
+import ch.heig.core.render.GameRender;
+import ch.heig.core.utils.Vector2f;
+import ch.heig.entity.Arena;
+import ch.heig.entity.player.Player;
+import ch.heig.entity.SpaceBubble;
+import ch.heig.entity.TestNetworkEntity;
 
 public class LocalMain {
     public static void main(String[] args) {
@@ -26,6 +25,7 @@ public class LocalMain {
         game.createEntity(new SpaceBubble(new Vector2f(GameRender.WIDTH/2,GameRender.HEIGHT/2+200),50));
         game.createEntity(new SpaceBubble(new Vector2f(GameRender.WIDTH/2,GameRender.HEIGHT/2-200),50));
         game.createEntity(new TestNetworkEntity(new Vector2f(GameRender.WIDTH/2+200,GameRender.HEIGHT/2+200),30));
+        game.createEntity(new Arena(new Vector2f(GameRender.WIDTH/2,GameRender.HEIGHT/2),400));
 
         try {
             game.join();
