@@ -19,8 +19,6 @@ public class Window extends JFrame {
     public GameRender gameCanvas;
     private boolean _close=false;
     public final Game game;
-    private JLayeredPane _panel = new JLayeredPane( );
-
 
     public Window(Game game, String title){
         super(title);
@@ -28,18 +26,13 @@ public class Window extends JFrame {
         this.game=game;
 
 
-        _panel.setLayout(new GridBagLayout());
-
-        GridBagConstraints c = new GridBagConstraints();
 
         // create a empty canvas
         gameCanvas = new GameRender(this.game);
 
-        c.gridx=1;
-        c.gridy=0;
-        _panel.add(gameCanvas);
+        add(gameCanvas);
 
-        add(_panel);
+
 
         // create input
         game.input=new Input(game);
@@ -48,14 +41,14 @@ public class Window extends JFrame {
         addKeyListener(game.input);
         addMouseListener(game.input);
         addWindowStateListener(e -> {
-            resizeGameCanavas(e.getComponent().getWidth(),e.getComponent().getHeight());
+            resizeGameCanavas(getContentPane().getSize().width,getContentPane().getSize().height);
         });
 
         addComponentListener(new ComponentListener()
         {
             @Override
             public void componentResized(ComponentEvent e) {
-                resizeGameCanavas(e.getComponent().getWidth(),e.getComponent().getHeight());
+                resizeGameCanavas(getContentPane().getSize().width,getContentPane().getSize().height);
             }
 
             @Override
@@ -94,7 +87,6 @@ public class Window extends JFrame {
      * @param newWindowHeight new window height
      */
     private void resizeGameCanavas(int newWindowWidth, int newWindowHeight){
-        int s = Math.min(newWindowWidth,newWindowHeight)-10;
-        gameCanvas.resizeGameRender(s,s);
+        gameCanvas.resizeGameRender(newWindowWidth,newWindowHeight);
     }
 }

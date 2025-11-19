@@ -15,6 +15,7 @@ public class Arena {
     public static void draw(Graphics g) {
         g.setColor(Color.WHITE);
         ((Graphics2D) g).setStroke(new BasicStroke(3));
+        g.fillRect((int)(position.x- 5),(int)(position.x- 5),10,10);
         g.drawOval((int)(position.x- radiuse),(int)(position.y- radiuse),(int) radiuse *2,(int) radiuse *2);
     }
 
