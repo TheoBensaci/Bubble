@@ -15,6 +15,7 @@ import ch.heig.core.utils.DebugUtils;
 import ch.heig.core.utils.Vector2f;
 import ch.heig.entity.Arena;
 import ch.heig.entity.SpaceBubble;
+import ch.heig.entity.bullet.Bullet;
 
 import java.awt.*;
 import java.awt.geom.AffineTransform;
@@ -52,6 +53,7 @@ public class Player extends CollisionBody implements IDrawable, IUpdatable {
     protected boolean _hasDash=false;
     protected boolean _requestDash=false;
     protected boolean _hasDebug=false;
+    protected boolean _onShoot=false;
 
 
 
@@ -125,6 +127,21 @@ public class Player extends CollisionBody implements IDrawable, IUpdatable {
         else if(getGame().input.getC()){
             getGame().debug=(!getGame().debug);
             _hasDebug=true;
+        }
+
+
+        if(_onShoot){
+            _onShoot=getGame().input.getMouseLeft();
+        }
+        else{
+            _onShoot=getGame().input.getMouseLeft();
+            if(_onShoot) {
+                getGame().createEntity(
+                        new Bullet(_position.copy(), 10, false)
+                                .setInitSpaceBubble(_actualBubble)
+                                .setVelocity(1, _rotation)
+                );
+            }
         }
 
 
@@ -225,7 +242,7 @@ public class Player extends CollisionBody implements IDrawable, IUpdatable {
                 if(diff<=0){
                     velo=0;
                     _position.add(
-                            getPosition().sub(_actualBubble.getPosition()).normilize().mult(-1*SpaceBubble.RADIUS_DECADE*deltaTime)
+                            getPosition().sub(_actualBubble.getPosition()).normilize().mult(-1*_actualBubble.getDecade()*deltaTime)
                     );
                 }
             }
@@ -369,6 +386,6 @@ public class Player extends CollisionBody implements IDrawable, IUpdatable {
 
     @Override
     public int getLayer() {
-        return 1;
+        return 2;
     }
 }

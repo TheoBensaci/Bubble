@@ -30,8 +30,13 @@ public class SpaceBubble extends CollisionBody implements IDrawable, IUpdatable,
 
     private final float _maxRadiuse;
 
+    private float _actualDecade=0;
 
     private boolean _hasPlayer=false;
+
+    private boolean _isActive=true;
+
+    private boolean _receveDamage=false;
 
     public SpaceBubble(Vector2f initPosition, float radius) {
         super(initPosition, radius, true);
@@ -87,8 +92,11 @@ public class SpaceBubble extends CollisionBody implements IDrawable, IUpdatable,
 
         if(!getGame().isServer())return;
 
-        if(_hasPlayer && collisionRadius>0){
-            collisionRadius-=RADIUS_DECADE*deltaTime;
+        if((_hasPlayer || _receveDamage)){
+            applyDecade(deltaTime);
+        }
+        else{
+            _actualDecade=0;
         }
 
         if(!_hasPlayer){
@@ -109,6 +117,33 @@ public class SpaceBubble extends CollisionBody implements IDrawable, IUpdatable,
     @Override
     public EntityData getData() {
         return new Data(this);
+    }
+
+
+    public float getDecade(){
+        return _actualDecade;
+    }
+
+    public void damage(){
+        _actualDecade=RADIUS_DECADE*1000;
+        _receveDamage=true;
+    }
+
+    private void applyDecade(float deltaTime){
+        if(collisionRadius==0)return;
+        applyDamage(_actualDecade*deltaTime);
+        _actualDecade=RADIUS_DECADE;
+        collisionRadius=(collisionRadius<0)?0:collisionRadius;
+    }
+
+    private void applyDamage(float amount){
+        if(collisionRadius==0)return;
+        collisionRadius-=amount;
+        collisionRadius=(collisionRadius<0)?0:collisionRadius;
+    }
+
+    public boolean isActive(){
+        return _isActive;
     }
 
 

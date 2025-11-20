@@ -27,8 +27,8 @@ public class LocalMain {
         game.createEntity(new TestNetworkEntity(new Vector2f(GameRender.WIDTH/2+200,GameRender.HEIGHT/2+200),30));
 
         // set arenna
-        Arena.position.set(GameRender.WIDTH/2,GameRender.HEIGHT/2);
-        Arena.radiuse=400f;
+        Arena.position.set((float)GameRender.WIDTH/2,(float)GameRender.HEIGHT/2);
+        Arena.radiuse=375f;
 
         try {
             game.join();

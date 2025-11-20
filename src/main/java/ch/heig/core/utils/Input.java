@@ -162,9 +162,14 @@ public class Input implements KeyListener, MouseListener {
         p.x-= q.x;
         p.y-= q.y;
 
+        Vector2f offset=r.getRenderOffset();
+        p.x-=(int)(offset.x);
+        p.y-=(int)(offset.y);
+
         // correct the point to the right scaling
         p.x= (int) (p.x/r.getRenderScale());
         p.y= (int) (p.y/r.getRenderScale());
+
 
         return p;
     }

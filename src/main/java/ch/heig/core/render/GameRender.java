@@ -21,6 +21,7 @@ import javax.swing.JPanel;
 
 import ch.heig.core.Entity;
 import ch.heig.core.Game;
+import ch.heig.core.utils.Vector2f;
 import ch.heig.entity.Arena;
 
 public class GameRender extends JPanel implements ActionListener {
@@ -43,6 +44,7 @@ public class GameRender extends JPanel implements ActionListener {
     public int actualWidth=WIDTH;                                           // actual render width
     public int actualHeight=HEIGHT;                                         // actual render height
     private float _renderScale=1f;                                          // actual render scale
+    private Vector2f _renderOffset=new Vector2f(0,0);
 
     private long _updateStart;                                              // last render update time, use to monitor render perofmance
 
@@ -71,7 +73,14 @@ public class GameRender extends JPanel implements ActionListener {
     public void resizeGameRender(int targetWidth, int targetHeight){
         actualWidth=targetWidth;
         actualHeight=targetHeight;
-        _renderScale= (float) actualWidth /WIDTH;
+        if(targetWidth>targetHeight){
+            _renderScale= (float) (actualHeight)/HEIGHT;
+            _renderOffset.set((actualWidth-WIDTH*_renderScale)/2,0);
+        }
+        else{
+            _renderScale= (float) (actualWidth)/WIDTH;
+            _renderOffset.set(0,(actualHeight-HEIGHT*_renderScale)/2);
+        }
     }
 
     @Override
@@ -97,6 +106,10 @@ public class GameRender extends JPanel implements ActionListener {
         return _renderScale;
     }
 
+    public Vector2f getRenderOffset(){
+        return _renderOffset.copy();
+    }
+
 
     @Override
     public void actionPerformed(ActionEvent e) {
@@ -109,9 +122,6 @@ public class GameRender extends JPanel implements ActionListener {
         _updateStart=System.nanoTime();
         drawBackground(g);
 
-        // draw arena
-        if(Arena.active)Arena.draw(g);
-
         // apply tranform, use to creat screen shake
         /*
         AffineTransform at = new AffineTransform();
@@ -122,9 +132,12 @@ public class GameRender extends JPanel implements ActionListener {
 
         AffineTransform renderTransform = new AffineTransform();
         //renderTransform.rotate(Math.PI/1,WIDTH/2,HEIGHT/2);
-        renderTransform.translate(0, 0);
+        renderTransform.translate(_renderOffset.x, _renderOffset.y);
         renderTransform.scale(_renderScale,_renderScale);
         ((Graphics2D)g).transform(renderTransform);
+
+        // draw arena
+        if(Arena.active)Arena.draw(g);
 
 
         try {
@@ -174,7 +187,7 @@ public class GameRender extends JPanel implements ActionListener {
 
 
 
-    // -------------- DEFAULT GRAPHIC --------------
+    // #region DEFAULT GRAPHIC
 
     /**
      * Draw a background color
@@ -184,6 +197,10 @@ public class GameRender extends JPanel implements ActionListener {
         g.setColor(backgroundColor);
         g.fillRect(0,0,actualWidth+10,actualHeight+10);
     }
+
+    //#endregion
+
+
 
     /**
      * Register a drawable
@@ -221,9 +238,10 @@ public class GameRender extends JPanel implements ActionListener {
         if(_drawables.getLast().getLayer()>drawable.getLayer()){
             try {
                 _semaphore.acquire();
-                for (int i = _drawables.size()-1; i >= 0; i--) {
-                    if(_drawables.get(i).getLayer()<drawable.getLayer()){
+                for (int i = _drawables.size()-1; i > 0; i--) {
+                    if(_drawables.get(i).getLayer()>drawable.getLayer()){
                         _drawables.add(i,drawable);
+                        _semaphore.release();
                         return;
                     }
                 }
@@ -237,7 +255,7 @@ public class GameRender extends JPanel implements ActionListener {
         }
         try {
             _semaphore.acquire();
-            _drawables.add(drawable);
+            _drawables.addLast(drawable);
             _semaphore.release();
         } catch (InterruptedException e) {
             throw new RuntimeException(e);
