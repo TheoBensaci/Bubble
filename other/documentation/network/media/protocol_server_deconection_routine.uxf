@@ -1,0 +1,18 @@
+<diagram program="umletino" version="15.1"><zoom_level>7</zoom_level><help_text></help_text><element><id>UMLGeneric</id><coordinates><x>210</x><y>0</y><w>70</w><h>21</h></coordinates><panel_attributes>_Client_</panel_attributes><additional_attributes></additional_attributes></element><element><id>Relation</id><coordinates><x>238</x><y>14</y><w>21</w><h>259</h></coordinates><panel_attributes>lt=.</panel_attributes><additional_attributes>10;10;10;350</additional_attributes></element><element><id>Relation</id><coordinates><x>420</x><y>14</y><w>21</w><h>259</h></coordinates><panel_attributes>lt=.</panel_attributes><additional_attributes>10;10;10;350</additional_attributes></element><element><id>UMLGeneric</id><coordinates><x>392</x><y>0</y><w>70</w><h>21</h></coordinates><panel_attributes>_Server_</panel_attributes><additional_attributes></additional_attributes></element><element><id>UMLGeneric</id><coordinates><x>392</x><y>259</y><w>70</w><h>21</h></coordinates><panel_attributes>_Server_</panel_attributes><additional_attributes></additional_attributes></element><element><id>UMLGeneric</id><coordinates><x>210</x><y>259</y><w>70</w><h>21</h></coordinates><panel_attributes>_Client_</panel_attributes><additional_attributes></additional_attributes></element><element><id>Relation</id><coordinates><x>399</x><y>28</y><w>203</w><h>28</h></coordinates><panel_attributes></panel_attributes><additional_attributes>270;20;10;20</additional_attributes></element><element><id>Relation</id><coordinates><x>399</x><y>35</y><w>203</w><h>28</h></coordinates><panel_attributes></panel_attributes><additional_attributes>270;20;10;20</additional_attributes></element><element><id>UMLGeneric</id><coordinates><x>273</x><y>35</y><w>133</w><h>21</h></coordinates><panel_attributes>Deconection routine
+</panel_attributes><additional_attributes></additional_attributes></element><element><id>Relation</id><coordinates><x>84</x><y>35</y><w>203</w><h>28</h></coordinates><panel_attributes></panel_attributes><additional_attributes>270;20;10;20</additional_attributes></element><element><id>Relation</id><coordinates><x>84</x><y>28</y><w>203</w><h>28</h></coordinates><panel_attributes></panel_attributes><additional_attributes>270;20;10;20</additional_attributes></element><element><id>Relation</id><coordinates><x>420</x><y>98</y><w>140</w><h>49</h></coordinates><panel_attributes>lt=&lt;&lt;-
+*(2)*
+Destroy the player entity
+on server side</panel_attributes><additional_attributes>10;50;40;50;40;10;10;10</additional_attributes></element><element><id>Relation</id><coordinates><x>238</x><y>63</y><w>203</w><h>42</h></coordinates><panel_attributes>*(1)*
+lt=-&gt;&gt;
+
+Send kick packet</panel_attributes><additional_attributes>270;20;10;20</additional_attributes></element><element><id>Relation</id><coordinates><x>420</x><y>140</y><w>133</w><h>49</h></coordinates><panel_attributes>lt=&lt;&lt;-
+*(3)*
+Remove the client form
+the client list</panel_attributes><additional_attributes>10;50;40;50;40;10;10;10</additional_attributes></element><element><id>Relation</id><coordinates><x>154</x><y>154</y><w>105</w><h>91</h></coordinates><panel_attributes>lt=&lt;&lt;-
+*(4)*
+Close the client</panel_attributes><additional_attributes>130;110;10;110;10;10;130;10</additional_attributes></element><element><id>UMLNote</id><coordinates><x>266</x><y>105</y><w>147</w><h>70</h></coordinates><panel_attributes>This packet is send once
+If it miss, the player will no longer
+recieve game state update 
+which will be catch by the time out
+and there do the 
+client deconnection routine</panel_attributes><additional_attributes></additional_attributes></element></diagram>
