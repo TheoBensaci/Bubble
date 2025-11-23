@@ -4,8 +4,8 @@ import ch.heig.core.IUpdatable;
 import ch.heig.core.collision.CollisionBody;
 import ch.heig.core.render.IDrawable;
 import ch.heig.core.utils.Vector2f;
-import ch.heig.entity.Arena;
-import ch.heig.entity.SpaceBubble;
+import ch.heig.other.Arena;
+import ch.heig.entity.SpaceBubble.SpaceBubble;
 import ch.heig.entity.player.Player;
 import ch.heig.network.networkHandler.INetworkReceiverEntity;
 import ch.heig.network.networkHandler.INetworkSenderEntity;
@@ -73,7 +73,7 @@ public class Bullet extends CollisionBody implements IUpdatable,IDrawable,INetwo
         // debug info
         if(getGame().debug){
             g.setColor(Color.magenta);
-            g.fillOval((int)(_position.x- collisionRadius),(int)(_position.y- collisionRadius),(int) collisionRadius *2,(int) collisionRadius *2);
+            g.fillOval((int)(p_position.x- collisionRadius),(int)(p_position.y- collisionRadius),(int) collisionRadius *2,(int) collisionRadius *2);
         }
 
         BufferedImage img =new BufferedImage(
@@ -92,7 +92,7 @@ public class Bullet extends CollisionBody implements IUpdatable,IDrawable,INetwo
         g2.fillOval(0,0,(int)(collisionRadius*1.5f),(int)(collisionRadius*2f));
         //g2.drawImage(_sprite,0,0,null);
         g2.dispose();
-        g.drawImage(img,(int)(_position.x-recenterOffset.x),(int)(_position.y-recenterOffset.y),null);
+        g.drawImage(img,(int)(p_position.x-recenterOffset.x),(int)(p_position.y-recenterOffset.y),null);
     }
 
     @Override
@@ -109,7 +109,7 @@ public class Bullet extends CollisionBody implements IUpdatable,IDrawable,INetwo
     public void update(float deltaTime) {
         if(!getGame().isServer())return;
 
-        _position.add(_velocity.copy().mult(deltaTime));
+        p_position.add(_velocity.copy().mult(deltaTime));
 
         if(Arena.active){
             // check disatnce to center
@@ -120,7 +120,7 @@ public class Bullet extends CollisionBody implements IUpdatable,IDrawable,INetwo
             }
         }
         else{
-            if(_position.magn()>1000){
+            if(p_position.magn()>1000){
                 getGame().destroyEntity(this);
             }
         }

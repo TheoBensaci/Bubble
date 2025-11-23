@@ -8,10 +8,8 @@ package ch.heig;
 
 
 import ch.heig.core.render.GameRender;
-import ch.heig.core.utils.Vector2f;
-import ch.heig.entity.Arena;
+import ch.heig.other.Arena;
 import ch.heig.network.coreVariant.ClientGame;
-import ch.heig.network.packet.LoginPacket;
 import ch.heig.network.socket.GameSocket;
 import ch.heig.network.socket.LoginSocket;
 

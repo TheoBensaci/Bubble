@@ -11,13 +11,13 @@ import ch.heig.core.utils.Vector2f;
 
 public class CollisionBody extends Entity{
 
-    protected final Vector2f _position;                     // position
+    protected final Vector2f p_position;                     // position
     public float collisionRadius;
     public boolean collisionTrigger;
     public boolean collisionEnable =true;
 
     public CollisionBody(Vector2f initPosition, float collisionRadius, boolean initTrigger){
-        _position=initPosition;
+        p_position =initPosition;
         this.collisionRadius =collisionRadius;
         collisionTrigger =initTrigger;
     }
@@ -27,7 +27,7 @@ public class CollisionBody extends Entity{
      * @return
      */
     public Vector2f getPosition(){
-        return _position.copy();
+        return p_position.copy();
     }
 
     /**
@@ -35,7 +35,7 @@ public class CollisionBody extends Entity{
      * @param position
      */
     public void setPosition(Vector2f position){
-        _position.set(position);
+        p_position.set(position);
     }
 
     /**
@@ -44,7 +44,7 @@ public class CollisionBody extends Entity{
      * @param y
      */
     public void setPosition(float x, float y){
-        _position.set(x,y);
+        p_position.set(x,y);
     }
 
     /**
@@ -67,8 +67,8 @@ public class CollisionBody extends Entity{
             diff.normilize();
             distance-= collisionRadius +other.collisionRadius;
             diff.mult(distance);
-            _position.add(diff);
-            other._position.sub(diff);
+            p_position.add(diff);
+            other.p_position.sub(diff);
         }
     }
 

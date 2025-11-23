@@ -163,7 +163,17 @@ public class Vector2f {
      * @return if this vector and the other vector are the same
      */
     public boolean isEqual(Vector2f vec){
-        return this.x== vec.x && this.y==vec.y;
+        return equal(this,vec);
+    }
+
+    /**
+     * Check if 2 vector are equal
+     * @param a vector a
+     * @param b vector b
+     * @return if this vector and the other vector are the same
+     */
+    public static boolean equal(Vector2f a,Vector2f b){
+        return a.x== b.x && a.y==b.y;
     }
 
 

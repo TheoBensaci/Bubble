@@ -44,13 +44,13 @@ public class ClientPlayer extends Player implements INetworkReceiverEntity {
 
         _clock+=delta;
 
-        if(lastDir!=null && _targetDir.isEqual(lastDir) && !_requestDash){
+        if(lastDir!=null && p_targetDir.isEqual(lastDir) && !p_requestDash){
             return;
         }
         if(lastDir==null)lastDir=new Vector2f(0,0);
 
 
-        lastDir.set(_targetDir);
+        lastDir.set(p_targetDir);
 
         ((ClientGame)getGame()).getGameSocket().send(createPacket());
     }
@@ -79,14 +79,14 @@ public class ClientPlayer extends Player implements INetworkReceiverEntity {
 
     private InputData createInputSnapshot(){
         InputData id = new InputData();
-        id.targetDirectionY=Math.round(_targetDir.y);
-        id.targetDirectionX=Math.round(_targetDir.x);
-        id.rotation=_rotation;
-        id.dash=_requestDash;
+        id.targetDirectionY=Math.round(p_targetDir.y);
+        id.targetDirectionX=Math.round(p_targetDir.x);
+        id.rotation= p_rotation;
+        id.dash= p_requestDash;
         id.delatTimeStart=_clock;
         id.number=_inputNumber;
-        id.positionX=_position.x;
-        id.positionY= _position.y;
+        id.positionX= p_position.x;
+        id.positionY= p_position.y;
         _inputNumber++;
         _clock=0;
 
@@ -124,9 +124,9 @@ public class ClientPlayer extends Player implements INetworkReceiverEntity {
     @Override
     public void applyData(PacketData data) {
         ServerPlayer.Data d = (ServerPlayer.Data)data;
-        _position.set(d.positionX,d.positionY);
-        _onDash=d.onDash;
-        this._ammo=d.amo;
-        this._numberDash=d.numberOfDash;
+        p_position.set(d.positionX,d.positionY);
+        p_onDash =d.onDash;
+        this.p_ammo =d.amo;
+        this.p_numberDash =d.numberOfDash;
     }
 }

@@ -210,7 +210,16 @@ public class Game extends Thread {
      * @return entity to create
      */
     public Entity createEntity(Entity e){
-        return createEntity(e,0);
+        return createEntity(e,0,0);
+    }
+
+    /**
+     * Create a new entity
+     * @param e entity to create
+     * @return entity to create
+     */
+    public Entity createEntity(Entity e, int group){
+        return createEntity(e,group,0);
     }
 
 
@@ -220,7 +229,7 @@ public class Game extends Thread {
      * @param forceId id imposed, if 0 -> generate a new id else set the entity with the force id
      * @return entity to create
      */
-    public Entity createEntity(Entity e, int forceId){
+    public Entity createEntity(Entity e, int group ,int forceId){
 
         try {
             _toBeCreateSemaphore.acquire();
@@ -229,7 +238,7 @@ public class Game extends Thread {
             if(e.getId()==0){
                 e.setId((forceId==0)?_idPool.pop():forceId);
             }
-
+            e.setGroup(group);
             _toBeCreate.add(e);
             _toBeCreateSemaphore.release();
         } catch (InterruptedException ex) {
