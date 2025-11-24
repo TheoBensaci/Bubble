@@ -63,11 +63,22 @@ public class ServerPlayer extends Player implements INetworkSenderEntity, INetwo
             inputDatas[0].delatTimeStart=0;
         }
 
+        // Faille safe for the bug i, apparently, can't resolve :[
+        if(inputDataHistroy.size()>inputDatas.length){
+            inputDataHistroy.clear();
+        }
 
+        boolean found = false;
         for (int i = inputDatas.length-1; i >=0 ; i--) {
             InputData id = inputDatas[i];
             if(id.number-1 != _lastInputNumber && !(id.number==Integer.MIN_VALUE && _lastInputNumber==Integer.MAX_VALUE))continue;
             addInput(id);
+            found=true;
+        }
+
+        if(!found){
+            // TODO : resync
+            inputDataHistroy.clear();
         }
 
 
@@ -86,9 +97,9 @@ public class ServerPlayer extends Player implements INetworkSenderEntity, INetwo
     }
 
     private void applyInput(InputData id){
-        _targetDir.set(id.targetDirectionX,id.targetDirectionY).normilize();
-        _rotation=id.rotation;
-        _requestDash=id.dash;
+        p_targetDir.set(id.targetDirectionX,id.targetDirectionY).normilize();
+        p_rotation =id.rotation;
+        p_requestDash =id.dash;
         _currentInput=id.number;
         _clock=0;
         Vector2f targetPos=new Vector2f(id.positionX,id.positionY);
@@ -110,24 +121,24 @@ public class ServerPlayer extends Player implements INetworkSenderEntity, INetwo
 
         String[] debugInfo=new String[]{
                 "Username : " + username,
-                "Position : " + _position,
-                "request dash : " + _requestDash,
+                "Position : " + p_position,
+                "request dash : " + p_requestDash,
                 "Input history length : " + inputDataHistroy.size(),
                 "Current input : "+_currentInput,
                 "T : "+(float)(t)/1000000
         };
 
-        DebugUtils.drawEntityDebugInfo(g,_position.copy(),new Vector2f(0, 50),debugInfo);
+        DebugUtils.drawEntityDebugInfo(g, p_position.copy(),new Vector2f(0, 50),debugInfo);
     }
 
     @Override
     public void applyData(PacketData data) {
         ServerPlayer.Data d = (ServerPlayer.Data)data;
-        _position.set(d.positionX,d.positionY);
-        _onDash=d.onDash;
-        this._ammo=d.amo;
-        this._numberDash=d.numberOfDash;
-        this._rotation=d.rotation;
+        p_position.set(d.positionX,d.positionY);
+        p_onDash =d.onDash;
+        this.p_ammo =d.amo;
+        this.p_numberDash =d.numberOfDash;
+        this.p_rotation =d.rotation;
     }
 
     public static class Data extends CollisionBodyData {
@@ -141,13 +152,13 @@ public class ServerPlayer extends Player implements INetworkSenderEntity, INetwo
         public Data(ServerPlayer ent) {
             super(ent);
             type = PacketDataType.Player;
-            this.rotation = ent._rotation;
+            this.rotation = ent.p_rotation;
             this.isAlive = true;
-            this.onDash = ent._onDash;
-            this.amo = ent._ammo;
-            this.numberOfDash = ent._numberDash;
+            this.onDash = ent.p_onDash;
+            this.amo = ent.p_ammo;
+            this.numberOfDash = ent.p_numberDash;
             this.username=ent.username;
-            this.rotation=ent._rotation;
+            this.rotation=ent.p_rotation;
         }
     }
 

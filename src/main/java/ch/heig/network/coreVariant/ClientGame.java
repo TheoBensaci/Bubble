@@ -17,7 +17,7 @@ public class ClientGame extends NetworkGame {
     public ClientGame(LoginPacket loginPacket, String title) {
         super(true, title,new ClientNetworkHandlerSystem());
         this.username=loginPacket.username;
-        this.player = (ClientPlayer) createEntity(new ClientPlayer(1,new Vector2f(0,0),true,this.username),loginPacket.id);
+        this.player = (ClientPlayer) createEntity(new ClientPlayer(1,new Vector2f(0,0),true,this.username),0,loginPacket.id);
 
     }
 

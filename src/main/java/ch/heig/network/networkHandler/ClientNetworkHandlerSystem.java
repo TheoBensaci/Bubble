@@ -11,7 +11,7 @@ import ch.heig.core.utils.Vector2f;
 import ch.heig.entity.player.ClientPlayer;
 import ch.heig.entity.player.ServerPlayer;
 import ch.heig.network.coreVariant.ClientGame;
-import ch.heig.entity.SpaceBubble;
+import ch.heig.entity.SpaceBubble.SpaceBubble;
 import ch.heig.entity.TestNetworkEntity;
 import ch.heig.network.socket.GameSocket;
 import ch.heig.network.packet.GameStatePacket;
@@ -121,7 +121,7 @@ public class ClientNetworkHandlerSystem extends NetworkHandlerSystem{
             default -> new Entity();
         };
 
-        _serverOwnedEntity.add(_game.createEntity(ent,entityData.id));
+        _serverOwnedEntity.add(_game.createEntity(ent,0,entityData.id));
     }
 
 

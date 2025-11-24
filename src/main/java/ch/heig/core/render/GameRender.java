@@ -22,11 +22,11 @@ import javax.swing.JPanel;
 import ch.heig.core.Entity;
 import ch.heig.core.Game;
 import ch.heig.core.utils.Vector2f;
-import ch.heig.entity.Arena;
+import ch.heig.other.Arena;
 
 public class GameRender extends JPanel implements ActionListener {
 
-    public Color backgroundColor=new Color(0x16162a);                   // game render background colore
+    public static final Color BACKGROUND_COLOR=new Color(0x16162a);                   // game render background colore
 
     private final Semaphore _semaphore = new Semaphore(1);           // semphore use to protect the list of drawables
 
@@ -54,7 +54,6 @@ public class GameRender extends JPanel implements ActionListener {
     public GameRender(Game game){
         this.actualWidth=WIDTH;
         this.actualHeight=HEIGHT;
-        setBackground(new Color(0xff0055));
         setFocusable(false);
 
         this.game = game;
@@ -137,7 +136,7 @@ public class GameRender extends JPanel implements ActionListener {
         ((Graphics2D)g).transform(renderTransform);
 
         // draw arena
-        if(Arena.active)Arena.draw(g);
+        if(Arena.active)Arena.drawBackground(g);
 
 
         try {
@@ -152,6 +151,14 @@ public class GameRender extends JPanel implements ActionListener {
         } catch (InterruptedException e) {
             throw new RuntimeException(e);
         }
+
+        // arena outline
+        if(Arena.active)Arena.drawOutline(g);
+
+
+
+        // UI render
+
         g.setColor(Color.ORANGE);
         float a = (float)(System.nanoTime()-_updateStart)/1000000;
         g.drawString("Game engine delta Time : "+game.getDeltaTime()+"ms",10,40);
@@ -194,7 +201,7 @@ public class GameRender extends JPanel implements ActionListener {
      * @param g
      */
     private void drawBackground(Graphics g){
-        g.setColor(backgroundColor);
+        g.setColor(BACKGROUND_COLOR);
         g.fillRect(0,0,actualWidth+10,actualHeight+10);
     }
 
@@ -235,12 +242,12 @@ public class GameRender extends JPanel implements ActionListener {
             return;
         }
 
-        if(_drawables.getLast().getLayer()>drawable.getLayer()){
+        if(_drawables.getLast().getLayer()>=drawable.getLayer()){
             try {
                 _semaphore.acquire();
                 for (int i = _drawables.size()-1; i > 0; i--) {
                     if(_drawables.get(i).getLayer()>drawable.getLayer()){
-                        _drawables.add(i,drawable);
+                        _drawables.add(i-1,drawable);
                         _semaphore.release();
                         return;
                     }

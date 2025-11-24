@@ -10,15 +10,15 @@ import ch.heig.core.IUpdatable;
 import ch.heig.core.Tag;
 import ch.heig.core.collision.CollisionBody;
 import ch.heig.core.render.IDrawable;
+import ch.heig.core.render.SpriteRenderUtils;
 import ch.heig.core.ressourceManagement.RessourceManager;
 import ch.heig.core.utils.DebugUtils;
 import ch.heig.core.utils.Vector2f;
-import ch.heig.entity.Arena;
-import ch.heig.entity.SpaceBubble;
+import ch.heig.other.Arena;
+import ch.heig.entity.SpaceBubble.SpaceBubble;
 import ch.heig.entity.bullet.Bullet;
 
 import java.awt.*;
-import java.awt.geom.AffineTransform;
 import java.awt.image.BufferedImage;
 import java.awt.image.BufferedImageOp;
 import java.awt.image.RescaleOp;
@@ -33,27 +33,28 @@ public class Player extends CollisionBody implements IDrawable, IUpdatable {
 
     public final int playerNumber;
 
-    protected Vector2f _direction = new Vector2f(0,0);        // direction apply to the player
-    protected Vector2f _targetDir =new Vector2f(0,0);          // direction request by the player
-    protected double _rotation=0;
-    protected int _maxNumberDash=2;
-    protected int _maxAmmo=5;
-    protected int _numberDash=_maxNumberDash;
-    protected int _ammo=_maxAmmo;
-    protected float _addSpeed=0;
+    protected Vector2f p_direction = new Vector2f(0,0);        // direction apply to the player
+    protected Vector2f p_targetDir =new Vector2f(0,0);          // direction request by the player
+    protected double p_rotation =0;
+    protected int p_maxNumberDash =2;
+    protected int p_maxAmmo =5;
+    protected int p_numberDash = p_maxNumberDash;
+    protected int p_ammo = p_maxAmmo;
+    protected float p_addSpeed =0;
 
     // state
-    protected boolean _onDash=false;
-    protected boolean _inSpaceBubble=false;
+    protected boolean p_onDash =false;
+    protected boolean p_inSpaceBubble =false;
 
-    protected SpaceBubble _actualBubble;
+    protected SpaceBubble p_actualBubble;
+    private SpaceBubble _bufferActualBubble;
 
 
     // input handling
-    protected boolean _hasDash=false;
-    protected boolean _requestDash=false;
-    protected boolean _hasDebug=false;
-    protected boolean _onShoot=false;
+    protected boolean p_hasDash =false;
+    protected boolean p_requestDash =false;
+    protected boolean p_hasDebug =false;
+    protected boolean p_onShoot =false;
 
 
 
@@ -80,24 +81,24 @@ public class Player extends CollisionBody implements IDrawable, IUpdatable {
 
     //#region GET
     public Vector2f getDirection(){
-        return _direction.copy();
+        return p_direction.copy();
     }
 
 
     //#endregion
 
     public void setSpaceBubble(SpaceBubble bubble){
-        _actualBubble=bubble;
+        _bufferActualBubble=bubble;
     }
 
     //#region movmement
 
     protected void startDash(){
-        _maxGhostPosition.set(_position);
-        _position.add(_targetDir.copy().mult(DASH_DISTANCE));
-        _addSpeed=DASH_ADD_SPEED;
-        _onDash=true;
-        _direction.set(_targetDir);
+        _maxGhostPosition.set(p_position);
+        p_position.add(p_targetDir.copy().mult(DASH_DISTANCE));
+        p_addSpeed =DASH_ADD_SPEED;
+        p_onDash =true;
+        p_direction.set(p_targetDir);
     }
 
     //#endregion
@@ -108,39 +109,35 @@ public class Player extends CollisionBody implements IDrawable, IUpdatable {
         Point p = getGame().input.getMousePos();
         Vector2f a = getPosition().sub(new Vector2f(p.x,p.y));
 
-        _rotation=Math.acos(a.normilize().dot(new Vector2f(-1,0)));
-        _rotation*=(a.y<0)?1:-1;
+        p_rotation =Math.acos(a.normilize().dot(new Vector2f(-1,0)));
+        p_rotation *=(a.y<0)?1:-1;
 
         // input handling
-        if(_hasDash){
-            _hasDash=getGame().input.getMouseRight();
-            _requestDash=false;
+        if(p_hasDash){
+            p_hasDash =getGame().input.getMouseRight();
+            p_requestDash =false;
         }
         else{
-            _requestDash=getGame().input.getMouseRight();
-            _hasDash=_requestDash;
+            p_requestDash =getGame().input.getMouseRight();
+            p_hasDash = p_requestDash;
         }
 
-        if(_hasDebug){
-            _hasDebug=getGame().input.getC();
+        if(p_hasDebug){
+            p_hasDebug =getGame().input.getC();
         }
         else if(getGame().input.getC()){
             getGame().debug=(!getGame().debug);
-            _hasDebug=true;
+            p_hasDebug =true;
         }
 
 
-        if(_onShoot){
-            _onShoot=getGame().input.getMouseLeft();
+        if(p_onShoot){
+            p_onShoot =getGame().input.getMouseLeft();
         }
         else{
-            _onShoot=getGame().input.getMouseLeft();
-            if(_onShoot) {
-                getGame().createEntity(
-                        new Bullet(_position.copy(), 10, false)
-                                .setInitSpaceBubble(_actualBubble)
-                                .setVelocity(1, _rotation)
-                );
+            p_onShoot =getGame().input.getMouseLeft();
+            if(p_onShoot) {
+                createBullet(false);
             }
         }
 
@@ -154,10 +151,6 @@ public class Player extends CollisionBody implements IDrawable, IUpdatable {
             getGame().window.gameCanvas.actualGroupRender=1;
             getGame().changeEntityGroup(this,1);
         }
-
-
-
-
 
 
         // define direction
@@ -176,7 +169,7 @@ public class Player extends CollisionBody implements IDrawable, IUpdatable {
         if(getGame().input.getDown()){
             y++;
         }
-        _targetDir.set(x,y).normilize();
+        p_targetDir.set(x,y).normilize();
 
     }
 
@@ -190,85 +183,87 @@ public class Player extends CollisionBody implements IDrawable, IUpdatable {
     protected void stateUpdate(float deltaTime){
 
         // add speed / dash state update
-        if(_onDash){
-            _addSpeed-=DASH_ADD_SPEED_DECRESS*deltaTime;
-            if(_addSpeed<=0){
-                _addSpeed=0;
-                _onDash=false;
+        if(p_onDash){
+            p_addSpeed -=DASH_ADD_SPEED_DECRESS*deltaTime;
+            if(p_addSpeed <=0){
+                p_addSpeed =0;
+                p_onDash =false;
             }
         }
 
-        _inSpaceBubble=(_actualBubble!=null);
+        p_actualBubble =_bufferActualBubble;
+
+        p_inSpaceBubble =(p_actualBubble !=null);
     }
 
     private void ghostUpdate(float deltaTime){
         // update ghost position
         // (i know it's a visual and technicly it would be logical to put it on the draw update, but trust me)
-        _maxGhostPosition=Vector2f.lerp(_maxGhostPosition,_position,
-                0.03f/((_onDash)?10:1)*
+        _maxGhostPosition=Vector2f.lerp(_maxGhostPosition, p_position,
+                0.03f/((p_onDash)?10:1)*
                         deltaTime
         );
     }
 
     protected void movementUpdate(float deltaTime){
         // dash
-        if(_requestDash && !_targetDir.isNull()){
-            _requestDash=false;
+        if(p_requestDash && !p_targetDir.isNull()){
+            p_requestDash =false;
             startDash();
             return;
         }
 
-        float velo = (MOVEMENT_SPEED+_addSpeed)*deltaTime;
+        float velo = (MOVEMENT_SPEED+ p_addSpeed)*deltaTime;
 
 
         // Space Bubble
-        if(_inSpaceBubble){
-            _direction.set(_targetDir);
+        if(p_inSpaceBubble){
+            p_direction.set(p_targetDir);
 
-            if(!_onDash){
+            if(!p_onDash){
                 // get vector
-                Vector2f sbVec = getPosition().sub(_actualBubble.getPosition());
-                if(_targetDir.isNull()) {
+                Vector2f sbVec = getPosition().sub(p_actualBubble.getPosition());
+                if(p_targetDir.isNull()) {
                     sbVec.add(sbVec.copy().normilize().mult(collisionRadius));
                 }
                 else{
-                    sbVec.add(_direction.copy().mult(collisionRadius));
-                    sbVec.add(_direction.copy().mult(velo));
+                    sbVec.add(p_direction.copy().mult(collisionRadius));
+                    sbVec.add(p_direction.copy().mult(velo));
                 }
 
                 float m = sbVec.magn();
-                float diff = _actualBubble.collisionRadius-m;
+                float diff = p_actualBubble.collisionRadius-m;
 
                 if(diff<=0){
                     velo=0;
-                    _position.add(
-                            getPosition().sub(_actualBubble.getPosition()).normilize().mult(-1*_actualBubble.getDecade()*deltaTime)
+                    p_position.add(
+                            getPosition().sub(p_actualBubble.getPosition()).normilize().mult(-1* p_actualBubble.getDecade()*deltaTime)
                     );
                 }
             }
         }
         else{
-            velo = (SPACE_MOVEMENT_SPEED+_addSpeed)*deltaTime;
+            velo = (SPACE_MOVEMENT_SPEED+ p_addSpeed)*deltaTime;
         }
 
         if(Arena.active){
             // check disatnce to center
             Vector2f diff = getPosition().sub(Arena.getPosition());
             if(diff.magn()>Arena.radiuse){
-                _direction=diff.normilize().mult(-1);
+                p_direction =diff.normilize().mult(-1);
             }
         }
 
 
-        if(_direction.isNull()){
+        if(p_direction.isNull()){
             return;
         }
 
 
 
         // move the player normally
-        _position.add(
-                _direction.copy().mult(velo)
+        p_position.add(
+                p_direction.copy().mult(velo)
         );
 
     }
@@ -276,13 +271,26 @@ public class Player extends CollisionBody implements IDrawable, IUpdatable {
     protected void atUpdateEnd(float deltaTime){
 
         // rest the space bubble, use to manage collision without a enter / exit hook (i'm lazy)
-        _actualBubble=null;
+        _bufferActualBubble=null;
     }
 
 
 
     //#endregion
 
+
+    //#region Bullet
+
+    private void createBullet(boolean destroyOnContact){
+        getGame().createEntity(
+                new Bullet(p_position.copy(), destroyOnContact?15:10, destroyOnContact)
+                        .setInitSpaceBubble(p_actualBubble)
+                        .setVelocity(1, p_rotation)
+                , getGroup()
+        );
+    }
+
+    //#endregion
 
     @Override
     public void update(float deltaTime) {
@@ -300,34 +308,18 @@ public class Player extends CollisionBody implements IDrawable, IUpdatable {
         if(_sprite==null){
             return;
         }
-        int w = _sprite.getWidth();
-        int h = _sprite.getHeight();
-        Vector2f recenterOffset=new Vector2f((float) w /2, (float) h /2);
 
         // debug info
         if(getGame().debug){
             g.setColor(Color.magenta);
-            g.fillOval((int)(_position.x- collisionRadius),(int)(_position.y- collisionRadius),(int) collisionRadius *2,(int) collisionRadius *2);
+            g.fillOval((int)(p_position.x- collisionRadius),(int)(p_position.y- collisionRadius),(int) collisionRadius *2,(int) collisionRadius *2);
         }
 
-        BufferedImage img =new BufferedImage(
-                (int)(w*1.5f),
-                (int)(h*1.5f),
-                BufferedImage.TYPE_INT_ARGB
-        );
-
-
-        Graphics2D g2 = img.createGraphics();
-        AffineTransform at = new AffineTransform();
-        //at.rotate(2);
-        at.rotate(_rotation+(Math.PI/2), recenterOffset.x, recenterOffset.y);
-        g2.transform(at);
-        g2.drawImage(_sprite,0,0,null);
-
-        g2.dispose();
+        BufferedImage newSprite = SpriteRenderUtils.rotateSprite(_sprite, p_rotation +(Math.PI/2));
+        Vector2f recenterOffset=new Vector2f(newSprite.getWidth()/3f,newSprite.getHeight()/3f);
 
         // draw ghost
-        Vector2f diff = _position.copy().sub(_maxGhostPosition);
+        Vector2f diff = p_position.copy().sub(_maxGhostPosition);
         if(!diff.isNull()) {
             float step = diff.magn() / _NUMBER_OF_GHOST;
             diff.normilize();
@@ -336,10 +328,10 @@ public class Player extends CollisionBody implements IDrawable, IUpdatable {
                 Vector2f ghostPos = _maxGhostPosition.copy().add(diff.copy().mult(i * step));
 
                 // change ghost color
-                float f = (_onDash)?0.5f:0.2f;
+                float f = (p_onDash)?0.5f:0.2f;
                 float colorFactor =1f;
 
-                if(_onDash){
+                if(p_onDash){
                     colorFactor=0.5f+((float) i/_NUMBER_OF_GHOST);
                 }
                 float[] scales = {f*colorFactor, f*colorFactor, f, 0.3f};
@@ -348,10 +340,10 @@ public class Player extends CollisionBody implements IDrawable, IUpdatable {
 
 
                 // draw ghost
-                ((Graphics2D) g).drawImage(img, (BufferedImageOp) rop, (int)(ghostPos.x-recenterOffset.x), (int) (ghostPos.y-recenterOffset.y));
+                ((Graphics2D) g).drawImage(newSprite, (BufferedImageOp) rop, (int)(ghostPos.x-recenterOffset.x), (int) (ghostPos.y-recenterOffset.y));
             }
         }
-        g.drawImage(img,(int)(_position.x-recenterOffset.x),(int)(_position.y-recenterOffset.y),null);
+        g.drawImage(newSprite,(int)(p_position.x-recenterOffset.x),(int)(p_position.y-recenterOffset.y),null);
 
         // debug info
         if(getGame().debug){
@@ -360,27 +352,27 @@ public class Player extends CollisionBody implements IDrawable, IUpdatable {
 
             String[] debugInfo=new String[]{
                     "ID : "+getId(),
-                    "Position : " + _position,
-                    "Taregt direction : " + _targetDir,
-                    "Direction : " + _direction,
-                    "In Space buble : " + _inSpaceBubble,
-                    "On dash : " + _onDash
+                    "Position : " + p_position,
+                    "Taregt direction : " + p_targetDir,
+                    "Direction : " + p_direction,
+                    "In Space buble : " + p_inSpaceBubble,
+                    "On dash : " + p_onDash
             };
 
-            DebugUtils.drawEntityDebugInfo(g,_position.copy(),new Vector2f(0, 50),debugInfo);
+            DebugUtils.drawEntityDebugInfo(g, p_position.copy(),new Vector2f(0, 50),debugInfo);
 
 
             g.setColor(Color.GREEN);
-            g.fillOval((int)_position.x,(int)_position.y,(int)3,(int)3);
+            g.fillOval((int) p_position.x,(int) p_position.y,(int)3,(int)3);
             g.setColor(Color.cyan);
             g.fillOval((int)_maxGhostPosition.x,(int)_maxGhostPosition.y,(int)3,(int)3);
 
             // show aim line
-            Vector2f aimingVec = new Vector2f(1,0).rotate(_rotation).mult(40);
-            aimingVec.add(_position);
+            Vector2f aimingVec = new Vector2f(1,0).rotate(p_rotation).mult(40);
+            aimingVec.add(p_position);
             g.setColor(Color.CYAN);
             ((Graphics2D) g).setStroke(new BasicStroke(2));
-            g.drawLine((int)(_position.x),(int)(_position.y),(int)(aimingVec.x),(int)(aimingVec.y));
+            g.drawLine((int)(p_position.x),(int)(p_position.y),(int)(aimingVec.x),(int)(aimingVec.y));
         }
     }
 
