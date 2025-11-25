@@ -51,7 +51,13 @@ public class ServerCliUtils {
 
     public static void serverCommandMessage(){
         String[] commandList=new String[]{
-                "exit | close the server"
+                "players -> list all player currently in the server",
+                "quick [player username] -> send the exit command to a player and quick it out of the server",
+                "exit -> close the server, also send the exit commannd to all player",
+                "game",
+                "  Start -> start the game",
+                "  Stop -> interupte the game",
+                "  Score -> show the current score of the game"
         };
         System.out.println("Command list : ");
         for (String s : commandList){
@@ -63,5 +69,24 @@ public class ServerCliUtils {
         System.out.print("> ");
     }
 
+    // Additional CLI messages required by issue
+    public static void gameStartMessage(){
+        System.out.println("[SERVER] Game Start");
+    }
 
+    public static void gameStopMessage(){
+        System.out.println("[SERVER] Game Stop");
+    }
+
+    public static void gameScoreMessage(String info){
+        System.out.println("[SERVER] Score: "+info);
+    }
+
+    public static void playerKickedMessage(String username){
+        System.out.println("[SERVER] Player '"+username+"' has been kicked (exit sent)");
+    }
+
+    public static void playerWinRoundMessage(String username, int score){
+        System.out.println("[SERVER] Player '"+username+"' won a round (score="+score+")");
+    }
 }
