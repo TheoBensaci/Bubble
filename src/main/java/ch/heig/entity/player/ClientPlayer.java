@@ -9,6 +9,8 @@ package ch.heig.entity.player;
 import java.awt.*;
 import java.util.Arrays;
 
+import ch.heig.core.Entity;
+import ch.heig.entity.SpaceBubble.SpaceBubble;
 import ch.heig.network.networkHandler.INetworkReceiverEntity;
 import ch.heig.core.utils.Vector2f;
 import ch.heig.network.coreVariant.ClientGame;
@@ -23,6 +25,7 @@ public class ClientPlayer extends Player implements INetworkReceiverEntity {
     private float _clock=0;
     private int _inputNumber=0;
     private String _username;
+    private int _lastBubbleId=0;
 
     public ClientPlayer(int playerNumber, Vector2f initPosition, boolean mainClient, String username) {
         super(playerNumber, initPosition);
@@ -44,7 +47,7 @@ public class ClientPlayer extends Player implements INetworkReceiverEntity {
 
         _clock+=delta;
 
-        if(lastDir!=null && p_targetDir.isEqual(lastDir) && !p_requestDash){
+        if(lastDir!=null && p_targetDir.isEqual(lastDir) && !p_requestDash && !p_requestShoot){
             return;
         }
         if(lastDir==null)lastDir=new Vector2f(0,0);
@@ -87,6 +90,7 @@ public class ClientPlayer extends Player implements INetworkReceiverEntity {
         id.number=_inputNumber;
         id.positionX= p_position.x;
         id.positionY= p_position.y;
+        id.shoot=p_requestShoot;
         _inputNumber++;
         _clock=0;
 
@@ -128,5 +132,22 @@ public class ClientPlayer extends Player implements INetworkReceiverEntity {
         p_onDash =d.onDash;
         this.p_ammo =d.amo;
         this.p_numberDash =d.numberOfDash;
+
+        if(!_mainClient){
+            p_rotation=d.rotation;
+        }
+
+
+        // bubble effect, i know it's not the good way to do it, but, not time and i'm lazy and i have to many labo to do, so, speed run logic it's for now
+        if(d.actualBubbleId!=_lastBubbleId){
+            createBubblePartFromId((d.actualBubbleId==0)?_lastBubbleId:d.actualBubbleId);
+        }
+        _lastBubbleId=d.actualBubbleId;
+    }
+
+    private void createBubblePartFromId(int id){
+        Entity entity = getGame().getUpdatableEntity(id);
+        if(entity==null)return;
+        createBubblePart((SpaceBubble)entity);
     }
 }

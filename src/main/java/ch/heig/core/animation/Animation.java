@@ -10,6 +10,7 @@ public class Animation<E> {
     private int _currentKeyFrameIndex=0;
     private boolean _run=false;
 
+    @SafeVarargs
     public Animation(KeyFrame<E> ... keyFrames){
         this._keyframes=Arrays.copyOf(keyFrames,keyFrames.length);
     }
@@ -56,7 +57,7 @@ public class Animation<E> {
         KeyFrame<E> a = _keyframes[index];
         KeyFrame<E> b = _keyframes[index2];
 
-        float t =((time / 1000f)-a.timeStamp)/(b.timeStamp-a.timeStamp);
+        float t =(time-a.timeStamp)/(b.timeStamp-a.timeStamp);
 
         return betweenFrame(a.value, b.value,t);
     }

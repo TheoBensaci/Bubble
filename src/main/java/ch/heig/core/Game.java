@@ -247,6 +247,17 @@ public class Game extends Thread {
         return e;
     }
 
+    public Entity getUpdatableEntity(int id){
+        for( IUpdatable up : _updateables){
+            if(up instanceof Entity entity){
+                if(entity.getId()==id){
+                    return entity;
+                }
+            }
+        }
+        return null;
+    }
+
     /**
      * Destroy a entity
      * @param e entity to destroy

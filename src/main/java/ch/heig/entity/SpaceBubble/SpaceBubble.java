@@ -10,10 +10,12 @@ import java.awt.BasicStroke;
 import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
+import java.util.Random;
 
 import ch.heig.core.IUpdatable;
 import ch.heig.core.collision.CollisionBody;
 import ch.heig.entity.player.Player;
+import ch.heig.entity.simpleEffect.SimpleEffect;
 import ch.heig.network.networkHandler.INetworkReceiverEntity;
 import ch.heig.network.networkHandler.INetworkSenderEntity;
 import ch.heig.core.render.IDrawable;
@@ -27,6 +29,9 @@ public class SpaceBubble extends CollisionBody implements IDrawable, IUpdatable,
     public static final float PLAYER_COLLISION_MARGE=5f;
     public final static float RADIUS_DECADE=0.015f;
     public final static float RADIUS_REGENERATE=0.05f;
+    public final static float INACTIVE_RADIUS_REGENERATE=0.015f;
+    public final static float MIN_RADIUS=10f;
+    public final static float INACTIVE_TIME=1000f;
 
     private final float _maxRadiuse;
 
@@ -37,6 +42,8 @@ public class SpaceBubble extends CollisionBody implements IDrawable, IUpdatable,
     private boolean _isActive=true;
 
     private boolean _receveDamage=false;
+
+    private float _inActiveTimer=0f;
 
     private float _lastRadius=0;        // use to guess bubble hit by a bullet
 
@@ -51,16 +58,17 @@ public class SpaceBubble extends CollisionBody implements IDrawable, IUpdatable,
 
     @Override
     public void draw(Graphics g) {
-        g.setColor(Color.black);
+        g.setColor((_isActive)?Color.BLACK:new Color(0x11121B));
         g.fillOval((int)(p_position.x- collisionRadius),(int)(p_position.y- collisionRadius),(int) collisionRadius *2,(int) collisionRadius *2);
 
-        g.setColor(Color.WHITE);
+        g.setColor((_isActive)?Color.WHITE:Color.darkGray);
         ((Graphics2D) g).setStroke(new BasicStroke(3));
         g.drawOval((int)(p_position.x- collisionRadius),(int)(p_position.y- collisionRadius),(int) collisionRadius *2,(int) collisionRadius *2);
 
         if(!getGame().debug)return;
         g.drawString("ID : "+getId(),(int)(p_position.x- collisionRadius),(int)(p_position.y- collisionRadius));
         g.drawString("R : "+collisionRadius,(int)(p_position.x- collisionRadius),(int)(p_position.y- collisionRadius)+20);
+        g.drawString("draw layer : "+getLayer(),(int)(p_position.x- collisionRadius),(int)(p_position.y- collisionRadius)+40);
     }
 
     @Override
@@ -72,6 +80,7 @@ public class SpaceBubble extends CollisionBody implements IDrawable, IUpdatable,
     public void onTrigger(CollisionBody oder) {
         if(oder instanceof Player player){
 
+
             // check if it strickly in the bubble or not
             Vector2f posRelative = player.getPosition().sub(p_position);
 
@@ -82,6 +91,8 @@ public class SpaceBubble extends CollisionBody implements IDrawable, IUpdatable,
 
             _hasPlayer=true;
 
+            if(!_isActive)return;
+
             player.setSpaceBubble(this);
         }
     }
@@ -91,16 +102,32 @@ public class SpaceBubble extends CollisionBody implements IDrawable, IUpdatable,
 
         if(!getGame().isServer())return;
 
-        if((_hasPlayer || _receveDamage)){
-            applyDecade(deltaTime);
+        if(_isActive) {
+            if ((_hasPlayer || _receveDamage)) {
+                applyDecade(deltaTime);
+            } else {
+                _actualDecade = 0;
+            }
+
+            _isActive=(collisionRadius>MIN_RADIUS);
+            if(!_isActive){
+                _inActiveTimer=INACTIVE_TIME;
+            }
         }
-        else{
-            _actualDecade=0;
+        else if(_inActiveTimer>0f){
+            _inActiveTimer-=deltaTime;
+            return;
         }
 
         if(!_hasPlayer){
-            float newRad = collisionRadius+RADIUS_REGENERATE*deltaTime;
-            collisionRadius = (newRad>=_maxRadiuse)?_maxRadiuse:newRad;
+            float newRad = collisionRadius+(_isActive?RADIUS_REGENERATE:INACTIVE_RADIUS_REGENERATE)*deltaTime;
+            if(newRad>=_maxRadiuse){
+                collisionRadius = _maxRadiuse;
+                _isActive=true;
+            }
+            else{
+                collisionRadius = newRad;
+            }
         }
 
         _lastRadius=collisionRadius;
@@ -127,7 +154,7 @@ public class SpaceBubble extends CollisionBody implements IDrawable, IUpdatable,
     }
 
     public void damage(){
-        _actualDecade=RADIUS_DECADE*1000;
+        _actualDecade=RADIUS_DECADE*250;
         _receveDamage=true;
     }
 
@@ -159,5 +186,21 @@ public class SpaceBubble extends CollisionBody implements IDrawable, IUpdatable,
             radius=ent.collisionRadius;
             this.type= PacketDataType.Bubble;
         }
+    }
+
+
+    public void createPart(Vector2f position){
+        Random rand = new Random();
+        getGame().createEntity(
+                new SimpleEffect("textures/bubble_out.png",
+                        position,
+                        128,
+                        128,
+                        15,
+                        0.5f,
+                        rand.nextDouble(-1*Math.PI,Math.PI)
+                ),
+                getGroup()
+        );
     }
 }
