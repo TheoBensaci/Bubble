@@ -48,14 +48,61 @@ public class ServerMain {
         try {
             while (wait && gameServer.isRunning()) {
                 line = in.readLine();
-                switch (line){
+                if(line==null) break;
+                String trimmed = line.trim();
+                switch (trimmed){
                     case "exit" :
                         wait=false;
+                        // send exit to all players before closing
+                        gameServer.broadcastExitToAll();
                         gameServer.close();
                         break;
 
+                    case "players":
+                        String[] players = gameServer.listPlayers();
+                        if(players.length==0){
+                            System.out.println("No player connected.");
+                        } else {
+                            System.out.println("Connected players ("+players.length+"):");
+                            for(String p : players){
+                                System.out.println(" - "+p);
+                            }
+                        }
+                        break;
+
                     default:
-                        System.out.println("'"+line+"' is not know as a command :[");
+                        if(trimmed.startsWith("quick ")){
+                            String username = trimmed.substring(6).trim();
+                            if(username.isEmpty()){
+                                System.out.println("Usage: quick [username]");
+                            } else {
+                                boolean ok = gameServer.kickPlayer(username);
+                                if(!ok){
+                                    System.out.println("Player not found: "+username);
+                                }
+                            }
+                        }
+                        else if(trimmed.startsWith("game ")){
+                            String arg = trimmed.substring(5).trim();
+                            if(arg.equalsIgnoreCase("Start")){
+                                ServerCliUtils.gameStartMessage();
+                            }
+                            else if(arg.equalsIgnoreCase("Stop")){
+                                ServerCliUtils.gameStopMessage();
+                                gameServer.close();
+                                wait=false;
+                            }
+                            else if(arg.equalsIgnoreCase("Score")){
+                                String board = gameServer.formatScoreBoard();
+                                ServerCliUtils.gameScoreMessage(board);
+                            }
+                            else{
+                                System.out.println("Unknown game subcommand: "+arg+" (use Start|Stop|Score)");
+                            }
+                        }
+                        else{
+                            System.out.println("'"+line+"' is not know as a command :[");
+                        }
                         break;
                 }
 
