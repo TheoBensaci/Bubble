@@ -8,6 +8,7 @@ package ch.heig.network.networkHandler;
 
 import ch.heig.core.Entity;
 import ch.heig.core.utils.Vector2f;
+import ch.heig.entity.bullet.Bullet;
 import ch.heig.entity.player.ClientPlayer;
 import ch.heig.entity.player.ServerPlayer;
 import ch.heig.network.coreVariant.ClientGame;
@@ -118,6 +119,7 @@ public class ClientNetworkHandlerSystem extends NetworkHandlerSystem{
             }
             case PacketDataType.Bubble -> new SpaceBubble((SpaceBubble.Data)entityData);
             case PacketDataType.Player -> new ClientPlayer((ServerPlayer.Data)entityData);
+            case PacketDataType.Bullet -> new Bullet((Bullet.Data)entityData);
             default -> new Entity();
         };
 

@@ -14,6 +14,7 @@ import ch.heig.core.render.SpriteRenderUtils;
 import ch.heig.core.ressourceManagement.RessourceManager;
 import ch.heig.core.utils.DebugUtils;
 import ch.heig.core.utils.Vector2f;
+import ch.heig.entity.simpleEffect.SimpleEffect;
 import ch.heig.other.Arena;
 import ch.heig.entity.SpaceBubble.SpaceBubble;
 import ch.heig.entity.bullet.Bullet;
@@ -22,6 +23,7 @@ import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.awt.image.BufferedImageOp;
 import java.awt.image.RescaleOp;
+import java.util.Random;
 
 public class Player extends CollisionBody implements IDrawable, IUpdatable {
 
@@ -42,12 +44,17 @@ public class Player extends CollisionBody implements IDrawable, IUpdatable {
     protected int p_ammo = p_maxAmmo;
     protected float p_addSpeed =0;
 
+    // shoot
+
+
     // state
     protected boolean p_onDash =false;
     protected boolean p_inSpaceBubble =false;
 
     protected SpaceBubble p_actualBubble;
-    private SpaceBubble _bufferActualBubble;
+
+    // use to track which bubble this player just leave
+    protected SpaceBubble p_bufferActualBubble;
 
 
     // input handling
@@ -55,6 +62,8 @@ public class Player extends CollisionBody implements IDrawable, IUpdatable {
     protected boolean p_requestDash =false;
     protected boolean p_hasDebug =false;
     protected boolean p_onShoot =false;
+    protected boolean p_requestShoot =false;
+    protected boolean p_holdOnShoot =false;
 
 
 
@@ -88,7 +97,7 @@ public class Player extends CollisionBody implements IDrawable, IUpdatable {
     //#endregion
 
     public void setSpaceBubble(SpaceBubble bubble){
-        _bufferActualBubble=bubble;
+        p_actualBubble=bubble;
     }
 
     //#region movmement
@@ -133,11 +142,12 @@ public class Player extends CollisionBody implements IDrawable, IUpdatable {
 
         if(p_onShoot){
             p_onShoot =getGame().input.getMouseLeft();
+            p_requestShoot =false;
         }
         else{
             p_onShoot =getGame().input.getMouseLeft();
             if(p_onShoot) {
-                createBullet(false);
+                p_requestShoot=true;
             }
         }
 
@@ -191,9 +201,23 @@ public class Player extends CollisionBody implements IDrawable, IUpdatable {
             }
         }
 
-        p_actualBubble =_bufferActualBubble;
+        p_inSpaceBubble = true;//(p_actualBubble !=null);
+    }
 
-        p_inSpaceBubble =(p_actualBubble !=null);
+    protected void effectUpdate(float deltaTime){
+
+        // spawn particle
+
+        // bubble part leave
+        if(p_actualBubble==null && p_bufferActualBubble!=null && p_bufferActualBubble.isActive()){         // bubble part leave
+            createBubblePart(p_bufferActualBubble);
+        }
+        else if(p_actualBubble!=null && p_bufferActualBubble==null && p_actualBubble.isActive()){   // bubble part enter
+            createBubblePart(p_actualBubble);
+        }
+
+
+        ghostUpdate(deltaTime);
     }
 
     private void ghostUpdate(float deltaTime){
@@ -220,7 +244,7 @@ public class Player extends CollisionBody implements IDrawable, IUpdatable {
         if(p_inSpaceBubble){
             p_direction.set(p_targetDir);
 
-            if(!p_onDash){
+            if(!p_onDash && p_actualBubble!=null){
                 // get vector
                 Vector2f sbVec = getPosition().sub(p_actualBubble.getPosition());
                 if(p_targetDir.isNull()) {
@@ -270,8 +294,9 @@ public class Player extends CollisionBody implements IDrawable, IUpdatable {
 
     protected void atUpdateEnd(float deltaTime){
 
+        p_bufferActualBubble=p_actualBubble;
         // rest the space bubble, use to manage collision without a enter / exit hook (i'm lazy)
-        _bufferActualBubble=null;
+        p_actualBubble=null;
     }
 
 
@@ -283,9 +308,9 @@ public class Player extends CollisionBody implements IDrawable, IUpdatable {
 
     private void createBullet(boolean destroyOnContact){
         getGame().createEntity(
-                new Bullet(p_position.copy(), destroyOnContact?15:10, destroyOnContact)
+                new Bullet(p_position.copy(), destroyOnContact?12:6, destroyOnContact)
                         .setInitSpaceBubble(p_actualBubble)
-                        .setVelocity(1, p_rotation)
+                        .setVelocity(1f, p_rotation)
                 , getGroup()
         );
     }
@@ -296,7 +321,15 @@ public class Player extends CollisionBody implements IDrawable, IUpdatable {
     public void update(float deltaTime) {
         inputUpdate(deltaTime);
         if(getGame().isServer())stateUpdate(deltaTime);
-        ghostUpdate(deltaTime);
+        effectUpdate(deltaTime);
+
+        // bullet
+        if(getGame().isServer()){
+            if(p_requestShoot){
+                createBullet(false);
+                p_requestShoot=false;
+            }
+        }
         if(getGame().isServer())movementUpdate(deltaTime);
         if(getGame().isServer())atUpdateEnd(deltaTime);
 
@@ -316,7 +349,7 @@ public class Player extends CollisionBody implements IDrawable, IUpdatable {
         }
 
         BufferedImage newSprite = SpriteRenderUtils.rotateSprite(_sprite, p_rotation +(Math.PI/2));
-        Vector2f recenterOffset=new Vector2f(newSprite.getWidth()/3f,newSprite.getHeight()/3f);
+        Vector2f recenterOffset=new Vector2f(newSprite.getWidth()/2f,newSprite.getHeight()/2f);
 
         // draw ghost
         Vector2f diff = p_position.copy().sub(_maxGhostPosition);
@@ -353,10 +386,12 @@ public class Player extends CollisionBody implements IDrawable, IUpdatable {
             String[] debugInfo=new String[]{
                     "ID : "+getId(),
                     "Position : " + p_position,
+                    "Rotation : " + p_rotation,
                     "Taregt direction : " + p_targetDir,
                     "Direction : " + p_direction,
                     "In Space buble : " + p_inSpaceBubble,
-                    "On dash : " + p_onDash
+                    "On dash : " + p_onDash,
+                    "Draw layer : " + getLayer()
             };
 
             DebugUtils.drawEntityDebugInfo(g, p_position.copy(),new Vector2f(0, 50),debugInfo);
@@ -374,6 +409,12 @@ public class Player extends CollisionBody implements IDrawable, IUpdatable {
             ((Graphics2D) g).setStroke(new BasicStroke(2));
             g.drawLine((int)(p_position.x),(int)(p_position.y),(int)(aimingVec.x),(int)(aimingVec.y));
         }
+    }
+
+    protected void createBubblePart(SpaceBubble bubble){
+        if(getGame().window==null)return;
+        Vector2f diff = getPosition().sub(bubble.getPosition()).normilize().mult(bubble.collisionRadius);
+        bubble.createPart(bubble.getPosition().add(diff));
     }
 
     @Override

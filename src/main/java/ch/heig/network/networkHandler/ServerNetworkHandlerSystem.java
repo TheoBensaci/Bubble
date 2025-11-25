@@ -87,25 +87,25 @@ public class ServerNetworkHandlerSystem extends NetworkHandlerSystem{
 
         // send it to all player
         Set<Map.Entry<String,ClientData>> set = server.serverPlayers.entrySet();
-        boolean[] needToBeLogout=new boolean[set.size()];
-        Arrays.fill(needToBeLogout,true);
+        String[] needToBeLogout=new String[set.size()];
+        Arrays.fill(needToBeLogout,"");
 
-        Iterator it = set.iterator();
+        Iterator<Map.Entry<String,ClientData>> it = set.iterator();
 
         for (int i = 0; i < needToBeLogout.length; i++) {
-            Map.Entry<String,ClientData> cd = (Map.Entry<String,ClientData>)it.next();
+            Map.Entry<String,ClientData> cd = it.next();
             if(cd.getValue().lastUpdateClock<_TIME_BEFOR_LOGOUT){
                 socket.send(gsp,cd.getValue().address,cd.getValue().port);
-                needToBeLogout[i]=false;
                 cd.getValue().lastUpdateClock+=server.getDeltaTime();
+            }
+            else{
+                needToBeLogout[i]=cd.getKey();
             }
         }
 
-        it = set.iterator();
-        for (int i = 0; i < needToBeLogout.length; i++) {
-            Map.Entry<String,ClientData> cd = (Map.Entry<String,ClientData>)it.next();
-            if(needToBeLogout[i]){
-                server.destroyPlayer(cd.getKey());
+        for (String s : needToBeLogout) {
+            if (!s.isEmpty()) {
+                server.destroyPlayer(s);
             }
         }
 

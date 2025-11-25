@@ -9,6 +9,8 @@ package ch.heig.entity.player;
 import java.awt.Graphics;
 import java.util.LinkedList;
 
+import ch.heig.core.Entity;
+import ch.heig.entity.SpaceBubble.SpaceBubble;
 import ch.heig.network.networkHandler.INetworkReceiverEntity;
 import ch.heig.network.networkHandler.INetworkSenderEntity;
 import ch.heig.core.utils.DebugUtils;
@@ -28,6 +30,7 @@ public class ServerPlayer extends Player implements INetworkSenderEntity, INetwo
     private long t;
     private int _currentInput=0;
     private float _clock=0;
+
 
 
     public ServerPlayer(String username, int playerNumber, Vector2f initPosition) {
@@ -100,6 +103,7 @@ public class ServerPlayer extends Player implements INetworkSenderEntity, INetwo
         p_targetDir.set(id.targetDirectionX,id.targetDirectionY).normilize();
         p_rotation =id.rotation;
         p_requestDash =id.dash;
+        p_requestShoot=id.shoot;
         _currentInput=id.number;
         _clock=0;
         Vector2f targetPos=new Vector2f(id.positionX,id.positionY);
@@ -133,12 +137,7 @@ public class ServerPlayer extends Player implements INetworkSenderEntity, INetwo
 
     @Override
     public void applyData(PacketData data) {
-        ServerPlayer.Data d = (ServerPlayer.Data)data;
-        p_position.set(d.positionX,d.positionY);
-        p_onDash =d.onDash;
-        this.p_ammo =d.amo;
-        this.p_numberDash =d.numberOfDash;
-        this.p_rotation =d.rotation;
+        return;
     }
 
     public static class Data extends CollisionBodyData {
@@ -148,17 +147,18 @@ public class ServerPlayer extends Player implements INetworkSenderEntity, INetwo
         public int amo;
         public int numberOfDash;
         public String username;
+        public int actualBubbleId=0;
 
         public Data(ServerPlayer ent) {
             super(ent);
             type = PacketDataType.Player;
-            this.rotation = ent.p_rotation;
             this.isAlive = true;
             this.onDash = ent.p_onDash;
             this.amo = ent.p_ammo;
             this.numberOfDash = ent.p_numberDash;
             this.username=ent.username;
             this.rotation=ent.p_rotation;
+            this.actualBubbleId=(ent.p_actualBubble!=null)?ent.p_actualBubble.getId():0;
         }
     }
 

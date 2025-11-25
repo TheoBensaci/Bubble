@@ -16,6 +16,7 @@ public class InputData extends PacketData{
     public float positionX=0;
     public float positionY=0;
     public boolean resync=false;
+    public boolean shoot=false;
 
     @Override
     public String toString() {
