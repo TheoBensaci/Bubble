@@ -75,4 +75,29 @@ public class CliUtils {
     public static final String PURPLE_BACKGROUND_BRIGHT = "\033[0;105m"; // PURPLE
     public static final String CYAN_BACKGROUND_BRIGHT = "\033[0;106m";  // CYAN
     public static final String WHITE_BACKGROUND_BRIGHT = "\033[0;107m";   // WHITE
+
+
+    /**
+     * Print a loading message
+     * @param message message
+     * @param statue 0 = loading, 1 = succes, 2 = error
+     */
+    public static void loadingMessage(String message,int statue){
+        StringBuilder str=new StringBuilder();
+        str.append(message);
+        str.append(switch (statue){
+            case 0 -> "...";
+            case 1 -> " => "+GREEN_BRIGHT+"[SUCCESS]"+RESET;
+            case 2 -> " => "+RED_BRIGHT+"[ERROR]"+RESET;
+            default -> "";
+        });
+        System.out.println(str.toString());
+    }
+
+
+    public static void askUserInputMessage(){
+        System.out.print("> ");
+    }
+
+
 }

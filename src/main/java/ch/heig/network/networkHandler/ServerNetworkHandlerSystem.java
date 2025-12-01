@@ -47,7 +47,9 @@ public class ServerNetworkHandlerSystem extends NetworkHandlerSystem{
         for ( Packet p : buffer){
             switch(p.type){
                 case PacketType.playerInput :
-                    InputPacket ip = (InputPacket) (p);
+                    InputPacket ip = p.safeCast(InputPacket.class);
+                    if(ip==null)continue;
+
                     if(!server.serverPlayers.containsKey(ip.username)){
                         break;
                     }
@@ -55,17 +57,20 @@ public class ServerNetworkHandlerSystem extends NetworkHandlerSystem{
                     cd.entity.receiveInput(ip.input);
                     server.serverPlayers.get(ip.username).lastUpdateClock=0;
                     break;
-                case PacketType.login:
-                    LoginPacket lp = (LoginPacket)p;
-                    if(server.serverPlayers.containsKey(lp.username)){
-                        lp.id=-1;
-                        socket.send(lp,p.inetAddress,p.port);
-                        break;
-                    }
+                case PacketType.command:
 
-                    Entity e = server.createNewPlayer(lp.username,p.inetAddress,p.port);
-                    lp.id=e.getId();
-                    socket.send(lp,p.inetAddress,p.port);
+                    // i know normaly this packet is ok, but just for concitency
+                    CommandPacket cp = p.safeCast(CommandPacket.class);
+                    if(cp==null)return;
+
+                    // we dont need check if the sender as OP pervilege, we all ready did it in the server socket
+                    execCommand(cp);
+
+                    socket.send(cp,cp.inetAddress,cp.port);
+
+                    if(cp.commandType== CommandPacket.Command.error)break;
+                    // log the output
+                    server.serverPlayers.get(cp.username).logCommandOutput(cp.arg);
                     break;
             }
         }
@@ -110,5 +115,62 @@ public class ServerNetworkHandlerSystem extends NetworkHandlerSystem{
         }
 
         _lastUpdateSend=System.nanoTime();
+    }
+
+    /***
+     * Exec a command and send back a log
+     * @return result
+     */
+    private CommandPacket execCommand(CommandPacket commandPacket){
+        ServerGame server = (ServerGame)_game;
+        switch (commandPacket.commandType){
+            case CommandPacket.Command.startGame :
+                commandPacket.arg="Game start";
+                commandPacket.commandType= CommandPacket.Command.log;
+                break;
+            case CommandPacket.Command.restarGame :
+                commandPacket.arg="Game re - started";
+                commandPacket.commandType= CommandPacket.Command.log;
+                break;
+
+            case CommandPacket.Command.cancelGame :
+                commandPacket.arg="Game stop";
+                commandPacket.commandType= CommandPacket.Command.log;
+                break;
+
+            case CommandPacket.Command.kickPlayer :
+
+                if(!server.serverPlayers.containsKey(commandPacket.arg)){
+                    commandPacket.arg="ERROR : player '"+commandPacket.arg+"' is unknown";
+                    commandPacket.commandType= CommandPacket.Command.error;
+                    break;
+                }
+
+                server.destroyPlayer(commandPacket.arg);
+                commandPacket.arg="Player kick";
+                commandPacket.commandType= CommandPacket.Command.log;
+                break;
+
+            case CommandPacket.Command.op :
+
+                if(!server.serverPlayers.containsKey(commandPacket.arg)){
+                    commandPacket.arg="ERROR : player '"+commandPacket.arg+"' is unknown";
+                    commandPacket.commandType= CommandPacket.Command.error;
+                    break;
+                }
+
+                server.serverPlayers.get(commandPacket.arg).operator=true;
+                commandPacket.arg="player '"+commandPacket.arg+"' is now a operator";
+                commandPacket.commandType= CommandPacket.Command.log;
+                break;
+
+            case CommandPacket.Command.stopServer :
+                commandPacket.arg="Server stop";
+                commandPacket.commandType= CommandPacket.Command.log;
+                server.close();
+                break;
+        }
+
+        return commandPacket;
     }
 }

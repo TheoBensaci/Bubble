@@ -6,6 +6,8 @@
 
 package ch.heig.network.packet;
 
+import ch.heig.network.packet.data.PacketData;
+
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.ObjectInput;
@@ -39,4 +41,20 @@ public abstract class Packet implements Serializable {
             return null;
         }
     }
+
+
+
+
+    /***
+     * safe cast a packet to a class E and handle miss cast
+     * @return casted object
+     */
+    public <T extends Packet> T safeCast(Class<T> clazz) {
+        T buf = clazz != null && clazz.isInstance(this) ? clazz.cast(this) : null;
+        if(buf == null){
+            System.err.println("ERROR : mist cast of packet to "+((clazz==null)?"NULL":clazz.getName()));
+        }
+        return buf;
+    }
+
 }

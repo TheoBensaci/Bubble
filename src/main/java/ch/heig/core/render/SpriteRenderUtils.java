@@ -1,10 +1,17 @@
-package ch.heig.core.render;
+/**
+ *   Autheur: Theo Bensaci
+ *   Date: 09:21 20.11.2025
+ *   Description: Utils for sprite rendering
+ */
 
-import ch.heig.core.utils.Vector2f;
+package ch.heig.core.render;
 
 import java.awt.*;
 import java.awt.geom.AffineTransform;
 import java.awt.image.BufferedImage;
+import java.awt.image.RescaleOp;
+
+import ch.heig.core.utils.Vector2f;
 
 public class SpriteRenderUtils {
 
@@ -50,5 +57,11 @@ public class SpriteRenderUtils {
         g2.drawImage(sprite,0,0,null);
         g2.dispose();
         return img;
+    }
+
+    public static RescaleOp colorToRescaleOp(Color col){
+        float[] scales = {col.getRed()/255f, col.getGreen()/255f, col.getBlue()/255f, col.getAlpha()/255f};
+        float[] offsets = {0,0,0,0};
+        return  new RescaleOp(scales,offsets, null);
     }
 }

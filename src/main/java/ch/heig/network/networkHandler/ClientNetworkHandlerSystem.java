@@ -14,6 +14,7 @@ import ch.heig.entity.player.ServerPlayer;
 import ch.heig.network.coreVariant.ClientGame;
 import ch.heig.entity.SpaceBubble.SpaceBubble;
 import ch.heig.entity.TestNetworkEntity;
+import ch.heig.network.packet.CommandPacket;
 import ch.heig.network.socket.GameSocket;
 import ch.heig.network.packet.GameStatePacket;
 import ch.heig.network.packet.Packet;
@@ -23,10 +24,16 @@ import ch.heig.network.packet.data.PacketDataType;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.LinkedList;
+import java.util.Queue;
 
 public class ClientNetworkHandlerSystem extends NetworkHandlerSystem{
 
+    // max time waited befor resending a command (in milli)
+    private static final long _COMMAND_RESEND_TIME=1000;
+
     private final ArrayList<Entity> _serverOwnedEntity=new ArrayList<>();
+
 
     private int _gameStateNumber=-1;
 
@@ -65,7 +72,9 @@ public class ClientNetworkHandlerSystem extends NetworkHandlerSystem{
 
         for (Packet p : buffer) {
             if(p.type== PacketType.gameState){
-                GameStatePacket gsp = (GameStatePacket) p;
+                GameStatePacket gsp = p.safeCast(GameStatePacket.class);
+                if(gsp==null)continue;
+
                 if(gsp.number<=_gameStateNumber && (gsp.number/_gameStateNumber)>0)return;
                 _gameStateNumber=gsp.number;
                 applyGameState(gsp);
@@ -133,4 +142,5 @@ public class ClientNetworkHandlerSystem extends NetworkHandlerSystem{
 
         _serverOwnedEntity.remove(entity);
     }
+
 }

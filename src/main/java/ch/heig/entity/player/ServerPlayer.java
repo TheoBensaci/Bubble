@@ -9,15 +9,12 @@ package ch.heig.entity.player;
 import java.awt.Graphics;
 import java.util.LinkedList;
 
-import ch.heig.core.Entity;
-import ch.heig.entity.SpaceBubble.SpaceBubble;
-import ch.heig.network.networkHandler.INetworkReceiverEntity;
 import ch.heig.network.networkHandler.INetworkSenderEntity;
 import ch.heig.core.utils.DebugUtils;
 import ch.heig.core.utils.Vector2f;
 import ch.heig.network.packet.data.*;
 
-public class ServerPlayer extends Player implements INetworkSenderEntity, INetworkReceiverEntity {
+public class ServerPlayer extends Player implements INetworkSenderEntity {
 
     public final String username;
 
@@ -135,10 +132,6 @@ public class ServerPlayer extends Player implements INetworkSenderEntity, INetwo
         DebugUtils.drawEntityDebugInfo(g, p_position.copy(),new Vector2f(0, 50),debugInfo);
     }
 
-    @Override
-    public void applyData(PacketData data) {
-        return;
-    }
 
     public static class Data extends CollisionBodyData {
         public double rotation;
@@ -148,6 +141,7 @@ public class ServerPlayer extends Player implements INetworkSenderEntity, INetwo
         public int numberOfDash;
         public String username;
         public int actualBubbleId=0;
+        public int playerColor=0;
 
         public Data(ServerPlayer ent) {
             super(ent);
@@ -159,6 +153,7 @@ public class ServerPlayer extends Player implements INetworkSenderEntity, INetwo
             this.username=ent.username;
             this.rotation=ent.p_rotation;
             this.actualBubbleId=(ent.p_actualBubble!=null)?ent.p_actualBubble.getId():0;
+            this.playerColor= ent.playerColor;
         }
     }
 

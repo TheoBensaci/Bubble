@@ -1,3 +1,9 @@
+/**
+ *   Autheur: Theo Bensaci
+ *   Date: 20:53 16.11.2025
+ *   Description: Class use to manage the Arena or the limit of the playable area
+ */
+
 package ch.heig.other;
 
 import ch.heig.core.render.GameRender;

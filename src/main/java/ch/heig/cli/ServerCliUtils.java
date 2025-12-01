@@ -1,8 +1,8 @@
 package ch.heig.cli;
 
-import ch.heig.core.Game;
-
 import java.net.InetAddress;
+
+import ch.heig.core.Game;
 
 public class ServerCliUtils {
 

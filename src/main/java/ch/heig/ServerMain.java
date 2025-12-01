@@ -13,6 +13,7 @@ import java.io.InputStreamReader;
 import ch.heig.cli.ServerCliUtils;
 import ch.heig.core.render.GameRender;
 import ch.heig.core.utils.Vector2f;
+import ch.heig.network.socket.ServerGameSocket;
 import ch.heig.other.Arena;
 import ch.heig.network.coreVariant.ServerGame;
 import ch.heig.entity.SpaceBubble.SpaceBubble;
@@ -24,7 +25,7 @@ public class ServerMain {
         ServerCliUtils.startServerStartMessage(GameSocket.PORT);
         ServerGame gameServer = new ServerGame(true);
         gameServer.start();
-        gameServer.setGameSocket(new GameSocket());
+        gameServer.setGameSocket(new ServerGameSocket());
 
         // load the map
 
