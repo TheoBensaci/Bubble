@@ -56,11 +56,11 @@ public class GameSocket extends Thread {
     }
 
     /**
-     * Do somthing on receve of a packet, if the methods return false, the packet is drop and not add to receivedPackets lst
+     * Pre process the packet
      * @param packet packet receve
-     * @return if the packet is to be keep of not
+     * @return if the packet need to be keep (true) or drop (false)
      */
-    public boolean onReceivePacket(Packet packet, InetAddress addr, int port){
+    protected boolean packetPreProcess(Packet packet){
         return true;
     }
 
@@ -80,10 +80,10 @@ public class GameSocket extends Thread {
                 // decode packet
                 Packet p = Packet.unserialize(inPkt.getData());
                 if(p==null)continue;
-
-                if(!onReceivePacket(p,inPkt.getAddress(),inPkt.getPort()))continue;
                 p.inetAddress=inPkt.getAddress();
                 p.port=inPkt.getPort();
+
+                if(!packetPreProcess(p))continue;
 
                 mutex.acquire();
                 receivedPackets.add(p);

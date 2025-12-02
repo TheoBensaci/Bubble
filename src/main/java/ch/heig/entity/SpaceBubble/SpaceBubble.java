@@ -15,6 +15,7 @@ import java.util.Random;
 import ch.heig.core.IUpdatable;
 import ch.heig.core.collision.CollisionBody;
 import ch.heig.entity.player.Player;
+import ch.heig.entity.player.ServerPlayer;
 import ch.heig.entity.simpleEffect.SimpleEffect;
 import ch.heig.network.networkHandler.INetworkReceiverEntity;
 import ch.heig.network.networkHandler.INetworkSenderEntity;
@@ -32,6 +33,7 @@ public class SpaceBubble extends CollisionBody implements IDrawable, IUpdatable,
     public final static float INACTIVE_RADIUS_REGENERATE=0.015f;
     public final static float MIN_RADIUS=10f;
     public final static float INACTIVE_TIME=1000f;
+    public final static float DAMAGE_VALUE=10f;
 
     private final float _maxRadiuse;
 
@@ -103,9 +105,15 @@ public class SpaceBubble extends CollisionBody implements IDrawable, IUpdatable,
         if(!getGame().isServer())return;
 
         if(_isActive) {
-            if ((_hasPlayer || _receveDamage)) {
-                applyDecade(deltaTime);
-            } else {
+            _actualDecade = RADIUS_DECADE;
+            if(_receveDamage){
+                _actualDecade=(_lastRadius-collisionRadius)/deltaTime;
+                _receveDamage=false;
+            }
+            else if(_hasPlayer){
+                applyDamage(_actualDecade*deltaTime);
+                collisionRadius=(collisionRadius<0)?0:collisionRadius;
+            }else {
                 _actualDecade = 0;
             }
 
@@ -137,10 +145,12 @@ public class SpaceBubble extends CollisionBody implements IDrawable, IUpdatable,
 
     @Override
     public void applyData(PacketData data) {
-        SpaceBubble.Data d = (SpaceBubble.Data)data;
+        SpaceBubble.Data d = data.safeCast( SpaceBubble.Data.class);
+        if(d==null)return;
         collisionRadius=d.radius;
         p_position.x=d.positionX;
         p_position.y=d.positionY;
+        _isActive=d.isActive;
     }
 
     @Override
@@ -154,16 +164,10 @@ public class SpaceBubble extends CollisionBody implements IDrawable, IUpdatable,
     }
 
     public void damage(){
-        _actualDecade=RADIUS_DECADE*250;
+        applyDamage(DAMAGE_VALUE);
         _receveDamage=true;
     }
 
-    private void applyDecade(float deltaTime){
-        if(collisionRadius==0)return;
-        applyDamage(_actualDecade*deltaTime);
-        _actualDecade=RADIUS_DECADE;
-        collisionRadius=(collisionRadius<0)?0:collisionRadius;
-    }
 
     private void applyDamage(float amount){
         if(collisionRadius==0)return;
@@ -182,7 +186,7 @@ public class SpaceBubble extends CollisionBody implements IDrawable, IUpdatable,
 
         public Data(SpaceBubble ent){
             super(ent);
-            isActive=true;
+            isActive=ent._isActive;
             radius=ent.collisionRadius;
             this.type= PacketDataType.Bubble;
         }

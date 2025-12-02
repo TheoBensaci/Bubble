@@ -14,7 +14,6 @@ import ch.heig.core.render.SpriteRenderUtils;
 import ch.heig.core.ressourceManagement.RessourceManager;
 import ch.heig.core.utils.DebugUtils;
 import ch.heig.core.utils.Vector2f;
-import ch.heig.entity.simpleEffect.SimpleEffect;
 import ch.heig.other.Arena;
 import ch.heig.entity.SpaceBubble.SpaceBubble;
 import ch.heig.entity.bullet.Bullet;
@@ -23,7 +22,6 @@ import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.awt.image.BufferedImageOp;
 import java.awt.image.RescaleOp;
-import java.util.Random;
 
 public class Player extends CollisionBody implements IDrawable, IUpdatable {
 
@@ -33,7 +31,7 @@ public class Player extends CollisionBody implements IDrawable, IUpdatable {
     public static float DASH_ADD_SPEED = 1.5f;
     public static float DASH_ADD_SPEED_DECRESS = 0.02f;
 
-    public final int playerNumber;
+    public int playerColor;
 
     protected Vector2f p_direction = new Vector2f(0,0);        // direction apply to the player
     protected Vector2f p_targetDir =new Vector2f(0,0);          // direction request by the player
@@ -66,9 +64,11 @@ public class Player extends CollisionBody implements IDrawable, IUpdatable {
     protected boolean p_holdOnShoot =false;
 
 
+    private boolean porut=false;
 
     // rendering
     private BufferedImage _sprite;
+    public Color outineColor=new Color(0xD3D3D3);
     private Vector2f _maxGhostPosition;
     private static final int _NUMBER_OF_GHOST=3;
 
@@ -80,11 +80,11 @@ public class Player extends CollisionBody implements IDrawable, IUpdatable {
         this.tag=Tag.player;
 
 
-        this.playerNumber =playerNumber;
+        this.playerColor =playerNumber;
         _maxGhostPosition=initPosition.copy();
 
         // get the sprite
-        _sprite= RessourceManager.getTexture("textures/player"+playerNumber+".png");
+        _sprite= RessourceManager.getTexture("textures/player.png");
 
     }
 
@@ -162,6 +162,15 @@ public class Player extends CollisionBody implements IDrawable, IUpdatable {
             getGame().changeEntityGroup(this,1);
         }
 
+        if(porut){
+            porut=getGame().input.getNum2();
+        }
+        else if(getGame().input.getNum2()){
+            playerColor++;
+            if (playerColor > 6) playerColor = 0;
+            porut=true;
+        }
+
 
         // define direction
         int x=0;
@@ -185,6 +194,22 @@ public class Player extends CollisionBody implements IDrawable, IUpdatable {
 
 
     //#enregion
+
+    //#region Collision
+
+    protected void onBulletTrigger(Bullet bullet){
+
+    }
+
+    @Override
+    public void onTrigger(CollisionBody other) {
+        super.onTrigger(other);
+        if(other instanceof Bullet bullet){
+            onBulletTrigger(bullet);
+        }
+    }
+
+    //#endregion
 
 
 
@@ -348,7 +373,9 @@ public class Player extends CollisionBody implements IDrawable, IUpdatable {
             g.fillOval((int)(p_position.x- collisionRadius),(int)(p_position.y- collisionRadius),(int) collisionRadius *2,(int) collisionRadius *2);
         }
 
-        BufferedImage newSprite = SpriteRenderUtils.rotateSprite(_sprite, p_rotation +(Math.PI/2));
+        BufferedImage newSprite = SpriteRenderUtils.rotateSprite(
+                SpriteRenderUtils.getSpriteFromSpriteSheet(_sprite,32,32, playerColor)
+                , p_rotation +(Math.PI/2));
         Vector2f recenterOffset=new Vector2f(newSprite.getWidth()/2f,newSprite.getHeight()/2f);
 
         // draw ghost
@@ -376,7 +403,14 @@ public class Player extends CollisionBody implements IDrawable, IUpdatable {
                 ((Graphics2D) g).drawImage(newSprite, (BufferedImageOp) rop, (int)(ghostPos.x-recenterOffset.x), (int) (ghostPos.y-recenterOffset.y));
             }
         }
-        g.drawImage(newSprite,(int)(p_position.x-recenterOffset.x),(int)(p_position.y-recenterOffset.y),null);
+
+        // draw outline
+        ((Graphics2D) g).drawImage(SpriteRenderUtils.rotateSprite(
+                SpriteRenderUtils.getSpriteFromSpriteSheet(_sprite,32,32,7),
+                p_rotation +(Math.PI/2)),SpriteRenderUtils.colorToRescaleOp(outineColor),
+                (int)(p_position.x-recenterOffset.x),(int)(p_position.y-recenterOffset.y));
+
+        ((Graphics2D) g).drawImage(newSprite,(int)(p_position.x-recenterOffset.x),(int)(p_position.y-recenterOffset.y),null);
 
         // debug info
         if(getGame().debug){

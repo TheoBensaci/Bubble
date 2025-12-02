@@ -8,5 +8,6 @@ package ch.heig.core;
 
 public enum Tag {
     none,
-    player
+    player,
+    killbox
 }

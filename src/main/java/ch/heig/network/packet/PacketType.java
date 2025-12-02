@@ -10,6 +10,8 @@ public enum PacketType{
     none,
     login,
     gameState,
+    command,
     playerInput,
-    exitServer
+    exit,
+    ping
 }

@@ -1,3 +1,9 @@
+/**
+ *   Autheur: Theo Bensaci
+ *   Date: 20:55 16.11.2025
+ *   Description: Collision group, use to link entity group to a separate collision context
+ */
+
 package ch.heig.core.collision;
 
 import java.util.ArrayList;

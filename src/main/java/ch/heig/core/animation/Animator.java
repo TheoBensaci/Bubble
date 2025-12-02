@@ -1,7 +1,12 @@
+/**
+ *   Autheur: Theo Bensaci
+ *   Date: 10:10 21.11.2025
+ *   Description: Class use to manage a list of animation, useful when we deal with multiple state of animation
+ */
+
 package ch.heig.core.animation;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
 
 public class Animator<E> {

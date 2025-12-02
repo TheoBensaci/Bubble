@@ -1,24 +1,34 @@
+/**
+ *   Autheur: Theo Bensaci
+ *   Date: 20:53 16.11.2025
+ *   Description: Entity use to test network system
+ *   TODO : delete this class
+ */
+
 package ch.heig.entity;
+
+import java.awt.BasicStroke;
+import java.awt.Color;
+import java.awt.Graphics;
+import java.awt.Graphics2D;
+import java.awt.geom.AffineTransform;
+import java.awt.image.BufferedImage;
 
 import ch.heig.core.IUpdatable;
 import ch.heig.core.Tag;
 import ch.heig.core.animation.Animation;
 import ch.heig.core.animation.KeyFrame;
 import ch.heig.core.collision.CollisionBody;
+import ch.heig.core.render.IDrawable;
 import ch.heig.core.render.SpriteRenderUtils;
 import ch.heig.core.ressourceManagement.RessourceManager;
+import ch.heig.core.utils.Vector2f;
 import ch.heig.network.networkHandler.INetworkReceiverEntity;
 import ch.heig.network.networkHandler.INetworkSenderEntity;
-import ch.heig.core.render.IDrawable;
-import ch.heig.core.utils.Vector2f;
 import ch.heig.network.packet.data.CollisionBodyData;
 import ch.heig.network.packet.data.EntityData;
 import ch.heig.network.packet.data.PacketData;
 import ch.heig.network.packet.data.PacketDataType;
-
-import java.awt.*;
-import java.awt.geom.AffineTransform;
-import java.awt.image.BufferedImage;
 
 public class TestNetworkEntity extends CollisionBody implements IDrawable, IUpdatable, INetworkSenderEntity, INetworkReceiverEntity {
 

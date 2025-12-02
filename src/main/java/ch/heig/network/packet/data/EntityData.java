@@ -15,4 +15,5 @@ public class EntityData extends PacketData {
         type=PacketDataType.Entity;
         id=ent.getId();
     }
+
 }

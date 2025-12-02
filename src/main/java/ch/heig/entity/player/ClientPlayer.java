@@ -11,6 +11,7 @@ import java.util.Arrays;
 
 import ch.heig.core.Entity;
 import ch.heig.entity.SpaceBubble.SpaceBubble;
+import ch.heig.entity.bullet.Bullet;
 import ch.heig.network.networkHandler.INetworkReceiverEntity;
 import ch.heig.core.utils.Vector2f;
 import ch.heig.network.coreVariant.ClientGame;
@@ -27,17 +28,21 @@ public class ClientPlayer extends Player implements INetworkReceiverEntity {
     private String _username;
     private int _lastBubbleId=0;
 
-    public ClientPlayer(int playerNumber, Vector2f initPosition, boolean mainClient, String username) {
-        super(playerNumber, initPosition);
+    public ClientPlayer(int playerColor, Vector2f initPosition, boolean mainClient, String username) {
+        super(playerColor, initPosition);
         Arrays.fill(this.inputDataHistroy,new InputData());
         _mainClient=mainClient;
         _username=username;
+
+        outineColor=new Color(0x0E3D800, true);
+
     }
 
     public ClientPlayer(ServerPlayer.Data data) {
         super(1, new Vector2f(data.positionX, data.positionY));
         _mainClient=false;
         _username=data.username;
+        outineColor=new Color(0xFF0055);
     }
 
     @Override
@@ -127,7 +132,10 @@ public class ClientPlayer extends Player implements INetworkReceiverEntity {
 
     @Override
     public void applyData(PacketData data) {
-        ServerPlayer.Data d = (ServerPlayer.Data)data;
+        ServerPlayer.Data d = data.safeCast(ServerPlayer.Data.class);
+        if(d==null)return;
+
+
         p_position.set(d.positionX,d.positionY);
         p_onDash =d.onDash;
         this.p_ammo =d.amo;
@@ -135,6 +143,7 @@ public class ClientPlayer extends Player implements INetworkReceiverEntity {
 
         if(!_mainClient){
             p_rotation=d.rotation;
+            playerColor=d.playerColor;
         }
 
 

@@ -1,24 +1,33 @@
+/**
+ *   Autheur: Theo Bensaci
+ *   Date: 09:42 19.11.2025
+ *   Description: Bullet entity
+ */
+
 package ch.heig.entity.bullet;
 
+import java.awt.Color;
+import java.awt.Graphics;
+import java.awt.Graphics2D;
+import java.awt.geom.AffineTransform;
+import java.awt.image.BufferedImage;
+
 import ch.heig.core.IUpdatable;
+import ch.heig.core.Tag;
 import ch.heig.core.collision.CollisionBody;
 import ch.heig.core.render.IDrawable;
 import ch.heig.core.render.SpriteRenderUtils;
 import ch.heig.core.ressourceManagement.RessourceManager;
 import ch.heig.core.utils.Vector2f;
-import ch.heig.network.packet.data.CollisionBodyData;
-import ch.heig.network.packet.data.PacketDataType;
-import ch.heig.other.Arena;
 import ch.heig.entity.SpaceBubble.SpaceBubble;
 import ch.heig.entity.player.Player;
 import ch.heig.network.networkHandler.INetworkReceiverEntity;
 import ch.heig.network.networkHandler.INetworkSenderEntity;
+import ch.heig.network.packet.data.CollisionBodyData;
 import ch.heig.network.packet.data.EntityData;
 import ch.heig.network.packet.data.PacketData;
-
-import java.awt.*;
-import java.awt.geom.AffineTransform;
-import java.awt.image.BufferedImage;
+import ch.heig.network.packet.data.PacketDataType;
+import ch.heig.other.Arena;
 
 public class Bullet extends CollisionBody implements IUpdatable,IDrawable,INetworkReceiverEntity, INetworkSenderEntity {
 
@@ -79,7 +88,10 @@ public class Bullet extends CollisionBody implements IUpdatable,IDrawable,INetwo
 
     @Override
     public void applyData(PacketData data) {
-        Data bData = (Bullet.Data)data;
+        Data bData = data.safeCast(Data.class);
+        if(bData==null)return;
+
+
         p_position.set(bData.positionX,bData.positionY);
         _rotation=bData.rotation;
         collisionRadius=bData.radius;

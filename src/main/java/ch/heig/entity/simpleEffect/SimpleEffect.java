@@ -1,4 +1,15 @@
+/**
+ *   Autheur: Theo Bensaci
+ *   Date: 10:19 24.11.2025
+ *   Description: Entity use to display simple effect like explosion or "particle"
+ *   When the animation is over, this entity destroy
+ *   If the game as no render -> instant destroy on creation
+ */
+
 package ch.heig.entity.simpleEffect;
+
+import java.awt.Graphics;
+import java.awt.image.BufferedImage;
 
 import ch.heig.core.Entity;
 import ch.heig.core.IUpdatable;
@@ -8,9 +19,6 @@ import ch.heig.core.render.IDrawable;
 import ch.heig.core.render.SpriteRenderUtils;
 import ch.heig.core.ressourceManagement.RessourceManager;
 import ch.heig.core.utils.Vector2f;
-
-import java.awt.*;
-import java.awt.image.BufferedImage;
 
 public class SimpleEffect extends Entity implements IDrawable, IUpdatable {
 

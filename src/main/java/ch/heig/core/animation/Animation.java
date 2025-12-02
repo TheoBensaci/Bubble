@@ -1,7 +1,12 @@
+/**
+ *   Autheur: Theo Bensaci
+ *   Date: 20:38 17.11.2025
+ *   Description: Class use to manage animation
+ */
+
 
 package ch.heig.core.animation;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 
 public class Animation<E> {

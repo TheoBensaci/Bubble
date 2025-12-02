@@ -68,7 +68,7 @@ public class NetworkGame extends Game {
 
     public void setGameSocket(GameSocket gameSocket){
         p_gameSocket =gameSocket;
-        p_gameSocket.start();
+        if(!p_gameSocket.isRunning())p_gameSocket.start();
     }
 
     public GameSocket getGameSocket(){
