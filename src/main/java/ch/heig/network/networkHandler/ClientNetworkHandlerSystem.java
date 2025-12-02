@@ -14,7 +14,6 @@ import ch.heig.entity.player.ServerPlayer;
 import ch.heig.network.coreVariant.ClientGame;
 import ch.heig.entity.SpaceBubble.SpaceBubble;
 import ch.heig.entity.TestNetworkEntity;
-import ch.heig.network.packet.CommandPacket;
 import ch.heig.network.socket.GameSocket;
 import ch.heig.network.packet.GameStatePacket;
 import ch.heig.network.packet.Packet;
@@ -24,18 +23,14 @@ import ch.heig.network.packet.data.PacketDataType;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.LinkedList;
-import java.util.Queue;
 
 public class ClientNetworkHandlerSystem extends NetworkHandlerSystem{
 
-    // max time waited befor resending a command (in milli)
-    private static final long _COMMAND_RESEND_TIME=1000;
 
     private final ArrayList<Entity> _serverOwnedEntity=new ArrayList<>();
 
 
-    private int _gameStateNumber=-1;
+    private int _actualGameStateId =0;
 
     private float _lastServerUpdateClock=0;
 
@@ -75,8 +70,10 @@ public class ClientNetworkHandlerSystem extends NetworkHandlerSystem{
                 GameStatePacket gsp = p.safeCast(GameStatePacket.class);
                 if(gsp==null)continue;
 
-                if(gsp.number<=_gameStateNumber && (gsp.number/_gameStateNumber)>0)return;
-                _gameStateNumber=gsp.number;
+                boolean overflow = (_actualGameStateId>=0 && gsp.stateID<0)|| (_actualGameStateId<0 &&gsp.stateID>=0);
+
+                if(gsp.stateID <= _actualGameStateId && !overflow)return;
+                _actualGameStateId =gsp.stateID;
                 applyGameState(gsp);
             }
         }

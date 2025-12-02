@@ -34,7 +34,7 @@ public class ClientPlayer extends Player implements INetworkReceiverEntity {
         _mainClient=mainClient;
         _username=username;
 
-        outineColor=new Color(0x0E3D800, true);
+        outineColor=new Color(0xFFE1D814, true);
 
     }
 
@@ -69,7 +69,7 @@ public class ClientPlayer extends Player implements INetworkReceiverEntity {
         float usernameSize= cp.username.length()*6.5f;
         Vector2f offset=new Vector2f(20+usernameSize/2,-5);
         Vector2f usernamePos=getPosition().add(offset);
-        g.setColor(new Color(0xffff55));
+        g.setColor(outineColor);
         g.fillRect((int)(usernamePos.x-usernameSize/2),(int)(usernamePos.y-17),(int)(usernameSize),4);
         ((Graphics2D) g).setStroke(new BasicStroke(3));
         Vector2f lineStartPose=new Vector2f(new Vector2f((usernamePos.x-usernameSize/2),(int)(usernamePos.y-15)));

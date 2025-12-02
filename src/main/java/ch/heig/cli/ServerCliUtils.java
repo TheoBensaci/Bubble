@@ -1,3 +1,9 @@
+/**
+ *   Autheur: Theo Bensaci
+ *   Date: 20:53 16.11.2025
+ *   Description:
+ */
+
 package ch.heig.cli;
 
 import java.net.InetAddress;

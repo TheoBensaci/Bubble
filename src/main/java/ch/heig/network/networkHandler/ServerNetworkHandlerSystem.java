@@ -6,7 +6,6 @@
 
 package ch.heig.network.networkHandler;
 
-import ch.heig.core.Entity;
 import ch.heig.network.coreVariant.ServerGame;
 import ch.heig.network.ClientData;
 import ch.heig.network.socket.GameSocket;
@@ -16,7 +15,7 @@ import ch.heig.network.packet.data.EntityData;
 import java.util.*;
 
 public class ServerNetworkHandlerSystem extends NetworkHandlerSystem{
-    private int _gameStateNumber=0;
+    private int _actualGameStateID =2147483647;
 
     private static float _TIME_BEFOR_LOGOUT=500;
 
@@ -47,6 +46,7 @@ public class ServerNetworkHandlerSystem extends NetworkHandlerSystem{
         for ( Packet p : buffer){
             switch(p.type){
                 case PacketType.playerInput :
+                {
                     InputPacket ip = p.safeCast(InputPacket.class);
                     if(ip==null)continue;
 
@@ -57,21 +57,25 @@ public class ServerNetworkHandlerSystem extends NetworkHandlerSystem{
                     cd.entity.receiveInput(ip.input);
                     server.serverPlayers.get(ip.username).lastUpdateClock=0;
                     break;
-                case PacketType.command:
+                }
+                case PacketType.command: {
 
                     // i know normaly this packet is ok, but just for concitency
                     CommandPacket cp = p.safeCast(CommandPacket.class);
-                    if(cp==null)return;
+                    if (cp == null) return;
 
                     // we dont need check if the sender as OP pervilege, we all ready did it in the server socket
                     execCommand(cp);
 
-                    socket.send(cp,cp.inetAddress,cp.port);
+                    socket.send(cp, cp.inetAddress, cp.port);
 
-                    if(cp.commandType== CommandPacket.Command.error)break;
+                    if (cp.commandType == CommandPacket.Command.error) break;
                     // log the output
-                    server.serverPlayers.get(cp.username).logCommandOutput(cp.arg);
+                    ClientData cd = server.serverPlayers.get(cp.username);
+                    if(cd!=null)cd.logCommandOutput(cp.arg);
+
                     break;
+                }
             }
         }
     }
@@ -86,9 +90,8 @@ public class ServerNetworkHandlerSystem extends NetworkHandlerSystem{
         for (INetworkSenderEntity e : _sender) {
             data.add(e.getData());
         }
-        GameStatePacket gsp = new GameStatePacket(data.toArray(new EntityData[0]));
-        gsp.number=_gameStateNumber;
-        _gameStateNumber++;
+        GameStatePacket gsp = new GameStatePacket(_actualGameStateID,data.toArray(new EntityData[0]));
+        _actualGameStateID++;
 
         // send it to all player
         Set<Map.Entry<String,ClientData>> set = server.serverPlayers.entrySet();
@@ -128,7 +131,7 @@ public class ServerNetworkHandlerSystem extends NetworkHandlerSystem{
                 commandPacket.arg="Game start";
                 commandPacket.commandType= CommandPacket.Command.log;
                 break;
-            case CommandPacket.Command.restarGame :
+            case CommandPacket.Command.restartGame:
                 commandPacket.arg="Game re - started";
                 commandPacket.commandType= CommandPacket.Command.log;
                 break;
@@ -141,7 +144,7 @@ public class ServerNetworkHandlerSystem extends NetworkHandlerSystem{
             case CommandPacket.Command.kickPlayer :
 
                 if(!server.serverPlayers.containsKey(commandPacket.arg)){
-                    commandPacket.arg="ERROR : player '"+commandPacket.arg+"' is unknown";
+                    commandPacket.arg="player '"+commandPacket.arg+"' is unknown";
                     commandPacket.commandType= CommandPacket.Command.error;
                     break;
                 }
@@ -154,7 +157,7 @@ public class ServerNetworkHandlerSystem extends NetworkHandlerSystem{
             case CommandPacket.Command.op :
 
                 if(!server.serverPlayers.containsKey(commandPacket.arg)){
-                    commandPacket.arg="ERROR : player '"+commandPacket.arg+"' is unknown";
+                    commandPacket.arg="player '"+commandPacket.arg+"' is unknown";
                     commandPacket.commandType= CommandPacket.Command.error;
                     break;
                 }

@@ -9,7 +9,6 @@ TODO : Documentation introduction
 
 ## Network
 - ### [Protocol](./network/protocol.md)
-- ### [Packet design](./network/packet_design.md)
 - ### [Network game core](./network/network_game_core.md)
 - ### [Lobby system](./network/lobby_system.md)
 

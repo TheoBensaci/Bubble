@@ -8,14 +8,15 @@ package ch.heig.network.packet;
 
 public class LoginPacket extends Packet {
     public String username="";              // username valid or ask depending on who send this packet
-    public int id=0;                        // if id < 0 -> username not available, else ok
-    public int playerColor=0;
-    public LoginPacket(){
-        type=PacketType.login;
-    }
+
+    // Use to tell which entity id the player is linked, it's also use in case of error
+    // if the username is invalid, the id will be < 0 to indicated that
+    // if the username is valid, the id will be entity id of player on the server
+    public int id=0;
+    public int playerColor=0;               // selected player color
 
     public LoginPacket(String username, int playerColor){
-        this();
+        type=PacketType.login;
         this.username=username;
         this.playerColor=playerColor;
     }

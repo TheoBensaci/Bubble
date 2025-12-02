@@ -17,6 +17,7 @@ import ch.heig.network.networkHandler.ServerNetworkHandlerSystem;
 import ch.heig.core.utils.Vector2f;
 import ch.heig.entity.player.ServerPlayer;
 import ch.heig.network.ClientData;
+import ch.heig.network.packet.LoginPacket;
 import ch.heig.network.socket.GameSocket;
 import ch.heig.network.socket.ServerGameSocket;
 
@@ -71,6 +72,15 @@ public class ServerGame extends NetworkGame {
             }
         }
         set.toArray(new ClientData[0])[0].operator=true;
+    }
+
+    public boolean isLoginPacketError(LoginPacket loginPacket){
+        if(!serverPlayers.containsKey(loginPacket.username))return false;
+
+        ClientData cd = serverPlayers.get(loginPacket.username);
+        if(!cd.checkIfPacketProvnence(loginPacket))return true;
+
+        return false;
     }
 
     @Override

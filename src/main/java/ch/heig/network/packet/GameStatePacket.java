@@ -10,12 +10,15 @@ import java.util.Arrays;
 
 import ch.heig.network.packet.data.EntityData;
 
-public class  GameStatePacket extends Packet{
+public class GameStatePacket extends Packet{
     public static final int PACKET_MAX_SIZE=3000;
-    public int number=0;
+
+    // actual
+    public int stateID =0;
     public final EntityData[] data;
 
-    public GameStatePacket(EntityData ... data){
+    public GameStatePacket(int stateID,EntityData ... data){
+        this.stateID=stateID;
         this.data= Arrays.copyOf(data,data.length);
         this.type=PacketType.gameState;
     }

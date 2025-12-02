@@ -5,7 +5,7 @@ Destroy the player entity
 on server side</panel_attributes><additional_attributes>10;50;40;50;40;10;10;10</additional_attributes></element><element><id>Relation</id><coordinates><x>238</x><y>63</y><w>203</w><h>42</h></coordinates><panel_attributes>*(1)*
 lt=-&gt;&gt;
 
-Send exit packet</panel_attributes><additional_attributes>270;20;10;20</additional_attributes></element><element><id>Relation</id><coordinates><x>420</x><y>140</y><w>133</w><h>49</h></coordinates><panel_attributes>lt=&lt;&lt;-
+Send kick packet</panel_attributes><additional_attributes>270;20;10;20</additional_attributes></element><element><id>Relation</id><coordinates><x>420</x><y>140</y><w>133</w><h>49</h></coordinates><panel_attributes>lt=&lt;&lt;-
 *(3)*
 Remove the client form
 the client list</panel_attributes><additional_attributes>10;50;40;50;40;10;10;10</additional_attributes></element><element><id>Relation</id><coordinates><x>154</x><y>154</y><w>105</w><h>91</h></coordinates><panel_attributes>lt=&lt;&lt;-
