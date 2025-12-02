@@ -1,25 +1,27 @@
-/**
- *   Autheur: Theo Bensaci
- *   Date: 18:06 12.11.2025
- *   Description: Input packet data
- */
-
+/** Autheur: Theo Bensaci | Date: 18:06 12.11.2025 | Description: Input packet data */
 package ch.heig.network.packet.data;
 
-public class InputData extends PacketData{
-    public int number=0;
-    public float delatTimeStart=0;
-    public int targetDirectionX=0;
-    public int targetDirectionY=0;
-    public boolean dash=false;
-    public double rotation=0;
-    public float positionX=0;
-    public float positionY=0;
-    public boolean resync=false;
-    public boolean shoot=false;
+public class InputData extends PacketData {
+  public int number = 0;
+  public float delatTimeStart = 0;
+  public int targetDirectionX = 0;
+  public int targetDirectionY = 0;
+  public boolean dash = false;
+  public double rotation = 0;
+  public float positionX = 0;
+  public float positionY = 0;
+  public boolean resync = false;
+  public boolean shoot = false;
 
-    @Override
-    public String toString() {
-        return "dir : ("+targetDirectionX+", "+targetDirectionY+") | Dash : "+dash+" | Rotation : "+rotation;
-    }
+  @Override
+  public String toString() {
+    return "dir : ("
+        + targetDirectionX
+        + ", "
+        + targetDirectionY
+        + ") | Dash : "
+        + dash
+        + " | Rotation : "
+        + rotation;
+  }
 }

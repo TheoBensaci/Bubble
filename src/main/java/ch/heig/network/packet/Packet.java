@@ -1,12 +1,8 @@
 /**
- *   Autheur: Theo Bensaci
- *   Date: 18:06 12.11.2025
- *   Description: General packet class for this project
+ * Autheur: Theo Bensaci | Date: 18:06 12.11.2025 | Description: General packet class for this
+ * project
  */
-
 package ch.heig.network.packet;
-
-import ch.heig.network.packet.data.PacketData;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -17,44 +13,41 @@ import java.io.Serializable;
 import java.net.InetAddress;
 
 public abstract class Packet implements Serializable {
-    public PacketType type;
+  public PacketType type;
 
-    public transient InetAddress inetAddress;
-    public transient int port;
+  public transient InetAddress inetAddress;
+  public transient int port;
 
-    public byte[] serialize(){
-        ByteArrayOutputStream bos = new ByteArrayOutputStream();
-        try (ObjectOutputStream out = new ObjectOutputStream(bos)) {
-            out.writeObject(this);
-            out.flush();
-            return bos.toByteArray();
-        } catch (Exception ex) {
-            return new byte[0];
-        }
+  public byte[] serialize() {
+    ByteArrayOutputStream bos = new ByteArrayOutputStream();
+    try (ObjectOutputStream out = new ObjectOutputStream(bos)) {
+      out.writeObject(this);
+      out.flush();
+      return bos.toByteArray();
+    } catch (Exception ex) {
+      return new byte[0];
     }
+  }
 
-    public static Packet unserialize(byte[] data){
-        ByteArrayInputStream bis = new ByteArrayInputStream(data);
-        try (ObjectInput in = new ObjectInputStream(bis)) {
-            return (Packet) in.readObject();
-        } catch (Exception ex) {
-            return null;
-        }
+  public static Packet unserialize(byte[] data) {
+    ByteArrayInputStream bis = new ByteArrayInputStream(data);
+    try (ObjectInput in = new ObjectInputStream(bis)) {
+      return (Packet) in.readObject();
+    } catch (Exception ex) {
+      return null;
     }
+  }
 
-
-
-
-    /***
-     * safe cast a packet to a class E and handle miss cast
-     * @return casted object
-     */
-    public <T extends Packet> T safeCast(Class<T> clazz) {
-        T buf = clazz != null && clazz.isInstance(this) ? clazz.cast(this) : null;
-        if(buf == null){
-            System.err.println("ERROR : mist cast of packet to "+((clazz==null)?"NULL":clazz.getName()));
-        }
-        return buf;
+  /***
+   * safe cast a packet to a class E and handle miss cast
+   * @return casted object
+   */
+  public <T extends Packet> T safeCast(Class<T> clazz) {
+    T buf = clazz != null && clazz.isInstance(this) ? clazz.cast(this) : null;
+    if (buf == null) {
+      System.err.println(
+          "ERROR : mist cast of packet to " + ((clazz == null) ? "NULL" : clazz.getName()));
     }
-
+    return buf;
+  }
 }

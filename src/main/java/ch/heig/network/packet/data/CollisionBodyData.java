@@ -1,16 +1,19 @@
+/**
+ * Autheur: Theo Bensaci | Date: 15:59 13.11.2025 | Description: Data common to all collision body
+ */
 package ch.heig.network.packet.data;
 
 import ch.heig.core.collision.CollisionBody;
 import ch.heig.core.utils.Vector2f;
 
 public class CollisionBodyData extends EntityData {
-    public float positionX=0;
-    public float positionY=0;
+  public float positionX = 0;
+  public float positionY = 0;
 
-    public CollisionBodyData(CollisionBody collisionBody){
-        super(collisionBody);
-        Vector2f p = collisionBody.getPosition();
-        positionX=p.x;
-        positionY=p.y;
-    }
+  public CollisionBodyData(CollisionBody collisionBody) {
+    super(collisionBody);
+    Vector2f p = collisionBody.getPosition();
+    positionX = p.x;
+    positionY = p.y;
+  }
 }
