@@ -42,7 +42,7 @@ public class ServerGameSocket extends GameSocket{
                 // check client permition
                 ClientData cd = _game.serverPlayers.get(cp.username);
                 if(cd==null || !cd.checkIfPacketProvnence(packet)){
-                    cp.arg="ERROR MESSAGE";
+                    cp.arg="Unknown user";
                     cp.commandType= CommandPacket.Command.error;
                     send(cp,packet.inetAddress,packet.port);
                     return false;
@@ -78,7 +78,12 @@ public class ServerGameSocket extends GameSocket{
                     return false;
                 }
 
-                if(!cd.operator)return false;
+                if(!cd.operator) {
+                    cp.arg="operator privilege are needed for this command";
+                    cp.commandType= CommandPacket.Command.error;
+                    send(cp,packet.inetAddress,packet.port);
+                    return false;
+                }
 
                 // the majority of the thoses command need to be treated in the main game loop du to concurency
                 return true;
@@ -87,8 +92,16 @@ public class ServerGameSocket extends GameSocket{
                 LoginPacket lp = packet.safeCast(LoginPacket.class);
                 if(lp==null)return false;
 
-                if(_game.serverPlayers.containsKey(lp.username)  || lp.username.contains(" ")){
+                if(lp.username.isEmpty() || _game.isLoginPacketError(lp) || lp.username.contains(" ")){
                     lp.id=-1;
+                    send(lp,packet.inetAddress,packet.port);
+                    return false;
+                }
+
+                // the player as resend a login packet with the same info and the packet comme from the right client
+                // so we send back the info
+                if(_game.serverPlayers.containsKey(lp.username)){
+                    lp.id=_game.serverPlayers.get(lp.username).entity.getId();
                     send(lp,packet.inetAddress,packet.port);
                     return false;
                 }

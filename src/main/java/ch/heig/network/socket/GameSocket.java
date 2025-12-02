@@ -24,7 +24,7 @@ public class GameSocket extends Thread {
     public static final int PORT = 8000;
     private boolean _running=false;
 
-    private String _hostname;
+    private String _hostname="";
     private InetAddress _addr;
     private final int _listenPort;
     private final int _targetPort;
@@ -82,6 +82,12 @@ public class GameSocket extends Thread {
                 if(p==null)continue;
                 p.inetAddress=inPkt.getAddress();
                 p.port=inPkt.getPort();
+
+                // this will mean we are only receiving from the host and no from a bunch of client
+                // in this cas, we need to check the provenence of the packet
+                if(_addr!=null && (!_addr.equals(p.inetAddress) || p.port!=_targetPort)){
+                    continue;
+                }
 
                 if(!packetPreProcess(p))continue;
 

@@ -28,7 +28,7 @@ public class CommandPacket extends Packet{
     public enum Command{
         none,
         startGame,
-        restarGame,
+        restartGame,
         cancelGame,
         kickPlayer,
         stopServer,

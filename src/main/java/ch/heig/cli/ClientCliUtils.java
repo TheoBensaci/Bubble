@@ -2,7 +2,6 @@ package ch.heig.cli;
 
 import ch.heig.network.packet.CommandPacket;
 
-import java.security.KeyPair;
 import java.util.*;
 
 public class ClientCliUtils {
@@ -84,7 +83,7 @@ public class ClientCliUtils {
                         case "stop":
                             return new CommandPacket(CommandPacket.Command.cancelGame,"");
                         case "restart":
-                            return new CommandPacket(CommandPacket.Command.restarGame,"");
+                            return new CommandPacket(CommandPacket.Command.restartGame,"");
                         default:
                             return null;
                     }

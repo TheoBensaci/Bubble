@@ -74,6 +74,9 @@ public class ClientGameSocket extends GameSocket{
                     _pingRunning=false;
                 }
                 return false;
+            case PacketType.exit:
+
+                return false;
 
             default:
                 return super.packetPreProcess(packet);
