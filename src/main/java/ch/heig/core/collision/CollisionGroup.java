@@ -1,29 +1,25 @@
 /**
- *   Autheur: Theo Bensaci
- *   Date: 20:55 16.11.2025
- *   Description: Collision group, use to link entity group to a separate collision context
+ * Autheur: Theo Bensaci | Date: 20:55 16.11.2025 | Description: Collision group, use to link entity
+ * group to a separate collision context
  */
-
 package ch.heig.core.collision;
 
 import java.util.ArrayList;
 
 public class CollisionGroup {
-    public final int index;
-    public final ArrayList<CollisionBody> bodies=new ArrayList<>();
+  public final int index;
+  public final ArrayList<CollisionBody> bodies = new ArrayList<>();
 
-    public CollisionGroup(int index){
-        this.index=index;
-    }
+  public CollisionGroup(int index) {
+    this.index = index;
+  }
 
-    /**
-     * Do the collsion update on every collsion body register
-     */
-    public void doCollisionUpdate(){
-        for (int i = 0; i < bodies.size(); i++) {
-            for (int j = i+1; j < bodies.size(); j++) {
-                bodies.get(i).doCollision(bodies.get(j));
-            }
-        }
+  /** Do the collsion update on every collsion body register */
+  public void doCollisionUpdate() {
+    for (int i = 0; i < bodies.size(); i++) {
+      for (int j = i + 1; j < bodies.size(); j++) {
+        bodies.get(i).doCollision(bodies.get(j));
+      }
     }
+  }
 }
